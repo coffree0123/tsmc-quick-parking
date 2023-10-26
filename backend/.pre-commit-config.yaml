@@ -6,3 +6,16 @@ repos:
         args: ["-C", "./backend"]
       - id: poetry-lock
         args: ["-C", "./backend"]
+  - repo: local
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: pylint
+        files: '^backend/.*\.py$'
+        language: system
+        types: [python]
+        args:
+          [
+            "-rn", # Only display messages
+            "-sn", # Don't display the score
+          ]
