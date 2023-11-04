@@ -17,7 +17,7 @@ jobs:
         python-version: '3.9'
         cache: 'poetry'
     - name: Install dependencies
-      run: poetry install
+      run: poetry install -C backend/
     - name: Analysing the code with pylint
       run: |
         poetry run pylint $(git ls-files '*.py')
