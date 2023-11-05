@@ -4,13 +4,14 @@
 
 ### Pull Request
 For more details, please refer to [Notion page about our git flow](https://www.notion.so/jackywithawhitedog/Git-workflow-9dca27847b614860a48d2ec18b80b826)
-1. Create new branch from `main` to add features or fix bugs (e.g., `jacky-feat-frontend-parking_login`)
+1. Create new branch from `main` to add features or fix bugs (e.g., `feat-frontend-parking_login`)
 2. After finish your code, create pull request to `main` (e.g., `fix(backend): login failed`)
-3. Only merge if all the build test is passed.
+3. Assign member to review code if needed
+4. Only merge if all the build test is passed.
 
 #### Branch Name Format
 ```text
-<branch owner>-<type>-<optional scope>-<description>
+<type>-<optional scope>-<description>
 ```
 
 ### Commit Message Format
