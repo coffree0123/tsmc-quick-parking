@@ -7,3 +7,9 @@
     ```
 
 After install the dependency, please install the precommit hook by running the following command: ```pre-commit install```
+
+## How to run the server
+Run the following command under backend/
+```bash
+uvicorn src.main:app --reload
+```
