@@ -1,17 +1,16 @@
 '''Manage database connection and actions'''
-import psycopg2
+import psycopg
 from src.user.constants import Role, Gender
 
-
-db_connect = {'host': 'localhost', 'user': 'postgres',
-              'password': 123, 'dbname': 'postgres', 'port': 8080}
+# Define the database connection parameters
+DB_CONNECT = 'postgres://postgres:123@127.0.0.1:8080/postgres'
 
 
 def add_user(user_id: int, first_name: str, last_name: str, email: str, phone_num: str,
-              gender: Gender, age: int, job_title: Role, special_role: str) -> int:
+             gender: Gender, age: int, job_title: Role, special_role: str) -> int:
     '''Add a new user to the database and return the user_id'''
     # Connect to the database
-    conn = psycopg2.connect(**db_connect)
+    conn = psycopg.connect(DB_CONNECT)
     cursor = conn.cursor()
     # Define the SQL query to insert the user information into the Users table
     sql_query = """
