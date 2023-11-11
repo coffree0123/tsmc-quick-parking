@@ -1,2 +1,6 @@
 # Cache files
 __pycache__
+
+# Temp files
+*.sql
+*.txt
