@@ -1,12 +1,14 @@
 import { Flex, List, Typography } from 'antd'
 import { ArrowRightOutlined } from '@ant-design/icons'
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 const { Title } = Typography
 
 interface SlotCardProps {
   title: string
   value: number
+  id: number
 }
 
 const LotCard = (props: SlotCardProps): React.ReactElement => {
@@ -26,7 +28,9 @@ const LotCard = (props: SlotCardProps): React.ReactElement => {
       <div style={{ fontSize: '1.5em', fontWeight: 'bold' }}>{props.title}</div>
       <div style={{ fontSize: '3em', fontWeight: 'bold' }}>{props.value}</div>
       <Flex justify='flex-end' style={{ width: '80%' }}>
-        <ArrowRightOutlined style={{ fontSize: '1.5em' }} />
+        <Link to={`parkingLot/${props.id}`} style={{ color: 'white' }}>
+          <ArrowRightOutlined style={{ fontSize: '1.5em' }} />
+        </Link>
       </Flex>
     </Flex>
   )
@@ -34,9 +38,9 @@ const LotCard = (props: SlotCardProps): React.ReactElement => {
 
 const Home = (): React.ReactElement => {
   const LotInfo: SlotCardProps[] = [
-    { title: 'Factory B', value: 134 },
-    { title: 'Office F', value: 57 },
-    { title: 'Office D', value: 65 }
+    { title: 'Factory B', value: 134, id: 1 },
+    { title: 'Office F', value: 57, id: 2 },
+    { title: 'Office D', value: 65, id: 3 }
   ]
 
   const Vehicles = [
@@ -52,8 +56,8 @@ const Home = (): React.ReactElement => {
         <div style={{ overflowX: 'scroll' }}>
           <Flex gap='large' style={{ width: '150%' }}>
             {
-              LotInfo.map(({ title, value }, index) => (
-                <LotCard key={index} title={title} value={value} />
+              LotInfo.map(({ title, value, id }, index) => (
+                <LotCard key={index} title={title} value={value} id={id} />
               ))
             }
           </Flex>

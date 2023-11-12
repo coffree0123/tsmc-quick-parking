@@ -5,6 +5,7 @@ import App from './pages/default'
 import reportWebVitals from './reportWebVitals'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
+import ParkingLot from './pages/ParkingLot'
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -14,6 +15,7 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/parkingLot/:id" element={<ParkingLot />} />
         <Route path="/app" element={<App />} />
       </Routes>
     </BrowserRouter>
