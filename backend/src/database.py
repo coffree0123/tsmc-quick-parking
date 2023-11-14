@@ -36,9 +36,10 @@ def add_user(first_name: str, last_name: str, email: str, phone_num: str,
 
 def get_free_spaces(parkinglot_id: int) -> List[Tuple[str]]:
     '''
-    Given a parkinglot id, returns all free spaces, each of which is represented by a tuple (floor, index)
+    Given a parkinglot id, returns all free spaces, 
+    each of which is represented by a tuple (floor, index)
     '''
-    
+
     sql_query = """
     SELECT
         floor,
