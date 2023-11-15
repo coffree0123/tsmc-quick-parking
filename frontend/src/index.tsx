@@ -1,8 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-// import './index.css'
-import App from './App'
+import './index.css'
+import App from './pages/default'
 import reportWebVitals from './reportWebVitals'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Home from './pages/Home'
+import ParkingLot from './pages/ParkingLot'
 
 import { PublicClientApplication, EventType } from '@azure/msal-browser'
 import { msalConfig } from './authConfig'
@@ -35,7 +38,13 @@ const root = ReactDOM.createRoot(
 )
 root.render(
   <React.StrictMode>
-    <App instance={msalInstance}/>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/parkingLot/:id" element={<ParkingLot />} />
+        <Route path="/app" element={<App instance={msalInstance}/>} />
+      </Routes>
+    </BrowserRouter>
   </React.StrictMode>
 )
 
