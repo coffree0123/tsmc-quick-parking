@@ -5,15 +5,15 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@ant-design/icons':
+    specifier: ^5.2.6
+    version: 5.2.6(react-dom@18.2.0)(react@18.2.0)
   '@azure/msal-browser':
     specifier: ^3.5.0
     version: 3.5.0
   '@azure/msal-react':
     specifier: ^2.0.7
     version: 2.0.7(@azure/msal-browser@3.5.0)(react@18.2.0)(typescript@4.9.5)
-  '@ant-design/icons':
-    specifier: ^5.2.6
-    version: 5.2.6(react-dom@18.2.0)(react@18.2.0)
   '@testing-library/jest-dom':
     specifier: ^5.17.0
     version: 5.17.0
@@ -35,12 +35,15 @@ dependencies:
   '@types/react-dom':
     specifier: ^18.2.14
     version: 18.2.14
-  bootstrap:
-    specifier: ^5.3.2
-    version: 5.3.2(@popperjs/core@2.11.8)
+  '@types/testing-library__jest-dom':
+    specifier: 5.14.9
+    version: 5.14.9
   antd:
     specifier: ^5.11.1
     version: 5.11.1(react-dom@18.2.0)(react@18.2.0)
+  bootstrap:
+    specifier: ^5.3.2
+    version: 5.3.2(@popperjs/core@2.11.8)
   react:
     specifier: ^18.2.0
     version: 18.2.0
@@ -2074,42 +2077,6 @@ packages:
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
     dev: false
 
-  /@react-aria/ssr@3.9.0(react@18.2.0):
-    resolution: {integrity: sha512-Bz6BqP6ZorCme9tSWHZVmmY+s7AU8l6Vl2NUYmBzezD//fVHHfFo4lFBn5tBuAaJEm3AuCLaJQ6H2qhxNSb7zg==}
-    engines: {node: '>= 12'}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
-    dependencies:
-      '@swc/helpers': 0.5.3
-      react: 18.2.0
-    dev: false
-
-  /@restart/hooks@0.4.11(react@18.2.0):
-    resolution: {integrity: sha512-Ft/ncTULZN6ldGHiF/k5qt72O8JyRMOeg0tApvCni8LkoiEahO+z3TNxfXIVGy890YtWVDvJAl662dVJSJXvMw==}
-    peerDependencies:
-      react: '>=16.8.0'
-    dependencies:
-      dequal: 2.0.3
-      react: 18.2.0
-    dev: false
-
-  /@restart/ui@1.6.6(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-eC3puKuWE1SRYbojWHXnvCNHGgf3uzHCb6JOhnF4OXPibOIPEkR1sqDSkL643ydigxwh+ruCa1CmYHlzk7ikKA==}
-    peerDependencies:
-      react: '>=16.14.0'
-      react-dom: '>=16.14.0'
-    dependencies:
-      '@babel/runtime': 7.23.2
-      '@popperjs/core': 2.11.8
-      '@react-aria/ssr': 3.9.0(react@18.2.0)
-      '@restart/hooks': 0.4.11(react@18.2.0)
-      '@types/warning': 3.0.3
-      dequal: 2.0.3
-      dom-helpers: 5.2.1
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
-      uncontrollable: 8.0.4(react@18.2.0)
-      warning: 4.0.3
   /@rc-component/color-picker@1.4.1(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-vh5EWqnsayZa/JwUznqDaPJz39jznx/YDbyBuVJntv735tKXKwEUZZb2jYEldOg+NKWZwtALjGMrNeGBmqFoEw==}
     peerDependencies:
@@ -2204,9 +2171,47 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
+  /@react-aria/ssr@3.9.0(react@18.2.0):
+    resolution: {integrity: sha512-Bz6BqP6ZorCme9tSWHZVmmY+s7AU8l6Vl2NUYmBzezD//fVHHfFo4lFBn5tBuAaJEm3AuCLaJQ6H2qhxNSb7zg==}
+    engines: {node: '>= 12'}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+    dependencies:
+      '@swc/helpers': 0.5.3
+      react: 18.2.0
+    dev: false
+
   /@remix-run/router@1.11.0:
     resolution: {integrity: sha512-BHdhcWgeiudl91HvVa2wxqZjSHbheSgIiDvxrF1VjFzBzpTtuDPkOdOi3Iqvc08kXtFkLjhbS+ML9aM8mJS+wQ==}
     engines: {node: '>=14.0.0'}
+    dev: false
+
+  /@restart/hooks@0.4.11(react@18.2.0):
+    resolution: {integrity: sha512-Ft/ncTULZN6ldGHiF/k5qt72O8JyRMOeg0tApvCni8LkoiEahO+z3TNxfXIVGy890YtWVDvJAl662dVJSJXvMw==}
+    peerDependencies:
+      react: '>=16.8.0'
+    dependencies:
+      dequal: 2.0.3
+      react: 18.2.0
+    dev: false
+
+  /@restart/ui@1.6.6(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-eC3puKuWE1SRYbojWHXnvCNHGgf3uzHCb6JOhnF4OXPibOIPEkR1sqDSkL643ydigxwh+ruCa1CmYHlzk7ikKA==}
+    peerDependencies:
+      react: '>=16.14.0'
+      react-dom: '>=16.14.0'
+    dependencies:
+      '@babel/runtime': 7.23.2
+      '@popperjs/core': 2.11.8
+      '@react-aria/ssr': 3.9.0(react@18.2.0)
+      '@restart/hooks': 0.4.11(react@18.2.0)
+      '@types/warning': 3.0.3
+      dequal: 2.0.3
+      dom-helpers: 5.2.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      uncontrollable: 8.0.4(react@18.2.0)
+      warning: 4.0.3
     dev: false
 
   /@rollup/plugin-babel@5.3.1(@babel/core@7.23.2)(rollup@2.79.1):
