@@ -1,4 +1,5 @@
 '''Manage database connection and actions'''
+from typing import List, Tuple
 import psycopg
 from src.users.constants import Role, Gender
 
@@ -31,3 +32,23 @@ def add_user(first_name: str, last_name: str, email: str, phone_num: str,
     conn.close()
 
     return user_id
+
+
+def get_free_spaces(parkinglot_id: int) -> List[Tuple[str]]:
+    '''
+    Given a parkinglot id, returns all free spaces, 
+    each of which is represented by a tuple (floor, index)
+    '''
+
+    sql_query = """
+    SELECT
+        floor,
+        index
+    FROM "ParkingSlots"
+    WHERE "parkingLotID" = %s AND "status" = 'free';
+    """
+
+    with psycopg.connect(DB_CONNECT) as conn:
+        with conn.execute(sql_query, [parkinglot_id]) as cursor:
+            res = cursor.fetchall()
+    return res
