@@ -4,3 +4,6 @@ __pycache__
 # Temp files
 *.sql
 *.txt
+
+# Log file
+api.log
