@@ -2,11 +2,11 @@ import React from 'react'
 
 import { MsalProvider, AuthenticatedTemplate, useMsal, UnauthenticatedTemplate } from '@azure/msal-react'
 import { Container, Button } from 'react-bootstrap'
-import { PageLayout } from './components/PageLayout'
-import { IdTokenData } from './components/DataDisplay'
-import { loginRequest } from './authConfig'
+import { PageLayout } from '../../components/PageLayout'
+import { IdTokenData } from '../../components/DataDisplay'
+import { loginRequest } from '../../authConfig'
 
-import './styles/App.css'
+import '../../styles/App.css'
 
 /**
   * Most applications will need to conditionally render certain components based on whether a user is signed in or not.
