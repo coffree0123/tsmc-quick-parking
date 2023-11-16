@@ -13,7 +13,7 @@ class QuickParkingDB():
     '''
     def __init__(self, conninfo) -> None:
         self._connection_pools = ConnectionPool(conninfo)
-        print('DEBUG: Starting DB')
+        self._connection_pools.wait()
 
     def add_user(self, first_name: str, last_name: str, email: str, phone_num: str,
                 gender: Gender, age: int, job_title: Role, special_role: str) -> int:
@@ -97,5 +97,3 @@ class QuickParkingDB():
                 # Close the cursor and the connection
                 cursor.close()
                 conn.close()
-
-database = QuickParkingDB(DB_CONNECT)

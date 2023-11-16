@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from src.users.router import router as user_router
 from src.spaces.router import router as spaces_router
 from src.parking.router import router as parking_router
-
+from src.database import QuickParkingDB, DB_CONNECT
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -26,7 +26,10 @@ async def lifespan(app: FastAPI):
     )
     handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
     logger.addHandler(handler)
-    
+
+    # set up database
+    app.state.database = QuickParkingDB(DB_CONNECT)
+
     yield
     '''Shutdown Routines'''
 
