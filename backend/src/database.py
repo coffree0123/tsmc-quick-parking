@@ -1,7 +1,7 @@
 '''Manage database connection and actions'''
 from typing import List, Tuple
 from psycopg_pool import ConnectionPool
-from src.users.constants import Role, Gender
+from src.users.constants import Role, Gender, VehicleSize
 
 # Define the database connection parameters
 DB_CONNECT = 'postgres://postgres:123@127.0.0.1:8080/postgres'
@@ -11,12 +11,13 @@ class QuickParkingDB():
     '''
     The interface object of Database
     '''
+
     def __init__(self, conninfo) -> None:
         self._connection_pools = ConnectionPool(conninfo)
         self._connection_pools.wait()
 
     def add_user(self, first_name: str, last_name: str, email: str, phone_num: str,
-                gender: Gender, age: int, job_title: Role, special_role: str) -> int:
+                 gender: Gender, age: int, job_title: Role, special_role: str) -> int:
         '''Add a new user to the database and return the user_id'''
         # Define the SQL query to insert the user information into the Users table
         sql_query = """
@@ -29,7 +30,7 @@ class QuickParkingDB():
             with conn.cursor() as cursor:
                 # Execute the SQL query with the user information as parameters
                 cursor.execute(sql_query, (first_name, last_name, email,
-                                        phone_num, gender, age, job_title, special_role))
+                                           phone_num, gender, age, job_title, special_role))
                 # Fetch the result and get the id of the inserted row
                 result = cursor.fetchone()
                 user_id = result[0]
@@ -37,6 +38,23 @@ class QuickParkingDB():
                 conn.commit()
 
         return user_id
+
+    def add_vehicle(self, user_id: int, license_id: str, nick_name: str,
+                    car_size: VehicleSize = "small") -> None:
+        '''Add a new vehicle to the database'''
+        # Define the SQL query to insert the vehicle information into the Cars table
+        sql_query = """
+        INSERT INTO "Cars" ("userID", "licensePlateNo", "size", "model")
+        VALUES (%s, %s, %s, %s);
+        """
+
+        with self._connection_pools.connection() as conn:
+            with conn.cursor() as cursor:
+                # Execute the SQL query with the vehicle information as parameters
+                cursor.execute(
+                    sql_query, (user_id, license_id, car_size, nick_name))
+                # Commit the changes to the database
+                conn.commit()
 
     def get_free_spaces(self, parkinglot_id: int) -> List[Tuple[str]]:
         '''
