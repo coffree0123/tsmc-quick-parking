@@ -1,3 +1,4 @@
+'''Vehicles management module'''
 from fastapi import APIRouter, Request
 from src.vehicles.constants import VehicleSize
 
