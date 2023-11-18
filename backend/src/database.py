@@ -1,5 +1,6 @@
 '''Manage database connection and actions'''
 from typing import List, Tuple
+from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool
 from src.users.constants import Role, Gender
 from src.vehicles.constants import VehicleSize
@@ -124,11 +125,11 @@ class QuickParkingDB():
         '''Retrieve the lastest 10 parking records of the given vehicle'''
         sql_query = """
         SELECT
-            parkinglots.name,
-            slots.floor,
-            slots.index,
-            records."startTime",
-            records."endTime"
+            parkinglots.name AS parkinglot_name,
+            slots.floor AS slot_floor,
+            slots.index AS slot_index,
+            records."startTime" AS start_time,
+            records."endTime" AS end_time
         FROM (
             SELECT
                 * 
@@ -144,6 +145,6 @@ class QuickParkingDB():
         """
 
         with self._connection_pools.connection() as conn:
-            with conn.execute(sql_query, [vehicle_id, num_records]) as cursor:
-                res = cursor.fetchall()
+            with conn.cursor(row_factory=dict_row) as cursor:
+                res = cursor.execute(sql_query, [vehicle_id, num_records]).fetchall()
         return res
