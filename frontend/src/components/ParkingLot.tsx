@@ -1,6 +1,5 @@
 import { Flex, Tabs, Typography } from 'antd'
 import React, { useState } from 'react'
-import { useParams } from 'react-router-dom'
 
 const { Title } = Typography
 
@@ -50,9 +49,8 @@ const LotItems = [
   { name: 'B3', map: randomMaps() }
 ]
 
-const ParkingLot = (): React.ReactElement => {
+const ParkingLot = (props: { id: number }): React.ReactElement => {
   const [floorId, setFloorId] = useState<number>(0)
-  const { id } = useParams()
 
   const changeMap = (key: string): void => {
     setFloorId(Number(key))
@@ -60,7 +58,7 @@ const ParkingLot = (): React.ReactElement => {
 
   return (
     <Flex vertical style={{ overflow: 'hidden' }}>
-      <Title>Map id: {id}</Title>
+      <Title level={3}>Map id: {props.id}</Title>
       <Tabs
         type='card'
         items={LotItems.map((item, index) => ({ key: String(index), label: item.name }))}
