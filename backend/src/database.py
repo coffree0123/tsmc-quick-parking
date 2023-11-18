@@ -1,7 +1,8 @@
 '''Manage database connection and actions'''
 from typing import List, Tuple
 from psycopg_pool import ConnectionPool
-from src.users.constants import Role, Gender, VehicleSize
+from src.users.constants import Role, Gender
+from src.vehicles.constants import VehicleSize
 
 # Define the database connection parameters
 DB_CONNECT = 'postgres://postgres:123@127.0.0.1:8080/postgres'
