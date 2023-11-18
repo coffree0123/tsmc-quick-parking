@@ -118,13 +118,15 @@ class QuickParkingDB():
                 cursor.close()
                 conn.close()
 
-    def get_vehicle_latest_records(self, vehicle_id: str) -> list:
-        '''Retrieve the lastest parking records of a vehicle'''
+    def get_latest_records(self, vehicle_id: str, user_id: int) -> list:
+        '''Retrieve the lastest 10 parking records'''
         num_records = 10
 
-        '''Retrieve the lastest 10 parking records of the given vehicle'''
-        sql_query = """
+        cond1 = f''' "licensePlateNo" = '{vehicle_id}' ''' if vehicle_id is not None else "1 = 1"
+        cond2 = f''' "userID" = '{user_id}' ''' if user_id is not None else "1 = 1"
+        sql_query = f"""
         SELECT
+            vehicles."licensePlateNo" AS license_plate_no,
             parkinglots.name AS parkinglot_name,
             slots.floor AS slot_floor,
             slots.index AS slot_index,
@@ -132,19 +134,22 @@ class QuickParkingDB():
             records."endTime" AS end_time
         FROM (
             SELECT
-                * 
-            FROM "ParkingRecords" 
-            WHERE "licensePlateNo" = %s
-            ORDER BY "startTime" DESC
-            LIMIT %s
-        ) AS records
-        LEFT JOIN "ParkingSlots" AS slots
+                "licensePlateNo",
+                "userID"
+            FROM "Cars"
+            WHERE {cond1} AND {cond2}
+        ) AS vehicles
+        INNER JOIN "ParkingRecords" AS records
+            ON vehicles."licensePlateNo" = records."licensePlateNo"
+        INNER JOIN "ParkingSlots" AS slots
             ON slots.id = records."slotID"
-        LEFT JOIN "ParkingLots" AS parkinglots
-            ON parkinglots.id = slots."parkingLotID";
+        INNER JOIN "ParkingLots" AS parkinglots
+            ON parkinglots.id = slots."parkingLotID"
+        ORDER BY start_time DESC
+        LIMIT {num_records};
         """
 
         with self._connection_pools.connection() as conn:
             with conn.cursor(row_factory=dict_row) as cursor:
-                res = cursor.execute(sql_query, [vehicle_id, num_records]).fetchall()
+                res = cursor.execute(sql_query).fetchall()
         return res
