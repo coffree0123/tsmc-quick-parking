@@ -1,6 +1,5 @@
 '''Parking Space Management Module'''
-from fastapi import APIRouter, Request
-from src.spaces.constants import VehicleRecord
+from fastapi import APIRouter, Request, HTTPException, status
 
 router = APIRouter()
 
@@ -11,17 +10,13 @@ def read_free_spaces(r: Request, parkinglot_id: int) -> list[tuple[int, int]]:
     return r.app.state.database.get_free_spaces(parkinglot_id)
 
 
-@router.get(path="/spaces/vehicle")
-def get_latest_records(r: Request, vehicle_id: str) -> list[VehicleRecord]:
-    '''Get a list of parking records of a vehicle'''
-    raw_results = r.app.state.database.get_vehicle_latest_records(vehicle_id)
-    annotated_results = [
-        VehicleRecord(
-            parkinglot_name=row[0],
-            slot_floor=row[1],
-            slot_index=row[2],
-            start_time=row[3],
-            end_time=row[4]
-        ) for row in raw_results
-    ]
-    return annotated_results
+@router.get(path="/spaces/records")
+def get_latest_records(r: Request, vehicle_id: str = None, user_id: int = None) -> list[dict]:
+    '''Search the parking records by user id or vehicle id'''
+    if vehicle_id is None and user_id is None:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            detail="At least one of user_id and vehicle_id must be provided"
+        )
+
+    return r.app.state.database.get_latest_records(vehicle_id, user_id)
