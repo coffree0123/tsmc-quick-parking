@@ -118,8 +118,9 @@ class QuickParkingDB():
                 conn.close()
 
     def get_vehicle_latest_records(self, vehicle_id: str) -> list:
+        '''Retrieve the lastest parking records of a vehicle'''
         num_records = 10
-        
+
         '''Retrieve the lastest 10 parking records of the given vehicle'''
         sql_query = """
         SELECT

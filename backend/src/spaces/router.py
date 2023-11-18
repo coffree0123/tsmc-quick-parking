@@ -13,6 +13,7 @@ def read_free_spaces(r: Request, parkinglot_id: int) -> list[tuple[int, int]]:
 
 @router.get(path="/spaces/vehicle")
 def get_latest_records(r: Request, vehicle_id: str) -> list[VehicleRecord]:
+    '''Get a list of parking records of a vehicle'''
     raw_results = r.app.state.database.get_vehicle_latest_records(vehicle_id)
     annotated_results = [
         VehicleRecord(
