@@ -116,3 +116,34 @@ class QuickParkingDB():
                 # Close the cursor and the connection
                 cursor.close()
                 conn.close()
+
+    def get_vehicle_latest_records(self, vehicle_id: str) -> list:
+        '''Retrieve the lastest parking records of a vehicle'''
+        num_records = 10
+
+        '''Retrieve the lastest 10 parking records of the given vehicle'''
+        sql_query = """
+        SELECT
+            parkinglots.name,
+            slots.floor,
+            slots.index,
+            records."startTime",
+            records."endTime"
+        FROM (
+            SELECT
+                * 
+            FROM "ParkingRecords" 
+            WHERE "licensePlateNo" = %s
+            ORDER BY "startTime" DESC
+            LIMIT %s
+        ) AS records
+        LEFT JOIN "ParkingSlots" AS slots
+            ON slots.id = records."slotID"
+        LEFT JOIN "ParkingLots" AS parkinglots
+            ON parkinglots.id = slots."parkingLotID";
+        """
+
+        with self._connection_pools.connection() as conn:
+            with conn.execute(sql_query, [vehicle_id, num_records]) as cursor:
+                res = cursor.fetchall()
+        return res
