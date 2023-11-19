@@ -5,13 +5,14 @@ import App from './pages/default'
 import reportWebVitals from './reportWebVitals'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
-import ParkingLot from './pages/ParkingLot'
 
 import { PublicClientApplication, EventType } from '@azure/msal-browser'
 import { msalConfig } from './authConfig'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './styles/index.css'
+import Dashboard from './pages/Dashboard'
+import ParkingLotPage from './pages/ParkingLotPage'
 
 /**
  * MSAL should be instantiated outside of the component tree to prevent it from being re-instantiated on re-renders.
@@ -41,8 +42,9 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/parkingLot/:id" element={<ParkingLot />} />
+        <Route path="/parkingLot/:id" element={<ParkingLotPage />} />
         <Route path="/app" element={<App instance={msalInstance}/>} />
+        <Route path='/dashboard' element={<Dashboard />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

@@ -6,7 +6,7 @@ from src.users.constants import Role, Gender, VehicleSize
 router = APIRouter()
 
 
-@router.post("/users/user_registration")
+@router.post("/users/")
 def create_user(r: Request, first_name: str, last_name: str, email: str,
                 phone_num: str, gender: Gender, age: int, job_title: Role,
                 special_role: str = "None") -> dict[str, int]:

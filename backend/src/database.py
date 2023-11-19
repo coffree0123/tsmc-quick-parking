@@ -1,7 +1,9 @@
 '''Manage database connection and actions'''
 from typing import List, Tuple
+from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool
-from src.users.constants import Role, Gender, VehicleSize
+from src.users.constants import Role, Gender
+from src.vehicles.constants import VehicleSize
 
 # Define the database connection parameters
 DB_CONNECT = 'postgres://postgres:123@127.0.0.1:8080/postgres'
@@ -178,3 +180,75 @@ class QuickParkingDB():
                 # Close the cursor and the connection
                 cursor.close()
                 conn.close()
+
+    def get_latest_records(self, vehicle_id: str, user_id: int) -> list:
+        '''Retrieve the lastest 10 parking records'''
+        num_records = 10
+
+        cond1 = f''' "licensePlateNo" = '{vehicle_id}' ''' if vehicle_id is not None else "1 = 1"
+        cond2 = f''' "userID" = '{user_id}' ''' if user_id is not None else "1 = 1"
+        sql_query = f"""
+        SELECT
+            vehicles."licensePlateNo" AS license_plate_no,
+            parkinglots.name AS parkinglot_name,
+            slots.floor AS slot_floor,
+            slots.index AS slot_index,
+            records."startTime" AS start_time,
+            records."endTime" AS end_time
+        FROM (
+            SELECT
+                "licensePlateNo",
+                "userID"
+            FROM "Cars"
+            WHERE {cond1} AND {cond2}
+        ) AS vehicles
+        INNER JOIN "ParkingRecords" AS records
+            ON vehicles."licensePlateNo" = records."licensePlateNo"
+        INNER JOIN "ParkingSlots" AS slots
+            ON slots.id = records."slotID"
+        INNER JOIN "ParkingLots" AS parkinglots
+            ON parkinglots.id = slots."parkingLotID"
+        ORDER BY start_time DESC
+        LIMIT {num_records};
+        """
+
+        with self._connection_pools.connection() as conn:
+            with conn.cursor(row_factory=dict_row) as cursor:
+                res = cursor.execute(sql_query).fetchall()
+        return res
+
+    def get_long_term_occupants(self, parkinglot_id):
+        '''Retrieve top 10 vehicles that occupies longest til now in the given parking lot'''
+        num_records = 10
+
+        sql_query = """
+        SELECT 
+            slots."floor",
+            slots."index",
+            records."licensePlateNo" AS license_plate_no,
+            records."startTime" AS start_time
+        FROM (
+            SELECT
+                "id",
+                "index",
+                "floor"
+            FROM "ParkingSlots" 
+            WHERE "parkingLotID" = %s
+        ) AS slots
+        INNER JOIN (
+            SELECT
+                "slotID",
+                "licensePlateNo",
+                "startTime"
+            FROM "ParkingRecords"
+            WHERE "endTime" is NULL
+        ) AS records
+            ON slots."id" = records."slotID"
+        ORDER BY "startTime"
+        LIMIT %s;
+        """
+
+        with self._connection_pools.connection() as conn:
+            with conn.cursor(row_factory=dict_row) as cursor:
+                res = cursor.execute(sql_query, params=(parkinglot_id, num_records)).fetchall()
+        return res
