@@ -1,7 +1,7 @@
 '''User management module'''
 from fastapi import APIRouter, Request
 from src.users.utils import get_user_favorite_parkinglot
-from src.users.constants import Role, Gender, VehicleSize
+from src.users.constants import Role, Gender
 
 router = APIRouter()
 
@@ -15,13 +15,6 @@ def create_user(r: Request, first_name: str, last_name: str, email: str,
                                             gender, age, job_title, special_role)
 
     return {"user_id": user_id}
-
-
-@router.post("/users/vehicle_registration")
-def add_vehicle(r: Request, user_id: int, license_id: str, nick_name: str,
-                car_size: VehicleSize = "small") -> None:
-    '''Add a new vehicle to the database'''
-    r.app.state.database.add_vehicle(user_id, license_id, nick_name, car_size)
 
 
 @router.get("/users/user_info/{user_id}")
