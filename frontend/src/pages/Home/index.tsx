@@ -1,7 +1,8 @@
-import { Flex, List, Typography } from 'antd'
+import { Button, Flex, List, Typography } from 'antd'
 import { ArrowRightOutlined } from '@ant-design/icons'
-import React from 'react'
+import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
+import { AuthContext } from '../../contexts/AuthContext'
 
 const { Title } = Typography
 
@@ -37,6 +38,8 @@ const LotCard = (props: SlotCardProps): React.ReactElement => {
 }
 
 const Home = (): React.ReactElement => {
+  const { logout } = useContext(AuthContext)
+
   const LotInfo: SlotCardProps[] = [
     { title: 'Factory B', value: 134, id: 1 },
     { title: 'Office F', value: 57, id: 2 },
@@ -79,6 +82,7 @@ const Home = (): React.ReactElement => {
           )}
         />
       </div>
+      <Button onClick={logout}>Logout</Button>
     </Flex>
   )
 }

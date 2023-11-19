@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Button, Col, Input, Layout, List, Row, Space, Typography } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import ParkingLot from '../../components/ParkingLot'
+import { AuthContext } from '../../contexts/AuthContext'
 
 const { Header, Content } = Layout
 const { Title } = Typography
@@ -23,6 +24,8 @@ const Vehicle = (props: VehicleProps): React.ReactElement => {
 }
 
 const Dashboard = (): React.ReactElement => {
+  const { logout } = useContext(AuthContext)
+
   const vehicles: VehicleProps[] = [
     { license: 'ABC-9988', slot: 'B1#105', stayTime: '7 days 18 hours' },
     { license: 'EAH-1677', slot: 'B2#222', stayTime: '1 days 3 hours' },
@@ -48,7 +51,7 @@ const Dashboard = (): React.ReactElement => {
           <span style={{ width: '150px', color: '#B32A2A', fontWeight: 'bold' }} >Quick Parking</span>
           <Input prefix={<SearchOutlined />} placeholder='Search the vehicles' style={{ width: '250px' }} />
         </Space>
-        <Button type='primary'>Logout</Button>
+        <Button type='primary' onClick={logout}>Logout</Button>
       </Header>
       <Content
         style={{
