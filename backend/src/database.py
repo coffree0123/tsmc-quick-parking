@@ -58,6 +58,69 @@ class QuickParkingDB():
                 # Commit the changes to the database
                 conn.commit()
 
+    def get_user_vehicles(self, user_id: int) -> tuple[list[str], list[str]]:
+        '''Get vehicle information given user_id'''
+        sql = """
+        SELECT "licensePlateNo", "model" FROM "Cars" WHERE "userID" = %s;
+        """
+        with self._connection_pools.connection() as conn:
+            with conn.cursor() as cursor:
+                # Execute the query with the user_id value
+                cursor.execute(sql, (user_id,))
+                # Fetch all the rows from the query result
+                rows = cursor.fetchall()
+
+        # Initialize two empty lists to store the licensePlateNo and model values
+        license_list, model_list = [], []
+
+        for row in rows:
+            license_list.append(row[0])
+            model_list.append(row[1])
+
+        return license_list, model_list
+
+    def get_parkinglot(self, license_id: str) -> str:
+        '''Get parkinglot information given licensePlateNo'''
+        # Writing a SQL query to join the relevant tables and select the parking lot names
+        sql_query = """
+        SELECT "ParkingLots"."name"
+        FROM "Cars"
+        JOIN "ParkingRecords" ON "Cars"."licensePlateNo" = "ParkingRecords"."licensePlateNo"
+        JOIN "ParkingSlots" ON "ParkingRecords"."slotID" = "ParkingSlots"."id"
+        JOIN "ParkingLots" ON "ParkingSlots"."parkingLotID" = "ParkingLots"."id"
+        WHERE "Cars"."licensePlateNo" = %s;
+        """
+        with self._connection_pools.connection() as conn:
+            with conn.cursor() as cursor:
+                # Executing the query and fetching the results
+                cursor.execute(sql_query, (license_id,))
+                results = cursor.fetchall()
+                # Converting the results to a list of strings
+                parking_lot_name = results[0][0] if len(
+                    results) > 0 and len(results[0]) > 0 else ""
+
+        return parking_lot_name
+
+    def get_location(self, license_id: str) -> tuple[str, str]:
+        '''Get parking location information given licensePlateNo'''
+        # Writing a SQL query to join the relevant tables and select the parking lot names
+        sql_query = """
+        SELECT "ParkingSlots"."index", "ParkingSlots"."floor"
+        FROM "ParkingSlots"
+        JOIN "ParkingRecords" ON "ParkingSlots".id = "ParkingRecords"."slotID"
+        JOIN "Cars" ON "ParkingRecords"."licensePlateNo" = "Cars"."licensePlateNo"
+        WHERE "Cars"."licensePlateNo" = %s;
+        """
+        with self._connection_pools.connection() as conn:
+            with conn.cursor() as cursor:
+                # Executing the query and fetching the results
+                cursor.execute(sql_query, (license_id,))
+                results = cursor.fetchall()
+                index = results[0][0] if len(results) > 0 and len(results[0]) > 0 else ""
+                floor = results[0][1] if len(results) > 0 and len(results[0]) > 0 else ""
+
+        return index, floor
+
     def get_free_spaces(self, parkinglot_id: int) -> List[Tuple[str]]:
         '''
         Given a parkinglot id, returns all free spaces, 
