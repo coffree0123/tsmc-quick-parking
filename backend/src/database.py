@@ -153,3 +153,39 @@ class QuickParkingDB():
             with conn.cursor(row_factory=dict_row) as cursor:
                 res = cursor.execute(sql_query).fetchall()
         return res
+
+    def get_long_term_occupants(self, parkinglot_id):
+        '''Retrieve top 10 vehicles that occupies longest til now in the given parking lot'''
+        num_records = 10
+
+        sql_query = """
+        SELECT 
+            slots."floor",
+            slots."index",
+            records."licensePlateNo" AS license_plate_no,
+            records."startTime" AS start_time
+        FROM (
+            SELECT
+                "id",
+                "index",
+                "floor"
+            FROM "ParkingSlots" 
+            WHERE "parkingLotID" = %s
+        ) AS slots
+        INNER JOIN (
+            SELECT
+                "slotID",
+                "licensePlateNo",
+                "startTime"
+            FROM "ParkingRecords"
+            WHERE "endTime" is NULL
+        ) AS records
+            ON slots."id" = records."slotID"
+        ORDER BY "startTime"
+        LIMIT %s;
+        """
+
+        with self._connection_pools.connection() as conn:
+            with conn.cursor(row_factory=dict_row) as cursor:
+                res = cursor.execute(sql_query, params=(parkinglot_id, num_records)).fetchall()
+        return res

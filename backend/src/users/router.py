@@ -1,5 +1,5 @@
 '''User management module'''
-from fastapi import APIRouter, Request, HTTPException, status
+from fastapi import APIRouter, Request
 from src.users.constants import Role, Gender
 
 router = APIRouter()
@@ -14,13 +14,3 @@ def create_user(r: Request, first_name: str, last_name: str, email: str,
                                             gender, age, job_title, special_role)
 
     return {"user_id": user_id}
-
-
-@router.get("/users/")
-def get_user(slot_id: int = None, license_id: int = None):
-    '''Get the user by slot_id or license_id'''
-    if slot_id is None and license_id is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="At least one of slot_id & license_id must be specified"
-        )

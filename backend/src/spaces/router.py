@@ -18,5 +18,10 @@ def get_latest_records(r: Request, vehicle_id: str = None, user_id: int = None) 
             status.HTTP_400_BAD_REQUEST,
             detail="At least one of user_id and vehicle_id must be provided"
         )
-
     return r.app.state.database.get_latest_records(vehicle_id, user_id)
+
+
+@router.get(path="/spaces/long-term")
+def get_long_term_occupants(r: Request, parkinglot_id: int) -> list[dict]:
+    '''Search the vehicles that park the longest in a parking lot'''
+    return r.app.state.database.get_long_term_occupants(parkinglot_id)
