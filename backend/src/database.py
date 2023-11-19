@@ -1,5 +1,4 @@
 '''Manage database connection and actions'''
-from typing import List, Tuple
 from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool
 from src.users.constants import Role, Gender
@@ -121,7 +120,7 @@ class QuickParkingDB():
 
         return index, floor
 
-    def get_free_spaces(self, parkinglot_id: int) -> List[Tuple[str]]:
+    def get_free_spaces(self, parkinglot_id: int) -> list[tuple[str]]:
         '''
         Given a parkinglot id, returns all free spaces, 
         each of which is represented by a tuple (floor, index)
