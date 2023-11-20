@@ -127,11 +127,25 @@ class QuickParkingDB():
         '''
 
         sql_query = """
-        SELECT
-            floor,
-            index
-        FROM "ParkingSlots"
-        WHERE "parkingLotID" = %s AND "status" = 'free';
+            SELECT
+                slots.floor,
+                slots.index
+            FROM (
+                SELECT
+                    id,
+                    floor,
+                    index
+                FROM "ParkingSlots"
+                WHERE "ParkingSlots"."parkingLotID" = %s
+            ) AS slots
+            LEFT JOIN (
+                SELECT
+                    "slotID"
+                FROM "ParkingRecords"
+                WHERE "endTime" IS NULL
+            ) AS records
+            ON slots.id = records."slotID"
+            WHERE records."slotID"  IS NULL;
         """
 
         with self._connection_pools.connection() as conn:
