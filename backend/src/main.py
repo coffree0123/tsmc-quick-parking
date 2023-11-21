@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from src.users.router import router as user_router
 from src.vehicles.router import router as vehicle_router
-from src.spaces.router import router as spaces_router
+from src.parkinglots.router import router as parkinglot_router
 from src.parking.router import router as parking_router
 from src.database import QuickParkingDB, DB_CONNECT
 
@@ -15,7 +15,7 @@ async def lifespan(app: FastAPI):
     # include routers
     app.include_router(user_router, prefix="/api")
     app.include_router(vehicle_router, prefix="/api")
-    app.include_router(spaces_router, prefix="/api")
+    app.include_router(parkinglot_router, prefix="/api")
     app.include_router(parking_router, prefix="/api")
 
     # save uvicorn logging to file

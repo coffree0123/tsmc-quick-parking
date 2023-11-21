@@ -127,11 +127,25 @@ class QuickParkingDB():
         '''
 
         sql_query = """
-        SELECT
-            floor,
-            index
-        FROM "ParkingSlots"
-        WHERE "parkingLotID" = %s AND "status" = 'free';
+            SELECT
+                slots.floor,
+                slots.index
+            FROM (
+                SELECT
+                    id,
+                    floor,
+                    index
+                FROM "ParkingSlots"
+                WHERE "ParkingSlots"."parkingLotID" = %s
+            ) AS slots
+            LEFT JOIN (
+                SELECT
+                    "slotID"
+                FROM "ParkingRecords"
+                WHERE "endTime" IS NULL
+            ) AS records
+            ON slots.id = records."slotID"
+            WHERE records."slotID"  IS NULL;
         """
 
         with self._connection_pools.connection() as conn:
@@ -221,9 +235,8 @@ class QuickParkingDB():
         num_records = 10
 
         sql_query = """
-        SELECT 
-            slots."floor",
-            slots."index",
+        SELECT
+            CONCAT("floor", '#', "index") AS postion,
             records."licensePlateNo" AS license_plate_no,
             records."startTime" AS start_time
         FROM (
@@ -250,4 +263,17 @@ class QuickParkingDB():
         with self._connection_pools.connection() as conn:
             with conn.cursor(row_factory=dict_row) as cursor:
                 res = cursor.execute(sql_query, params=(parkinglot_id, num_records)).fetchall()
+        return res
+
+    def get_parkinglot_info(self, parkinglot_id: int):
+        '''Get all info of a parking lot'''
+        sql_query = """
+        SELECT
+            *
+        FROM "ParkingLots"
+        WHERE "id" = %s
+        """
+        with self._connection_pools.connection() as conn:
+            with conn.cursor(row_factory=dict_row) as cursor:
+                res = cursor.execute(sql_query, (parkinglot_id,)).fetchall()
         return res
