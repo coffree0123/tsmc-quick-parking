@@ -25,7 +25,10 @@ export const NavigationBar = (): any => {
   }
 
   const handleGuardLogin = (): void => {
-    login('abc123', true)
+    if (idTokenClaims != null && typeof idTokenClaims.sub === 'string') {
+      login(idTokenClaims.sub, true)
+      console.log(idTokenClaims.sub)
+    }
   }
 
   /**
