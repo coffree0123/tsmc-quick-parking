@@ -1,8 +1,9 @@
-import { Button, Flex, List, Typography } from 'antd'
+import { Flex, List, Typography } from 'antd'
 import { ArrowRightOutlined } from '@ant-design/icons'
-import React, { useContext } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
-import { AuthContext } from '../../contexts/AuthContext'
+import LogOutButton from '../../components/LogOutButton'
+import { MsalProvider } from '@azure/msal-react'
 
 const { Title } = Typography
 
@@ -37,9 +38,7 @@ const LotCard = (props: SlotCardProps): React.ReactElement => {
   )
 }
 
-const Home = (): React.ReactElement => {
-  const { logout } = useContext(AuthContext)
-
+const Home = ({ instance }: any): React.ReactElement => {
   const LotInfo: SlotCardProps[] = [
     { title: 'Factory B', value: 134, id: 1 },
     { title: 'Office F', value: 57, id: 2 },
@@ -52,6 +51,7 @@ const Home = (): React.ReactElement => {
   ]
 
   return (
+    <MsalProvider instance={instance}>
     <Flex vertical style={{ overflow: 'hidden' }}>
       <Title>Hi Alice!</Title>
       <div>
@@ -82,8 +82,9 @@ const Home = (): React.ReactElement => {
           )}
         />
       </div>
-      <Button onClick={logout}>Logout</Button>
+      <LogOutButton />
     </Flex>
+    </MsalProvider>
   )
 }
 

@@ -36,7 +36,7 @@ msalInstance.addEventCallback((event: any) => {
   }
 })
 
-const PubliceDefaultURL = 'login'
+const PubliceDefaultURL = '/app'
 const UserDefaultURL = '/'
 const GuardDefaultURL = '/dashboard'
 
@@ -72,11 +72,11 @@ root.render(
             <Route path="/app" element={<App instance={msalInstance}/>} />
           </Route>
           <Route element={<UserRoutes />}>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Home instance={msalInstance}/>} />
             <Route path="/parkingLot/:id" element={<ParkingLotPage />} />
           </Route>
           <Route element={<GuardRoutes />}>
-            <Route path='/dashboard' element={<Dashboard />} />
+            <Route path='/dashboard' element={<Dashboard instance={msalInstance}/>} />
           </Route>
         </Routes>
       </AuthContextProvider>
