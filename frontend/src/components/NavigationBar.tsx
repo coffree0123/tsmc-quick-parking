@@ -3,10 +3,10 @@ import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from '@azure/
 import { Navbar, Button } from 'react-bootstrap'
 import { loginRequest } from '../authConfig'
 import { AuthContext } from '../contexts/AuthContext'
+import { EventType } from '@azure/msal-browser'
 
 export const NavigationBar = (): any => {
   const { instance } = useMsal()
-  const idTokenClaims = instance.getActiveAccount()?.idTokenClaims
   const { login } = useContext(AuthContext)
 
   const handleLoginRedirect = (): any => {
@@ -17,19 +17,18 @@ export const NavigationBar = (): any => {
     instance.logoutRedirect().catch((error) => { console.log(error) })
   }
 
-  const handleUserLogin = (): void => {
-    if (idTokenClaims != null && typeof idTokenClaims.sub === 'string') {
-      login(idTokenClaims.sub, false)
-      console.log(idTokenClaims.sub)
+  // Listen for sign-in event and set active account
+  instance.addEventCallback((event: any) => {
+    if (event.eventType === EventType.LOGIN_SUCCESS && event.payload.account != null) {
+      const idTokenClaims = event.payload.account.idTokenClaims
+      console.log(idTokenClaims.roles)
+      if (typeof idTokenClaims.roles === 'undefined') {
+        login(idTokenClaims.sub, false)
+      } else {
+        login(idTokenClaims.sub, true)
+      }
     }
-  }
-
-  const handleGuardLogin = (): void => {
-    if (idTokenClaims != null && typeof idTokenClaims.sub === 'string') {
-      login(idTokenClaims.sub, true)
-      console.log(idTokenClaims.sub)
-    }
-  }
+  })
 
   /**
      * Most applications will need to conditionally render certain components based on whether a user is signed in or not.
@@ -46,12 +45,6 @@ export const NavigationBar = (): any => {
                     <div className="collapse navbar-collapse justify-content-end">
                         <Button variant="warning" onClick={handleLogoutRedirect}>
                             Sign out
-                        </Button>
-                        <Button onClick={handleUserLogin}>
-                            User Proceed
-                        </Button>
-                        <Button onClick={handleGuardLogin}>
-                            Guard Proceed
                         </Button>
                     </div>
                 </AuthenticatedTemplate>
