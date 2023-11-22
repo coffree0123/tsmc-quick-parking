@@ -208,8 +208,17 @@ class QuickParkingDB():
         '''Retrieve the lastest 10 parking records'''
         num_records = 10
 
-        cond1 = f''' "licensePlateNo" = '{vehicle_id}' ''' if vehicle_id is not None else "1 = 1"
-        cond2 = f''' "userID" = '{user_id}' ''' if user_id is not None else "1 = 1"
+        params = []
+        cond1 = "1 = 1"
+        cond2 = "1 = 1"
+        if vehicle_id is not None:
+            cond1 = f''' "licensePlateNo" = %s '''
+            params.append(vehicle_id)
+        if user_id is not None:
+            cond2 = f''' "userID" = %s '''
+            params.append(user_id)
+        params.append(num_records)
+
         sql_query = f"""
         SELECT
             vehicles."licensePlateNo" AS license_plate_no,
@@ -232,12 +241,12 @@ class QuickParkingDB():
         INNER JOIN "ParkingLots" AS parkinglots
             ON parkinglots.id = slots."parkingLotID"
         ORDER BY start_time DESC
-        LIMIT {num_records};
+        LIMIT %s;
         """
 
         with self._connection_pools.connection() as conn:
             with conn.cursor(row_factory=dict_row) as cursor:
-                res = cursor.execute(sql_query).fetchall()
+                res = cursor.execute(sql_query, params=params).fetchall()
         return res
 
     def get_long_term_occupants(self, parkinglot_id):
