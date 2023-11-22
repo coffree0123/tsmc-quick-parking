@@ -57,7 +57,7 @@ class QuickParkingDB():
                 # Commit the changes to the database
                 conn.commit()
 
-    def get_user_vehicles(self, user_id: int):
+    def get_user_vehicles(self, user_id: int) -> list[dict]:
         '''Retrive the user vehicles info and their current states in the parking lot'''
         sql_query = """
         SELECT
