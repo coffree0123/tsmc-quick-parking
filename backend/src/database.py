@@ -1,8 +1,9 @@
 '''Manage database connection and actions'''
-from psycopg.rows import dict_row
+from psycopg.rows import dict_row, class_row
 from psycopg_pool import ConnectionPool
 from src.users.constants import Role, Gender
-from src.vehicles.constants import VehicleSize
+from src.vehicles.constants import VehicleSize, Vehicle
+from src.parking.constants import ParkingRecord
 
 # Define the database connection parameters
 DB_CONNECT = 'postgres://postgres:123@127.0.0.1:8080/postgres'
@@ -104,20 +105,26 @@ class QuickParkingDB():
                 cursor.execute(sql_query, (license_plate_no,))
                 conn.commit()
 
-    def get_user_vehicles(self, user_id: int) -> list[dict]:
+    def get_user_vehicles(self, user_id: int) -> list[Vehicle]:
         '''Retrive the user vehicles info and their current states in the parking lot'''
         sql_query = """
         SELECT
             cars."licensePlateNo" AS license_plate_no,
             cars."model",
             records."startTime" AS start_time,
-            parkinglots."name",
+            parkinglots."name" AS parkinglot_name,
             CONCAT('B', slots."floor", '#', slots."index") AS position
         FROM (
-            SELECT "licensePlateNo", "model" FROM "Cars" WHERE "userID" = %s
+            SELECT
+                "licensePlateNo",
+                "model"
+            FROM "Cars"
+            WHERE "userID" = %s
         ) AS cars
         LEFT JOIN "ParkingRecords" AS records
-            ON cars."licensePlateNo" = records."licensePlateNo" AND records."endTime" IS NULL
+            ON
+                cars."licensePlateNo" = records."licensePlateNo" AND 
+                records."endTime" IS NULL
         LEFT JOIN "ParkingSlots" AS slots
             ON slots.id = records."slotID"
         LEFT JOIN "ParkingLots" AS parkinglots
@@ -125,7 +132,7 @@ class QuickParkingDB():
         """
 
         with self._connection_pools.connection() as conn:
-            with conn.cursor(row_factory=dict_row) as cursor:
+            with conn.cursor(row_factory=class_row(Vehicle)) as cursor:
                 cursor.execute(sql_query, (user_id,))
                 res = cursor.fetchall()
         return res
@@ -140,22 +147,13 @@ class QuickParkingDB():
             SELECT
                 slots.floor,
                 slots.index
-            FROM (
-                SELECT
-                    id,
-                    floor,
-                    index
-                FROM "ParkingSlots"
-                WHERE "ParkingSlots"."parkingLotID" = %s
-            ) AS slots
-            LEFT JOIN (
-                SELECT
-                    "slotID"
-                FROM "ParkingRecords"
-                WHERE "endTime" IS NULL
-            ) AS records
-            ON slots.id = records."slotID"
-            WHERE records."slotID"  IS NULL;
+            FROM "ParkingSlots" AS slots
+            WHERE 
+                slots."parkingLotID" = %s AND
+                NOT EXISTS (
+                    SELECT 1 FROM "ParkingRecords" AS records
+                    WHERE records."endTime" IS NULL AND slots.id = records."slotID"
+                );
         """
 
         with self._connection_pools.connection() as conn:
@@ -204,7 +202,7 @@ class QuickParkingDB():
                 cursor.close()
                 conn.close()
 
-    def get_latest_records(self, license_plate_no: str, user_id: int) -> list:
+    def get_latest_records(self, license_plate_no: str, user_id: int) -> list[ParkingRecord]:
         '''Retrieve the lastest 10 parking records'''
         num_records = 10
 
@@ -212,10 +210,10 @@ class QuickParkingDB():
         cond1 = "1 = 1"
         cond2 = "1 = 1"
         if license_plate_no is not None:
-            cond1 = ''' "licensePlateNo" = %s '''
+            cond1 = ''' vehicles."licensePlateNo" = %s '''
             params.append(license_plate_no)
         if user_id is not None:
-            cond2 = ''' "userID" = %s '''
+            cond2 = ''' vehicles."userID" = %s '''
             params.append(user_id)
         params.append(num_records)
 
@@ -223,19 +221,15 @@ class QuickParkingDB():
         SELECT
             vehicles."licensePlateNo" AS license_plate_no,
             parkinglots.name AS parkinglot_name,
-            slots.floor AS slot_floor,
-            slots.index AS slot_index,
+            CONCAT('B', slots.floor, '#', slots.index) AS position,
             records."startTime" AS start_time,
             records."endTime" AS end_time
-        FROM (
-            SELECT
-                "licensePlateNo",
-                "userID"
-            FROM "Cars"
-            WHERE {cond1} AND {cond2}
-        ) AS vehicles
+        FROM "Cars" AS vehicles
         INNER JOIN "ParkingRecords" AS records
-            ON vehicles."licensePlateNo" = records."licensePlateNo"
+            ON
+                {cond1} AND
+                {cond2} AND
+                vehicles."licensePlateNo" = records."licensePlateNo"
         INNER JOIN "ParkingSlots" AS slots
             ON slots.id = records."slotID"
         INNER JOIN "ParkingLots" AS parkinglots
@@ -245,7 +239,7 @@ class QuickParkingDB():
         """
 
         with self._connection_pools.connection() as conn:
-            with conn.cursor(row_factory=dict_row) as cursor:
+            with conn.cursor(row_factory=class_row(ParkingRecord)) as cursor:
                 res = cursor.execute(sql_query, params=params).fetchall()
         return res
 
@@ -255,26 +249,15 @@ class QuickParkingDB():
 
         sql_query = """
         SELECT
-            CONCAT("floor", '#', "index") AS postion,
+            CONCAT('B', "floor", '#', "index") AS postion,
             records."licensePlateNo" AS license_plate_no,
             records."startTime" AS start_time
-        FROM (
-            SELECT
-                "id",
-                "index",
-                "floor"
-            FROM "ParkingSlots" 
-            WHERE "parkingLotID" = %s
-        ) AS slots
-        INNER JOIN (
-            SELECT
-                "slotID",
-                "licensePlateNo",
-                "startTime"
-            FROM "ParkingRecords"
-            WHERE "endTime" is NULL
-        ) AS records
-            ON slots."id" = records."slotID"
+        FROM "ParkingSlots" AS slots
+        INNER JOIN "ParkingRecords" AS records
+            ON 
+                slots."parkingLotID" = %s AND 
+                slots."id" = records."slotID" AND 
+                records."endTime" IS NULL
         ORDER BY "startTime"
         LIMIT %s;
         """
