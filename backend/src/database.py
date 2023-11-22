@@ -108,11 +108,11 @@ class QuickParkingDB():
         '''Retrive the user vehicles info and their current states in the parking lot'''
         sql_query = """
         SELECT
-            cars."licensePlateNo",
+            cars."licensePlateNo" AS license_plate_no,
             cars."model",
-            records."startTime",
+            records."startTime" AS start_time,
             parkinglots."name",
-            CONCAT('B', slots."floor", '#', slots."index")
+            CONCAT('B', slots."floor", '#', slots."index") AS position
         FROM (
             SELECT "licensePlateNo", "model" FROM "Cars" WHERE "userID" = %s
         ) AS cars
