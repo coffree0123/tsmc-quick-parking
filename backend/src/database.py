@@ -20,7 +20,6 @@ class QuickParkingDB():
     def add_user(self, first_name: str, last_name: str, email: str, phone_num: str,
                  gender: Gender, age: int, job_title: Role, special_role: str) -> int:
         '''Add a new user to the database and return the user_id'''
-        # Define the SQL query to insert the user information into the Users table
         sql_query = """
         INSERT INTO "Users" ("firstName", "lastName", "email", "phoneNo", "gender", "age", "jobTitle", "specialRole")
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
@@ -43,11 +42,10 @@ class QuickParkingDB():
     def update_user(self, user_id: int, first_name: str, last_name: str, email: str, phone_num: str,
                     gender: Gender, age: int, job_title: Role, special_role: str) -> None:
         '''Update a user's information in the database'''
-        # Define the SQL query to insert the user information into the Users table
         sql_query = """
         UPDATE "Users" SET "firstName" = %s, "lastName" = %s, "email" = %s, 
         "phoneNo" = %s, "gender" = %s, "age" = %s, "jobTitle" = %s, "specialRole" = %s 
-        WHERE id = %s
+        WHERE id = %s;
         """
 
         with self._connection_pools.connection() as conn:
@@ -59,9 +57,8 @@ class QuickParkingDB():
 
     def delete_user(self, user_id: int) -> None:
         '''Delete a user's information in the database'''
-        # Define the SQL query to insert the user information into the Users table
         sql_query = """
-        DELETE FROM "Users" WHERE "id" = %s
+        DELETE FROM "Users" WHERE "id" = %s;
         """
 
         with self._connection_pools.connection() as conn:
@@ -73,7 +70,6 @@ class QuickParkingDB():
     def add_vehicle(self, user_id: int, license_id: str, nick_name: str,
                     car_size: VehicleSize = "small") -> None:
         '''Add a new vehicle to the database'''
-        # Define the SQL query to insert the vehicle information into the Cars table
         sql_query = """
         INSERT INTO "Cars" ("userID", "licensePlateNo", "size", "model")
         VALUES (%s, %s, %s, %s);
@@ -85,6 +81,27 @@ class QuickParkingDB():
                 cursor.execute(
                     sql_query, (user_id, license_id, car_size, nick_name))
                 # Commit the changes to the database
+                conn.commit()
+
+    def delete_vehicle(self, license_id: str) -> None:
+        '''Delete a vehicle's information in the database'''
+        # Delete parking records first
+        sql_query = """
+        DELETE FROM "ParkingRecords" WHERE "licensePlateNo" = %s;
+        """
+        with self._connection_pools.connection() as conn:
+            with conn.cursor() as cursor:
+                # Execute the SQL query with the user information as parameters
+                cursor.execute(sql_query, (license_id,))
+                conn.commit()
+        # Delete car information
+        sql_query = """
+        DELETE FROM "Cars" WHERE "licensePlateNo" = %s;
+        """
+        with self._connection_pools.connection() as conn:
+            with conn.cursor() as cursor:
+                # Execute the SQL query with the user information as parameters
+                cursor.execute(sql_query, (license_id,))
                 conn.commit()
 
     def get_user_vehicles(self, user_id: int) -> list[dict]:
