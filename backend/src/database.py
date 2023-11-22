@@ -67,7 +67,7 @@ class QuickParkingDB():
                 cursor.execute(sql_query, (user_id,))
                 conn.commit()
 
-    def add_vehicle(self, user_id: int, license_id: str, nick_name: str,
+    def add_vehicle(self, user_id: int, license_plate_no: str, nick_name: str,
                     car_size: VehicleSize = "small") -> None:
         '''Add a new vehicle to the database'''
         sql_query = """
@@ -79,11 +79,11 @@ class QuickParkingDB():
             with conn.cursor() as cursor:
                 # Execute the SQL query with the vehicle information as parameters
                 cursor.execute(
-                    sql_query, (user_id, license_id, car_size, nick_name))
+                    sql_query, (user_id, license_plate_no, car_size, nick_name))
                 # Commit the changes to the database
                 conn.commit()
 
-    def delete_vehicle(self, license_id: str) -> None:
+    def delete_vehicle(self, license_plate_no: str) -> None:
         '''Delete a vehicle's information in the database'''
         # Delete parking records first
         sql_query = """
@@ -92,7 +92,7 @@ class QuickParkingDB():
         with self._connection_pools.connection() as conn:
             with conn.cursor() as cursor:
                 # Execute the SQL query with the user information as parameters
-                cursor.execute(sql_query, (license_id,))
+                cursor.execute(sql_query, (license_plate_no,))
                 conn.commit()
         # Delete car information
         sql_query = """
@@ -101,7 +101,7 @@ class QuickParkingDB():
         with self._connection_pools.connection() as conn:
             with conn.cursor() as cursor:
                 # Execute the SQL query with the user information as parameters
-                cursor.execute(sql_query, (license_id,))
+                cursor.execute(sql_query, (license_plate_no,))
                 conn.commit()
 
     def get_user_vehicles(self, user_id: int) -> list[dict]:
@@ -163,7 +163,7 @@ class QuickParkingDB():
                 res = cursor.fetchall()
         return res
 
-    def park_car(self, plate_num: str, slot_id: id, start_time: str) -> str:
+    def park_car(self, license_plate_no: str, slot_id: id, start_time: str) -> str:
         '''Add a parking record to the database and return the record_id'''
         # Define the SQL query to insert the user information into the Users table
         sql_query = """
@@ -174,7 +174,7 @@ class QuickParkingDB():
         with self._connection_pools.connection() as conn:
             with conn.cursor() as cursor:
                 # Execute the SQL query with the user information as parameters
-                cursor.execute(sql_query, (plate_num, slot_id, start_time))
+                cursor.execute(sql_query, (license_plate_no, slot_id, start_time))
                 # Fetch the result and get the id of the inserted row
                 result = cursor.fetchone()
                 record_id = result[0]
@@ -204,16 +204,16 @@ class QuickParkingDB():
                 cursor.close()
                 conn.close()
 
-    def get_latest_records(self, vehicle_id: str, user_id: int) -> list:
+    def get_latest_records(self, license_plate_no: str, user_id: int) -> list:
         '''Retrieve the lastest 10 parking records'''
         num_records = 10
 
         params = []
         cond1 = "1 = 1"
         cond2 = "1 = 1"
-        if vehicle_id is not None:
+        if license_plate_no is not None:
             cond1 = f''' "licensePlateNo" = %s '''
-            params.append(vehicle_id)
+            params.append(license_plate_no)
         if user_id is not None:
             cond2 = f''' "userID" = %s '''
             params.append(user_id)
