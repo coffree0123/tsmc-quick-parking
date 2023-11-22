@@ -15,6 +15,7 @@ def delete_vehicle(r: Request, license_plate_no: str) -> None:
     '''Add a new vehicle to the database'''
     r.app.state.database.delete_vehicle(license_plate_no)
 
-@router.get("/vehicles/{license_plate_no}/owner-info")
-def get_vehicle_owner_info(r: Request, license_plate_no: int):
-    pass
+# @router.get("/vehicles/{license_plate_no}/owner-info")
+# def get_vehicle_owner_info(r: Request, license_plate_no: int):
+#     '''get info of the owner a vehicle'''
+#     pass

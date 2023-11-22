@@ -212,10 +212,10 @@ class QuickParkingDB():
         cond1 = "1 = 1"
         cond2 = "1 = 1"
         if license_plate_no is not None:
-            cond1 = f''' "licensePlateNo" = %s '''
+            cond1 = ''' "licensePlateNo" = %s '''
             params.append(license_plate_no)
         if user_id is not None:
-            cond2 = f''' "userID" = %s '''
+            cond2 = ''' "userID" = %s '''
             params.append(user_id)
         params.append(num_records)
 
