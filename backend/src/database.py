@@ -40,6 +40,36 @@ class QuickParkingDB():
 
         return user_id
 
+    def update_user(self, user_id: int, first_name: str, last_name: str, email: str, phone_num: str,
+                    gender: Gender, age: int, job_title: Role, special_role: str) -> None:
+        '''Update a user's information in the database'''
+        # Define the SQL query to insert the user information into the Users table
+        sql_query = """
+        UPDATE "Users" SET "firstName" = %s, "lastName" = %s, "email" = %s, 
+        "phoneNo" = %s, "gender" = %s, "age" = %s, "jobTitle" = %s, "specialRole" = %s 
+        WHERE id = %s
+        """
+
+        with self._connection_pools.connection() as conn:
+            with conn.cursor() as cursor:
+                # Execute the SQL query with the user information as parameters
+                cursor.execute(sql_query, (first_name, last_name, email, phone_num,
+                                           gender, age, job_title, special_role, user_id))
+                conn.commit()
+
+    def delete_user(self, user_id: int) -> None:
+        '''Delete a user's information in the database'''
+        # Define the SQL query to insert the user information into the Users table
+        sql_query = """
+        DELETE FROM "Users" WHERE "id" = %s
+        """
+
+        with self._connection_pools.connection() as conn:
+            with conn.cursor() as cursor:
+                # Execute the SQL query with the user information as parameters
+                cursor.execute(sql_query, (user_id,))
+                conn.commit()
+
     def add_vehicle(self, user_id: int, license_id: str, nick_name: str,
                     car_size: VehicleSize = "small") -> None:
         '''Add a new vehicle to the database'''
@@ -115,8 +145,10 @@ class QuickParkingDB():
                 # Executing the query and fetching the results
                 cursor.execute(sql_query, (license_id,))
                 results = cursor.fetchall()
-                index = results[0][0] if len(results) > 0 and len(results[0]) > 0 else ""
-                floor = results[0][1] if len(results) > 0 and len(results[0]) > 0 else ""
+                index = results[0][0] if len(
+                    results) > 0 and len(results[0]) > 0 else ""
+                floor = results[0][1] if len(
+                    results) > 0 and len(results[0]) > 0 else ""
 
         return index, floor
 
@@ -262,7 +294,8 @@ class QuickParkingDB():
 
         with self._connection_pools.connection() as conn:
             with conn.cursor(row_factory=dict_row) as cursor:
-                res = cursor.execute(sql_query, params=(parkinglot_id, num_records)).fetchall()
+                res = cursor.execute(sql_query, params=(
+                    parkinglot_id, num_records)).fetchall()
         return res
 
     def get_parkinglot_info(self, parkinglot_id: int):
