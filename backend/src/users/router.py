@@ -17,7 +17,7 @@ def create_user(r: Request, first_name: str, last_name: str, email: str,
     return {"user_id": user_id}
 
 
-@router.get("/users/user-info/{user_id}")
+@router.get("/users/{user_id}")
 def get_user_info(r: Request, user_id: int) -> dict[str, list]:
     '''Get user information'''
     # Get user's favorite parking lot
