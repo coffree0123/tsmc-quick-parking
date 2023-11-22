@@ -17,6 +17,21 @@ def create_user(r: Request, first_name: str, last_name: str, email: str,
     return {"user_id": user_id}
 
 
+@router.put("/users/")
+def update_user(r: Request, user_id: int, first_name: str, last_name: str, email: str,
+                phone_num: str, gender: Gender, age: int, job_title: Role,
+                special_role: str = "None") -> None:
+    '''Update user information'''
+    user_id = r.app.state.database.update_user(user_id, first_name, last_name, email,
+                                               phone_num, gender, age, job_title, special_role)
+
+
+@router.delete("/users/")
+def delete_user(r: Request, user_id: int) -> None:
+    '''Delete user'''
+    user_id = r.app.state.database.delete_user(user_id)
+
+
 @router.get("/users/user_info/{user_id}")
 def get_user_info(r: Request, user_id: int) -> dict[str, list[str]]:
     '''Get user information'''
