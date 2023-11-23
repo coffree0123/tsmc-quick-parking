@@ -6,10 +6,10 @@ router = APIRouter()
 
 
 @router.post("/parking/{slot_id}")
-def park(r: Request, plate_num: str, slot_id: int):
+def park(r: Request, license_plate_no: str, slot_id: int):
     '''Park a car in a slot'''
     start_time = str(datetime.now())
-    record_id = r.app.state.database.park_car(plate_num, slot_id, start_time)
+    record_id = r.app.state.database.park_car(license_plate_no, slot_id, start_time)
 
     return {"record_id": record_id, 'start_time': start_time}
 

@@ -17,8 +17,23 @@ def create_user(r: Request, first_name: str, last_name: str, email: str,
     return {"user_id": user_id}
 
 
-@router.get("/users/user_info/{user_id}")
-def get_user_info(r: Request, user_id: int) -> dict[str, list[str]]:
+@router.put("/users/")
+def update_user(r: Request, user_id: int, first_name: str, last_name: str, email: str,
+                phone_num: str, gender: Gender, age: int, job_title: Role,
+                special_role: str = "None") -> None:
+    '''Update user information'''
+    user_id = r.app.state.database.update_user(user_id, first_name, last_name, email,
+                                               phone_num, gender, age, job_title, special_role)
+
+
+@router.delete("/users/")
+def delete_user(r: Request, user_id: int) -> None:
+    '''Delete user'''
+    user_id = r.app.state.database.delete_user(user_id)
+
+
+@router.get("/users/{user_id}")
+def get_user_info(r: Request, user_id: int) -> dict[str, list]:
     '''Get user information'''
     # Get user's favorite parking lot
     favorite_list = get_user_favorite_parkinglot()
@@ -28,14 +43,9 @@ def get_user_info(r: Request, user_id: int) -> dict[str, list[str]]:
                      for favorite in favorite_list]
 
     # Get user's parked vehicles
-    license_list, nickname_list = r.app.state.database.get_user_vehicles(
-        user_id)
-    position_list = [r.app.state.database.get_location(
-        license_id) for license_id in license_list]
-    location_list = [
-        f"B{str(pos[1])}#{str(pos[0])}" for pos in position_list if pos[0] != ""]
-    parkinglot_list = [r.app.state.database.get_parkinglot(
-        license_id) for license_id in license_list]
-    return {"favorite_buildings": favorite_building_list, "free_numbers": free_num_list,
-            "parked_vehicles": nickname_list, "parking_lots": parkinglot_list,
-            "locations": location_list}
+    user_vehicles = r.app.state.database.get_user_vehicles(user_id)
+
+    return {
+        "favorite_buildings_and_free_num": tuple(zip(favorite_building_list, free_num_list)),
+        "user_vehicles": user_vehicles,
+    }
