@@ -161,9 +161,13 @@ class QuickParkingDB():
                 res = cursor.fetchall()
         return res
 
-    def park_car(self, license_plate_no: str, slot_id: id, start_time: str) -> str:
+    def park_car(self, slot_id: int, license_plate_no: str, start_time: str) -> int:
         '''Add a parking record to the database and return the record_id'''
-        # Define the SQL query to insert the user information into the Users table
+        check_query = """
+        SELECT 1
+        from "Cars"
+        where "licensePlateNo" = %s;
+        """
         sql_query = """
         INSERT INTO "ParkingRecords" ("licensePlateNo", "slotID", "startTime")
         VALUES (%s, %s, %s)
@@ -171,8 +175,12 @@ class QuickParkingDB():
         """
         with self._connection_pools.connection() as conn:
             with conn.cursor() as cursor:
-                # Execute the SQL query with the user information as parameters
+                cursor.execute(check_query, (license_plate_no, ))
+                result = cursor.fetchone()
+                if result is None:
+                    self.add_vehicle(None, license_plate_no, "")
                 cursor.execute(sql_query, (license_plate_no, slot_id, start_time))
+
                 # Fetch the result and get the id of the inserted row
                 result = cursor.fetchone()
                 record_id = result[0]
@@ -186,7 +194,6 @@ class QuickParkingDB():
 
     def pick_car(self, slot_id: int, end_time: str) -> None:
         '''Add end_time to a record'''
-        # Define the SQL query to insert the user information into the Users table
         sql_query = """
         UPDATE "ParkingRecords" 
         SET "endTime" = %s
@@ -194,7 +201,6 @@ class QuickParkingDB():
         """
         with self._connection_pools.connection() as conn:
             with conn.cursor() as cursor:
-                # Execute the SQL query with the user information as parameters
                 cursor.execute(sql_query, (end_time, slot_id))
                 # Commit the changes to the database
                 conn.commit()
