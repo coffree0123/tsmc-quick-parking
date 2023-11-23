@@ -1,15 +1,15 @@
 '''User management module'''
 from datetime import datetime
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Body
 
 router = APIRouter()
 
 
 @router.post("/parking/{slot_id}")
-def park(r: Request, license_plate_no: str, slot_id: int):
+def park(r: Request, slot_id: int, license_plate_no: str=Body(embed=True)):
     '''Park a car in a slot'''
     start_time = str(datetime.now())
-    record_id = r.app.state.database.park_car(license_plate_no, slot_id, start_time)
+    record_id = r.app.state.database.park_car(slot_id, license_plate_no, start_time)
 
     return {"record_id": record_id, 'start_time': start_time}
 
