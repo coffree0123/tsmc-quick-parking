@@ -2,6 +2,7 @@
 from enum import Enum
 from datetime import datetime
 from dataclasses import dataclass, field
+from pydantic import BaseModel, Field
 
 from src.parking.constants import ParkingRecord
 
@@ -34,3 +35,11 @@ class VehicleAndOwner:
     '''Return model of vehicle and owner info'''
     vehicle_records: list[ParkingRecord] = field(default_factory=list)
     user_vehicles: list[Vehicle] = field(default_factory=list)
+
+
+class VehicleRequest(BaseModel):
+    '''Vehicle request data'''
+    user_id: int
+    license_plate_no: str
+    nick_name: str
+    car_size: VehicleSize = Field(default="small")
