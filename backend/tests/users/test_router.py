@@ -1,8 +1,9 @@
 '''Test user router'''
 from unittest.mock import Mock
 from fastapi.testclient import TestClient
-from src.main import app
 import pytest
+
+from src.main import app
 
 
 @pytest.fixture()
