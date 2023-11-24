@@ -178,7 +178,8 @@ class QuickParkingDB():
                 result = cursor.fetchone()
                 if result is None:
                     self.add_vehicle(None, license_plate_no, "")
-                cursor.execute(sql_query, (license_plate_no, slot_id, start_time))
+                cursor.execute(
+                    sql_query, (license_plate_no, slot_id, start_time))
 
                 # Fetch the result and get the id of the inserted row
                 result = cursor.fetchone()
