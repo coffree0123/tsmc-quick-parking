@@ -1,6 +1,8 @@
 '''User constants'''
 from enum import Enum
+from dataclasses import dataclass
 from pydantic import BaseModel, Field
+from src.vehicles.constants import Vehicle
 
 
 class Role(str, Enum):
@@ -28,3 +30,16 @@ class UserRequest(BaseModel):
     age: int
     job_title: Role
     special_role: str = "None"
+
+
+@dataclass
+class BuildingInfo():
+    '''Building information'''
+    building_name: str
+    free_num: str
+
+
+class UserInfo(BaseModel):
+    '''User information'''
+    favorite_buildings_and_free_num: list[BuildingInfo]
+    user_vehicles: list[Vehicle]
