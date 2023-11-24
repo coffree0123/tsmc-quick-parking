@@ -20,11 +20,18 @@ def user_data():
     }
 
 
-def test_create_user(mocker, user_data):
+@pytest.fixture()
+def mock_db():
+    '''Mock database'''
+    fake_db = Mock()
+    fake_db.add_user.return_value = 1
+    fake_db.update_user.return_value = None
+    return fake_db
+
+
+def test_create_user(mocker, mock_db, user_data):
     '''Test create user'''
     # mock database
-    mock_db = Mock()
-    mock_db.add_user.return_value = 1
     mocker.patch("src.main.QuickParkingDB", return_value=mock_db)
 
     with TestClient(app) as client:
@@ -33,11 +40,9 @@ def test_create_user(mocker, user_data):
         assert "user_id" in response.json()
 
 
-def test_update_user(mocker, user_data):
+def test_update_user(mocker, mock_db, user_data):
     '''Test update user'''
     # mock database
-    mock_db = Mock()
-    mock_db.update_user.return_value = None
     mocker.patch("src.main.QuickParkingDB", return_value=mock_db)
 
     with TestClient(app) as client:
