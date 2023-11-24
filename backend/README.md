@@ -11,12 +11,19 @@ After install the dependency, please install the precommit hook by running the f
 ## How to run the server
 
 ### Normal Usage
-Start
-```
+Start the service by
+```bash
 $ docker-compose up --build -d
 ```
-Turn down
+
+You can see and test the APIs by typing in the browser
 ```
+127.0.0.1:<PROD_PORT>/docs
+```
+where `PROD_PORT` is set to `8000` currently in `.env` file.
+
+Shut down the service by
+```bash
 $ docker-compose down
 ```
 
