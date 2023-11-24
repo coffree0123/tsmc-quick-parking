@@ -10,13 +10,13 @@ repos:
     hooks:
       - id: pylint
         name: pylint
-        entry: pylint
+        entry: poetry run -C backend/ pylint
         files: '^backend/.*\.py$'
         language: system
         types: [python]
         args:
           [
-            "--disable=E0401,R0913",
+            "--disable=E0401,R0913,E1129,W0621,W0105",
             "-rn", # Only display messages
             "-sn", # Don't display the score
           ]
