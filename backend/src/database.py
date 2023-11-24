@@ -61,7 +61,6 @@ class QuickParkingDB():
         sql_query = """
         DELETE FROM "Users" WHERE "id" = %s;
         """
-
         with self._connection_pools.connection() as conn:
             with conn.cursor() as cursor:
                 # Execute the SQL query with the user information as parameters

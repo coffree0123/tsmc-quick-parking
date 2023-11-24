@@ -13,7 +13,7 @@ def add_vehicle(r: Request, vehicle_request: VehicleRequest) -> None:
                                      vehicle_request.nick_name, vehicle_request.car_size)
 
 
-@router.delete("/vehicles/")
+@router.delete("/vehicles/{license_plate_no}")
 def delete_vehicle(r: Request, license_plate_no: str) -> None:
     '''Add a new vehicle to the database'''
     r.app.state.database.delete_vehicle(license_plate_no)

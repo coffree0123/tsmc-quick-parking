@@ -1,7 +1,7 @@
 '''User constants'''
 from enum import Enum
 from dataclasses import dataclass
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from src.vehicles.constants import Vehicle
 
 
@@ -21,7 +21,6 @@ class Gender(str, Enum):
 
 class UserRequest(BaseModel):
     '''User request data'''
-    user_id: int = Field(default=None)
     first_name: str
     last_name: str
     email: str

@@ -1,5 +1,5 @@
 '''User management module'''
-from fastapi import APIRouter, Request, HTTPException, status
+from fastapi import APIRouter, Request
 from src.users.utils import get_user_favorite_parkinglot
 from src.users.constants import UserRequest, UserInfo, BuildingInfo
 
@@ -17,22 +17,17 @@ def create_user(r: Request, user_request: UserRequest) -> dict[str, int]:
     return {"user_id": user_id}
 
 
-@router.put("/users/")
-def update_user(r: Request, user_request: UserRequest) -> None:
+@router.put("/users/{user_id}")
+def update_user(r: Request, user_id: int, user_request: UserRequest) -> None:
     '''Update user information'''
-    if user_request.user_id is None:
-        raise HTTPException(
-            status.HTTP_400_BAD_REQUEST,
-            detail="user_id must be provided"
-        )
-    r.app.state.database.update_user(user_request.user_id, user_request.first_name,
+    r.app.state.database.update_user(user_id, user_request.first_name,
                                      user_request.last_name, user_request.email,
                                      user_request.phone_num, user_request.gender,
                                      user_request.age, user_request.job_title,
                                      user_request.special_role)
 
 
-@router.delete("/users/")
+@router.delete("/users/{user_id}")
 def delete_user(r: Request, user_id: int) -> None:
     '''Delete user'''
     user_id = r.app.state.database.delete_user(user_id)
