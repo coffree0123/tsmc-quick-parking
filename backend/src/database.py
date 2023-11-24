@@ -6,7 +6,8 @@ from src.users.constants import Role, Gender
 from src.vehicles.constants import VehicleSize, Vehicle
 from src.parking.constants import ParkingRecord
 
-DB_CONNECT = os.environ["DB_CONNECT"]
+DB_CONNECT = os.environ["DB_CONNECT"] \
+    if "DB_CONNECT" in os.environ else "postgres://postgres:123@127.0.0.1:8080/postgres"
 
 class QuickParkingDB():
     '''
