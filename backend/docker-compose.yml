@@ -1,0 +1,31 @@
+version: '3.5'
+
+services:
+  app:
+    build: .
+    container_name: quick-parking-app
+    ports:
+      - ${PROD_PORT}:${PROD_PORT}
+    environment:
+      - DB_CONNECT=${DB_CONNECT}
+    networks:
+      - quick-parking-network
+    depends_on:
+      - db
+
+  db:
+    image: postgres:latest
+    container_name: quick-parking-db
+    volumes:
+      - ./tmp/db/:/var/lib/postgres/data
+    environment:
+      - PGUSER=${PGUSER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    expose:
+      - 5432
+    networks:
+      - quick-parking-network
+
+networks:
+  quick-parking-network:
+    driver: bridge
