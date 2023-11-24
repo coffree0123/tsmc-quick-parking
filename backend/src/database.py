@@ -61,7 +61,6 @@ class QuickParkingDB():
         sql_query = """
         DELETE FROM "Users" WHERE "id" = %s;
         """
-
         with self._connection_pools.connection() as conn:
             with conn.cursor() as cursor:
                 # Execute the SQL query with the user information as parameters
@@ -179,7 +178,8 @@ class QuickParkingDB():
                 result = cursor.fetchone()
                 if result is None:
                     self.add_vehicle(None, license_plate_no, "")
-                cursor.execute(sql_query, (license_plate_no, slot_id, start_time))
+                cursor.execute(
+                    sql_query, (license_plate_no, slot_id, start_time))
 
                 # Fetch the result and get the id of the inserted row
                 result = cursor.fetchone()
