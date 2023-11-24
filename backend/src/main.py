@@ -1,5 +1,6 @@
 '''Entry point for the FastAPI application'''
 import logging
+from logging.handlers import RotatingFileHandler
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -8,6 +9,7 @@ from src.vehicles.router import router as vehicle_router
 from src.parkinglots.router import router as parkinglot_router
 from src.parking.router import router as parking_router
 from src.database import QuickParkingDB, DB_CONNECT
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -18,17 +20,6 @@ async def lifespan(app: FastAPI):
     app.include_router(parkinglot_router, prefix="/api")
     app.include_router(parking_router, prefix="/api")
 
-    # save uvicorn logging to file
-    logger = logging.getLogger("uvicorn.access")
-    handler = logging.handlers.RotatingFileHandler(
-        "api.log", 
-        mode="a",
-        maxBytes=100*1024,
-        backupCount=3,
-    )
-    handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
-    logger.addHandler(handler)
-
     # set up database
     app.state.database = QuickParkingDB(DB_CONNECT)
 
@@ -36,6 +27,19 @@ async def lifespan(app: FastAPI):
     '''Shutdown Routines'''
 
 app = FastAPI(lifespan=lifespan)
+
+# logging
+logger = logging.getLogger("uvicorn.access")
+handler = RotatingFileHandler(
+    "api.log",
+    mode="a",
+    maxBytes=100*1024,
+    backupCount=3,
+)
+handler.setFormatter(logging.Formatter(
+    "%(asctime)s - %(levelname)s - %(message)s"))
+logger.addHandler(handler)
+
 
 @app.get("/")
 def index():
