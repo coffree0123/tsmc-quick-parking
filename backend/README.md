@@ -27,7 +27,11 @@ Shut down the service by
 $ docker-compose down
 ```
 
-Note that the database is not persistent currently (i.e. if container is shutdown, all data is lost)
+The database data is stored in the docker volume `quick-parking-data`. To start with the application with new empty database, remove the volume before `docker-compose up`.
+```bash
+$ docker volume rm backend_quick-parking-data
+```
+Note the directory name `backend` is prepended before `quick-parking-data` because docker-compose use this kind of naming convention.
 
 ### Backend Development
 Run the following command under backend/
