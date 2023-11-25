@@ -3,12 +3,13 @@ import logging
 from logging.handlers import RotatingFileHandler
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from src.users.router import router as user_router
 from src.vehicles.router import router as vehicle_router
 from src.parkinglots.router import router as parkinglot_router
 from src.parking.router import router as parking_router
 from src.database import QuickParkingDB, DB_CONNECT
+from src.auth import AuthError, get_jwt_token, verify_and_decode_jwt_token
 
 
 @asynccontextmanager
@@ -45,3 +46,23 @@ logger.addHandler(handler)
 def index():
     '''Index route'''
     return {"Hello": "FastAPI"}
+
+@app.middleware("http")
+async def auth_middleware(request: Request, call_next):
+    '''Middleware for authentication'''
+    if request.url.path.startswith('/api/users/'):
+        try:
+            jwt_token = get_jwt_token(request)
+            payload = await verify_and_decode_jwt_token(jwt_token)
+        except AuthError as auth_error:
+            return Response(content=auth_error.error_msg, status_code=auth_error.status_code)
+
+        user_id = request.url.path.split('/')[-1]
+        sub = payload['sub']
+        if user_id == sub:
+            response = await call_next(request)
+        else:
+            response = Response(content="Permission Denied", status_code= 403)
+    else:
+        response = await call_next(request)
+    return response
