@@ -61,9 +61,8 @@ const Home = ({ instance }: any): React.ReactElement => {
   const [userInfo, setUserInfo] = useState<UserInfo>()
 
   useEffect(() => {
-    const API_ROOT = process.env.REACT_APP_API_ROOT ?? 'http://localhost:8000/api'
     const id = 1
-    axios.get<UserInfo>(`${API_ROOT}/users/${id}`)
+    axios.get<UserInfo>(`users/${id}`)
       .then(response => {
         setUserInfo(response.data)
       })
@@ -84,7 +83,7 @@ const Home = ({ instance }: any): React.ReactElement => {
                 <Flex gap='large' style={{ width: '150%' }}>
                   {
                     userInfo.favorite_buildings_and_free_num.map((item, index) => (
-                      <LotCard key={index} title={item.building_name} value={Number(item.free_num)} id={1} />
+                      <LotCard key={index} title={item.building_name} value={Number(item.free_num)} id={index + 1} />
                     ))
                   }
                 </Flex>
