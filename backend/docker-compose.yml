@@ -2,8 +2,12 @@ version: '3.5'
 
 services:
   app:
-    build: .
-    container_name: quick-parking-app
+    build: 
+      context: .
+      dockerfile: ./docker/app/Dockerfile.app
+      args:
+        - APP_USER=${APP_USER}
+    container_name: ${APP_HOST}
     ports:
       - ${PROD_PORT}:${PROD_PORT}
     environment:
@@ -14,13 +18,14 @@ services:
       - db
 
   db:
-    image: postgres:latest
-    container_name: quick-parking-db
+    image: postgres:12-alpine
+    container_name: ${DB_HOST}
     volumes:
-      - ./tmp/db/:/var/lib/postgres/data
+      - ./docker/db/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
-      - PGUSER=${PGUSER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
     expose:
       - 5432
     networks:
