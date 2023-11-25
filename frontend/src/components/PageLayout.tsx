@@ -14,7 +14,7 @@ export const PageLayout = (props: any): any => {
             <NavigationBar />
             <br />
             <h5>
-                <center>Welcome to the Microsoft Authentication Library For React Tutorial</center>
+                <center>Welcome to TSMC Quick Parking</center>
             </h5>
             <br />
             {props.children}

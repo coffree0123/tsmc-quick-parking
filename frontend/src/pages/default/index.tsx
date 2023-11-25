@@ -1,9 +1,9 @@
 import React from 'react'
 
 import { MsalProvider, AuthenticatedTemplate, useMsal, UnauthenticatedTemplate } from '@azure/msal-react'
-import { Container, Button } from 'react-bootstrap'
+import { Button } from 'antd'
 import { PageLayout } from '../../components/PageLayout'
-import { IdTokenData } from '../../components/DataDisplay'
+// import { IdTokenData } from '../../components/DataDisplay'
 import { loginRequest } from '../../authConfig'
 
 import '../../styles/App.css'
@@ -21,7 +21,7 @@ const MainContent = (): any => {
    * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-react/docs/hooks.md
    */
   const { instance } = useMsal()
-  const activeAccount = instance.getActiveAccount()
+  // const activeAccount = instance.getActiveAccount()
 
   const handleRedirect = (): any => {
     instance
@@ -34,16 +34,9 @@ const MainContent = (): any => {
   return (
       <div className="App">
           <AuthenticatedTemplate>
-              {(activeAccount != null)
-                ? (
-                  <Container>
-                      <IdTokenData idTokenClaims={activeAccount.idTokenClaims} />
-                  </Container>
-                  )
-                : null}
           </AuthenticatedTemplate>
           <UnauthenticatedTemplate>
-              <Button className="signInButton" onClick={handleRedirect} variant="primary">
+              <Button onClick={handleRedirect}>
                   Sign up
               </Button>
           </UnauthenticatedTemplate>
