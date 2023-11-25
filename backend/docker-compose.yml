@@ -2,7 +2,9 @@ version: '3.5'
 
 services:
   app:
-    build: .
+    build: 
+      context: .
+      dockerfile: ./docker/app/Dockerfile.app
     container_name: quick-parking-app
     ports:
       - ${PROD_PORT}:${PROD_PORT}

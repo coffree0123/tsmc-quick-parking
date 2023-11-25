@@ -1,12 +1,12 @@
 # stage 1: install dependency
-FROM python:3.12-slim as builder
+FROM python:3.9-slim as builder
 
 RUN python -m pip install --no-cache-dir --upgrade poetry
 COPY pyproject.toml poetry.lock ./ 
 RUN poetry export -f requirements.txt --without-hashes -o requirements.txt
 
 # stage 2: web app image
-FROM python:3.12-slim as webapp
+FROM python:3.9-slim as webapp
 
 # switch to non-root user
 RUN adduser quickparking
