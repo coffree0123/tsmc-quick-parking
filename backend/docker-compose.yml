@@ -1,5 +1,8 @@
 version: '3.5'
 
+volumes:
+  quick-parking-data:
+
 services:
   app:
     build: 
@@ -22,6 +25,7 @@ services:
     container_name: ${DB_HOST}
     volumes:
       - ./docker/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - quick-parking-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
