@@ -9,14 +9,14 @@ RUN poetry export -f requirements.txt --without-hashes -o requirements.txt
 FROM python:3.9-slim as webapp
 
 # switch to non-root user
-RUN adduser quickparking
-USER quickparking:quickparking
-WORKDIR /home/quickparking
+ARG APP_USER
+RUN adduser ${APP_USER}
+USER ${APP_USER}
+WORKDIR /home/${APP_USER}
 
 # copy dependecies and code
 COPY --from=builder /requirements.txt /tmp/requirements.txt
 RUN python -m pip install --user --upgrade --no-cache-dir -r /tmp/requirements.txt
-COPY src /home/quickparking/src
+COPY src /home/${APP_USER}/src
 
 ENTRYPOINT ./.local/bin/uvicorn src.main:app --reload ${PROD_PORT} --host 0.0.0.0
-#CMD bash

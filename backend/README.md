@@ -27,6 +27,8 @@ Shut down the service by
 $ docker-compose down
 ```
 
+Note that the database is not persistent currently (i.e. if container is shutdown, all data is lost)
+
 ### Backend Development
 Run the following command under backend/
 ```bash
