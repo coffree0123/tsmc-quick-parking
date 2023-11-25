@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from '@azure/msal-react'
-import { Navbar, Button } from 'react-bootstrap'
+import { Button, Layout } from 'antd'
 import { loginRequest } from '../authConfig'
 import { AuthContext } from '../contexts/AuthContext'
 import { EventType } from '@azure/msal-browser'
@@ -8,6 +8,7 @@ import { EventType } from '@azure/msal-browser'
 export const NavigationBar = (): any => {
   const { instance } = useMsal()
   const { login } = useContext(AuthContext)
+  const { Header } = Layout
 
   const handleLoginRedirect = (): any => {
     instance.loginRedirect(loginRequest).catch((error) => { console.log(error) })
@@ -36,24 +37,17 @@ export const NavigationBar = (): any => {
      * only render their children if a user is authenticated or unauthenticated, respectively.
      */
   return (
-        <>
-            <Navbar bg="primary" variant="dark" className="navbarStyle">
-                <a className="navbar-brand" href="/">
-                    Microsoft identity platform
-                </a>
-                <AuthenticatedTemplate>
-                    <div className="collapse navbar-collapse justify-content-end">
-                        <Button variant="warning" onClick={handleLogoutRedirect}>
-                            Sign out
-                        </Button>
-                    </div>
-                </AuthenticatedTemplate>
-                <UnauthenticatedTemplate>
-                    <div className="collapse navbar-collapse justify-content-end">
-                        <Button onClick={handleLoginRedirect}>Sign in</Button>
-                    </div>
-                </UnauthenticatedTemplate>
-            </Navbar>
-        </>
+    <Layout className="layout">
+      <Header style={{ display: 'flex', alignItems: 'center' }}>
+      <AuthenticatedTemplate>
+              <Button onClick={handleLogoutRedirect}>
+                  Sign out
+              </Button>
+      </AuthenticatedTemplate>
+      <UnauthenticatedTemplate>
+              <Button onClick={handleLoginRedirect}>Sign in</Button>
+      </UnauthenticatedTemplate>
+      </Header>
+      </Layout>
   )
 }
