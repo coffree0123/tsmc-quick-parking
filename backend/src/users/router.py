@@ -34,7 +34,7 @@ def delete_user(r: Request, user_id: int) -> None:
 
 
 @router.get("/users/{user_id}")
-def get_user_info(r: Request, user_id: int) -> UserInfo:
+def get_user_info(r: Request, user_id: str) -> UserInfo:
     '''Get user information'''
     # Get user's favorite parking lot
     favorite_list = get_user_favorite_parkinglot()
