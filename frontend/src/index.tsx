@@ -14,6 +14,7 @@ import './styles/index.css'
 import Dashboard from './pages/Dashboard'
 import ParkingLotPage from './pages/ParkingLotPage'
 import Login from './pages/Login'
+import Setting from './pages/Setting'
 import AuthContextProvider, { AuthContext } from './contexts/AuthContext'
 
 /**
@@ -74,6 +75,7 @@ root.render(
           <Route element={<UserRoutes />}>
             <Route path="/" element={<Home instance={msalInstance}/>} />
             <Route path="/parkingLot/:id" element={<ParkingLotPage />} />
+            <Route path="/setting" element={<Setting />} />
           </Route>
           <Route element={<GuardRoutes />}>
             <Route path='/dashboard' element={<Dashboard instance={msalInstance}/>} />
