@@ -32,6 +32,7 @@ def mock_db():
 
 def test_create_user(mocker, mock_db, user_data):
     '''Test create user'''
+    # mock database
     mocker.patch("src.main.QuickParkingDB", return_value=mock_db)
 
     with TestClient(app) as client:
@@ -42,6 +43,7 @@ def test_create_user(mocker, mock_db, user_data):
 
 def test_update_user(mocker, mock_db, user_data):
     '''Test update user'''
+    # mock database
     mocker.patch("src.main.QuickParkingDB", return_value=mock_db)
 
     with TestClient(app) as client:
