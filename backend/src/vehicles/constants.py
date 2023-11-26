@@ -1,9 +1,8 @@
 '''Vehicles constants'''
 from enum import Enum
 from datetime import datetime
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pydantic import BaseModel, Field
-
 from src.parking.constants import ParkingRecord
 
 
@@ -31,10 +30,21 @@ class Vehicle:
 
 
 @dataclass
-class VehicleAndOwner:
+class OwnerInfo:
+    '''Vehicle owner info shown to guard'''
+    id: str = ""
+    name: str = ""
+    job_title: str = ""
+    email: str = ""
+    phone: str = ""
+    special_role: str = ""
+
+
+class VehicleAndOwner(BaseModel):
     '''Return model of vehicle and owner info'''
-    vehicle_records: list[ParkingRecord] = field(default_factory=list)
-    user_vehicles: list[Vehicle] = field(default_factory=list)
+    vehicle_records: list[ParkingRecord] = Field(default_factory=list)
+    owner_info: OwnerInfo = Field(default_factory=OwnerInfo)
+    owner_other_vehicles: list[Vehicle] = Field(default_factory=list)
 
 
 class VehicleRequest(BaseModel):

@@ -1,4 +1,5 @@
 '''Parking Space Management Module'''
+from collections import defaultdict
 from fastapi import APIRouter, Request
 from src.parkinglots.constants import FreeSpace
 
@@ -9,13 +10,17 @@ router = APIRouter()
 @router.get(path="/parkinglots/{parkinglot_id}/free-slots")
 def get_free_spaces(r: Request, parkinglot_id: int) -> FreeSpace:
     '''Returns a list of free spaces of a parking lot'''
+    # parking lot info
     parkinglot_info = r.app.state.database.get_parkinglot_info(parkinglot_id)
     if not parkinglot_info:
         return FreeSpace()
-
     parkinglot_info = parkinglot_info[0]
-    free_slots = r.app.state.database.get_free_spaces(parkinglot_id)
-    free_slots = [f"{floor}#{idx}" for floor, idx in sorted(free_slots)]
+
+    # get free slots in the parking lot
+    free_slots = defaultdict(list)
+    for floor, idx in sorted(r.app.state.database.get_free_spaces(parkinglot_id)):
+        free_slots['B' + str(floor)].append(idx)
+
     return FreeSpace(
         num_row=parkinglot_info["numRow"],
         num_col=parkinglot_info["numCol"],
