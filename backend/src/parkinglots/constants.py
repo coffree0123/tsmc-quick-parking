@@ -1,5 +1,5 @@
 '''Parking Lot module constants'''
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class FreeSpace(BaseModel):
@@ -7,4 +7,4 @@ class FreeSpace(BaseModel):
     num_row: int = 0
     num_col: int = 0
     num_floor: int = 0
-    free_slots: list[str] = []
+    free_slots: dict[str, list[int]] = Field(default_factory=dict)
