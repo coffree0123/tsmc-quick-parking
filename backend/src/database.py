@@ -136,7 +136,7 @@ class QuickParkingDB():
                 res = cursor.fetchall()
         return res
 
-    def get_free_spaces(self, parkinglot_id: int) -> list[tuple[str]]:
+    def get_free_spaces(self, parkinglot_id: int) -> list[tuple[int]]:
         '''
         Given a parkinglot id, returns all free spaces, 
         each of which is represented by a tuple (floor, index)
