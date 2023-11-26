@@ -10,8 +10,8 @@ from src.main import app
 def user_data():
     '''User data for testing'''
     return {
-        "first_name": "John",
-        "last_name": "Doe",
+        "user_id": "21EC2020-3AEA-1069-A2DD-08002B30309D",
+        "name": "John Doe",
         "email": "john.doe@example.com",
         "phone_num": "1234567890",
         "gender": "male",
@@ -25,7 +25,7 @@ def user_data():
 def mock_db():
     '''Mock database'''
     fake_db = Mock()
-    fake_db.add_user.return_value = 1
+    fake_db.add_user.return_value = "21EC2020-3AEA-1069-A2DD-08002B30309D"
     fake_db.update_user.return_value = None
     return fake_db
 
