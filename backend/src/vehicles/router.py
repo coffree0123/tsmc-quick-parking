@@ -29,11 +29,9 @@ def get_vehicle_and_owner_info(r: Request, license_plate_no: str) -> VehicleAndO
 
 # need: extend the api, and then deprecate this one
 # need: concat floor and index
-
-
 @router.get(path="/vehicles/records")
 def get_latest_records(
-    r: Request, vehicle_id: str = None, user_id: int = None
+    r: Request, vehicle_id: str = None, user_id: str = None
 ) -> list[ParkingRecord]:
     '''Search the parking records by user id or vehicle id'''
     if vehicle_id is None and user_id is None:

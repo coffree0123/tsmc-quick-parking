@@ -1,6 +1,10 @@
 '''This file contains utility functions for users'''
+from src.users.constants import BuildingInfo
 
-def get_user_favorite_parkinglot() -> list[tuple[int, str]]:
+def get_user_favorite_parkinglot() -> list[BuildingInfo]:
     '''Get user's favorite parking lot'''
     # This function will be updated later
-    return [(1, "Building A"), (2, "Factory B")]
+    return [
+        BuildingInfo(0, "Building A", 30),
+        BuildingInfo(1, "Factory B", 80)
+    ]

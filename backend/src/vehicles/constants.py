@@ -39,7 +39,7 @@ class VehicleAndOwner:
 
 class VehicleRequest(BaseModel):
     '''Vehicle request data'''
-    user_id: int
+    user_id: str
     license_plate_no: str
     nick_name: str
     car_size: VehicleSize = Field(default="small")

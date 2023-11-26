@@ -21,8 +21,8 @@ class Gender(str, Enum):
 
 class UserRequest(BaseModel):
     '''User request data'''
-    first_name: str
-    last_name: str
+    user_id: str
+    name: str
     email: str
     phone_num: str
     gender: Gender
@@ -34,11 +34,12 @@ class UserRequest(BaseModel):
 @dataclass
 class BuildingInfo():
     '''Building information'''
+    build_id: int
     building_name: str
-    free_num: str
+    free_num: int
 
 
 class UserInfo(BaseModel):
     '''User information'''
-    favorite_buildings_and_free_num: list[BuildingInfo]
-    user_vehicles: list[Vehicle]
+    favorite_buildings: list[BuildingInfo]
+    parked_vehicles: list[Vehicle]

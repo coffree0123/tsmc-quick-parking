@@ -6,16 +6,15 @@ CREATE TYPE "carSize" AS ENUM (
 );
 
 CREATE TABLE "Cars" (
-  "userID" integer,
+  "userID" varchar,
   "licensePlateNo" varchar PRIMARY KEY,
   "size" "carSize",
   "model" varchar
 );
 
 CREATE TABLE "Users" (
-  "id" serial PRIMARY KEY,
-  "firstName" varchar,
-  "lastName" varchar,
+  "id" varchar PRIMARY KEY,
+  "name" varchar,
   "email" varchar,
   "phoneNo" varchar,
   "gender" varchar,
@@ -51,7 +50,7 @@ CREATE TABLE "ParkingRecords" (
 );
 
 CREATE TABLE "UserFavorites" (
-  "userID" integer,
+  "userID" varchar,
   "parkingLotID" integer,
   PRIMARY KEY ("userID", "parkingLotID")
 );

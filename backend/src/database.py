@@ -18,11 +18,11 @@ class QuickParkingDB():
         self._connection_pools = ConnectionPool(conninfo)
         self._connection_pools.wait()
 
-    def add_user(self, first_name: str, last_name: str, email: str, phone_num: str,
-                 gender: Gender, age: int, job_title: Role, special_role: str) -> int:
+    def add_user(self, user_id: str, name: str, email: str, phone_num: str,
+                 gender: Gender, age: int, job_title: Role, special_role: str) -> str:
         '''Add a new user to the database and return the user_id'''
         sql_query = """
-        INSERT INTO "Users" ("firstName", "lastName", "email", "phoneNo", "gender", "age", "jobTitle", "specialRole")
+        INSERT INTO "Users" ("id", "name", "email", "phoneNo", "gender", "age", "jobTitle", "specialRole")
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         RETURNING id;
         """
@@ -30,7 +30,7 @@ class QuickParkingDB():
         with self._connection_pools.connection() as conn:
             with conn.cursor() as cursor:
                 # Execute the SQL query with the user information as parameters
-                cursor.execute(sql_query, (first_name, last_name, email,
+                cursor.execute(sql_query, (user_id, name, email,
                                            phone_num, gender, age, job_title, special_role))
                 # Fetch the result and get the id of the inserted row
                 result = cursor.fetchone()
@@ -40,11 +40,11 @@ class QuickParkingDB():
 
         return user_id
 
-    def update_user(self, user_id: int, first_name: str, last_name: str, email: str, phone_num: str,
+    def update_user(self, user_id: str, name: str, email: str, phone_num: str,
                     gender: Gender, age: int, job_title: Role, special_role: str) -> None:
         '''Update a user's information in the database'''
         sql_query = """
-        UPDATE "Users" SET "firstName" = %s, "lastName" = %s, "email" = %s, 
+        UPDATE "Users" SET "name" = %s, "email" = %s, 
         "phoneNo" = %s, "gender" = %s, "age" = %s, "jobTitle" = %s, "specialRole" = %s 
         WHERE id = %s;
         """
@@ -52,11 +52,11 @@ class QuickParkingDB():
         with self._connection_pools.connection() as conn:
             with conn.cursor() as cursor:
                 # Execute the SQL query with the user information as parameters
-                cursor.execute(sql_query, (first_name, last_name, email, phone_num,
+                cursor.execute(sql_query, (name, email, phone_num,
                                            gender, age, job_title, special_role, user_id))
                 conn.commit()
 
-    def delete_user(self, user_id: int) -> None:
+    def delete_user(self, user_id: str) -> None:
         '''Delete a user's information in the database'''
         sql_query = """
         DELETE FROM "Users" WHERE "id" = %s;
@@ -67,7 +67,7 @@ class QuickParkingDB():
                 cursor.execute(sql_query, (user_id,))
                 conn.commit()
 
-    def add_vehicle(self, user_id: int, license_plate_no: str, nick_name: str,
+    def add_vehicle(self, user_id: str, license_plate_no: str, nick_name: str,
                     car_size: VehicleSize = "small") -> None:
         '''Add a new vehicle to the database'''
         sql_query = """
@@ -104,7 +104,7 @@ class QuickParkingDB():
                 cursor.execute(sql_query, (license_plate_no,))
                 conn.commit()
 
-    def get_user_vehicles(self, user_id: int) -> list[Vehicle]:
+    def get_user_vehicles(self, user_id: str) -> list[Vehicle]:
         '''Retrive the user vehicles info and their current states in the parking lot'''
         sql_query = """
         SELECT
@@ -208,7 +208,7 @@ class QuickParkingDB():
                 cursor.close()
                 conn.close()
 
-    def get_latest_records(self, license_plate_no: str, user_id: int) -> list[ParkingRecord]:
+    def get_latest_records(self, license_plate_no: str, user_id: str) -> list[ParkingRecord]:
         '''Retrieve the lastest 10 parking records'''
         num_records = 10
 
