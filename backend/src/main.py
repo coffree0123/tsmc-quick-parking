@@ -4,6 +4,7 @@ from logging.handlers import RotatingFileHandler
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from src.users.router import router as user_router
 from src.vehicles.router import router as vehicle_router
 from src.parkinglots.router import router as parkinglot_router
@@ -27,6 +28,13 @@ async def lifespan(app: FastAPI):
     '''Shutdown Routines'''
 
 app = FastAPI(lifespan=lifespan)
+# set up CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # logging
 logger = logging.getLogger("uvicorn.access")
