@@ -3,7 +3,7 @@ import os
 from psycopg.rows import dict_row, class_row
 from psycopg_pool import ConnectionPool
 from src.users.constants import Role, Gender
-from src.vehicles.constants import VehicleSize, Vehicle
+from src.vehicles.constants import VehicleSize, Vehicle, OwnerInfo
 from src.parking.constants import ParkingRecord
 
 DB_CONNECT = os.environ["DB_CONNECT"] \
@@ -103,6 +103,37 @@ class QuickParkingDB():
                 # Execute the SQL query with the user information as parameters
                 cursor.execute(sql_query, (license_plate_no,))
                 conn.commit()
+
+    def get_vehicle_owner_info(self, license_plate_no: str) -> OwnerInfo:
+        '''Retrieves the owner info of a vehicle'''
+        sql_qeury = """
+        SELECT 
+            users.id,
+            users.name,
+            users."jobTitle" AS job_title,
+            users.email,
+            users."phoneNo" AS phone,
+            users."specialRole" AS special_role
+        FROM (
+            SELECT
+                "userID"
+            FROM "Cars"
+            WHERE "licensePlateNo" = %s
+        ) AS cars
+        LEFT JOIN "Users" AS users
+            ON cars."userID" = users.id;
+        """
+
+        with self._connection_pools.connection() as conn:
+            with conn.cursor(row_factory=class_row(OwnerInfo)) as cursor:
+                cursor.execute(sql_qeury, params=(license_plate_no,))
+                res = cursor.fetchall()
+
+        if len(res) > 1:
+            raise ValueError("The vehicle has two or more users")
+        if len(res) == 0:
+            return OwnerInfo()
+        return res[0]
 
     def get_user_vehicles(self, user_id: str) -> list[Vehicle]:
         '''Retrive the user vehicles info and their current states in the parking lot'''
