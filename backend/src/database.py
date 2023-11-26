@@ -247,10 +247,10 @@ class QuickParkingDB():
         cond1 = "1 = 1"
         cond2 = "1 = 1"
         if license_plate_no is not None:
-            cond1 = ''' vehicles."licensePlateNo" = %s '''
+            cond1 = ''' "licensePlateNo" = %s '''
             params.append(license_plate_no)
         if user_id is not None:
-            cond2 = ''' vehicles."userID" = %s '''
+            cond2 = ''' "userID" = %s '''
             params.append(user_id)
         params.append(num_records)
 
@@ -261,15 +261,17 @@ class QuickParkingDB():
             CONCAT('B', slots.floor, '#', slots.index) AS position,
             records."startTime" AS start_time,
             records."endTime" AS end_time
-        FROM "Cars" AS vehicles
-        INNER JOIN "ParkingRecords" AS records
-            ON
-                {cond1} AND
-                {cond2} AND
-                vehicles."licensePlateNo" = records."licensePlateNo"
-        INNER JOIN "ParkingSlots" AS slots
+        FROM (
+            SELECT
+                *
+            FROM "Cars"
+            WHERE {cond1} AND {cond2}
+        ) AS vehicles
+        LEFT JOIN "ParkingRecords" AS records
+            ON vehicles."licensePlateNo" = records."licensePlateNo"
+        LEFT JOIN "ParkingSlots" AS slots
             ON slots.id = records."slotID"
-        INNER JOIN "ParkingLots" AS parkinglots
+        LEFT JOIN "ParkingLots" AS parkinglots
             ON parkinglots.id = slots."parkingLotID"
         ORDER BY start_time DESC
         LIMIT %s;
