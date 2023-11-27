@@ -1,9 +1,10 @@
-import { Flex, List, Typography } from 'antd'
+import { Flex, List, Skeleton, Typography } from 'antd'
 import { ArrowRightOutlined } from '@ant-design/icons'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import LogOutButton from '../../components/LogOutButton'
 import { MsalProvider } from '@azure/msal-react'
+import axios from 'axios'
 
 const { Title } = Typography
 
@@ -38,17 +39,35 @@ const LotCard = (props: SlotCardProps): React.ReactElement => {
   )
 }
 
-const Home = ({ instance }: any): React.ReactElement => {
-  const LotInfo: SlotCardProps[] = [
-    { title: 'Factory B', value: 134, id: 1 },
-    { title: 'Office F', value: 57, id: 2 },
-    { title: 'Office D', value: 65, id: 3 }
-  ]
+interface BuildingInfo {
+  building_name: string
+  free_num: string
+}
 
-  const Vehicles = [
-    { name: 'Toyota', lot: 'Office A', slot: 'B5#503' },
-    { name: 'Gogoro', lot: 'Factory B', slot: 'B1#127' }
-  ]
+interface VehicleInfo {
+  license_plate_no: string
+  model: string
+  start_time: string
+  parkinglot_name: string
+  position: string
+}
+
+interface UserInfo {
+  favorite_buildings_and_free_num: BuildingInfo[]
+  user_vehicles: VehicleInfo[]
+}
+
+const Home = ({ instance }: any): React.ReactElement => {
+  const [userInfo, setUserInfo] = useState<UserInfo>()
+
+  useEffect(() => {
+    const id = 1
+    axios.get<UserInfo>(`users/${id}`)
+      .then(response => {
+        setUserInfo(response.data)
+      })
+      .catch(error => { console.error(error) })
+  }, [])
 
   return (
     <MsalProvider instance={instance}>
@@ -57,30 +76,42 @@ const Home = ({ instance }: any): React.ReactElement => {
       <div>
         <Title level={2}>Your favorites</Title>
         <div style={{ overflowX: 'scroll' }}>
-          <Flex gap='large' style={{ width: '150%' }}>
-            {
-              LotInfo.map(({ title, value, id }, index) => (
-                <LotCard key={index} title={title} value={value} id={id} />
-              ))
-            }
-          </Flex>
+          {
+            userInfo === undefined
+              ? <Skeleton active />
+              : (
+                <Flex gap='large' style={{ width: '150%' }}>
+                  {
+                    userInfo.favorite_buildings_and_free_num.map((item, index) => (
+                      <LotCard key={index} title={item.building_name} value={Number(item.free_num)} id={index + 1} />
+                    ))
+                  }
+                </Flex>
+                )
+          }
         </div>
       </div>
       <div>
         <Title level={2}>Parked Vehicles</Title>
-        <List
-          size='large'
-          bordered
-          dataSource={Vehicles}
-          renderItem={(item) => (
-            <List.Item>
-              <Flex justify='space-between' style={{ width: '100%' }}>
-                <div>{item.name}</div>
-                <div>{item.lot}, <span style={{ color: 'gray' }}>{item.slot}</span></div>
-              </Flex>
-            </List.Item>
-          )}
-        />
+        {
+          userInfo === undefined
+            ? <Skeleton active />
+            : (
+              <List
+                size='large'
+                bordered
+                dataSource={userInfo.user_vehicles}
+                renderItem={(item) => (
+                  <List.Item>
+                    <Flex justify='space-between' style={{ width: '100%' }}>
+                      <div>{item.model}</div>
+                      <div>{item.parkinglot_name}, <span style={{ color: 'gray' }}>{item.position}</span></div>
+                    </Flex>
+                  </List.Item>
+                )}
+              />
+              )
+        }
       </div>
       <LogOutButton />
     </Flex>

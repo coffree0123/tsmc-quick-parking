@@ -16,6 +16,7 @@ import ParkingLotPage from './pages/ParkingLotPage'
 import Login from './pages/Login'
 import Setting from './pages/Setting'
 import AuthContextProvider, { AuthContext } from './contexts/AuthContext'
+import axios from 'axios'
 
 /**
  * MSAL should be instantiated outside of the component tree to prevent it from being re-instantiated on re-renders.
@@ -59,6 +60,8 @@ const GuardRoutes = (): React.ReactElement => {
     ? <Navigate to={PubliceDefaultURL} replace />
     : (isGuard ? <Outlet /> : <Navigate to={UserDefaultURL} replace />)
 }
+
+axios.defaults.baseURL = process.env.REACT_APP_API_ROOT ?? 'http://localhost:8000/api'
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
