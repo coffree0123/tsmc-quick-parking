@@ -3,7 +3,7 @@ import os
 from psycopg.rows import dict_row, class_row
 from psycopg_pool import ConnectionPool
 from src.users.constants import Role, Gender
-from src.vehicles.constants import VehicleSize, Vehicle
+from src.vehicles.constants import VehicleSize, Vehicle, OwnerInfo
 from src.parking.constants import ParkingRecord
 
 DB_CONNECT = os.environ["DB_CONNECT"] \
@@ -18,11 +18,11 @@ class QuickParkingDB():
         self._connection_pools = ConnectionPool(conninfo)
         self._connection_pools.wait()
 
-    def add_user(self, first_name: str, last_name: str, email: str, phone_num: str,
-                 gender: Gender, age: int, job_title: Role, special_role: str) -> int:
+    def add_user(self, user_id: str, name: str, email: str, phone_num: str,
+                 gender: Gender, age: int, job_title: Role, special_role: str) -> str:
         '''Add a new user to the database and return the user_id'''
         sql_query = """
-        INSERT INTO "Users" ("firstName", "lastName", "email", "phoneNo", "gender", "age", "jobTitle", "specialRole")
+        INSERT INTO "Users" ("id", "name", "email", "phoneNo", "gender", "age", "jobTitle", "specialRole")
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         RETURNING id;
         """
@@ -30,7 +30,7 @@ class QuickParkingDB():
         with self._connection_pools.connection() as conn:
             with conn.cursor() as cursor:
                 # Execute the SQL query with the user information as parameters
-                cursor.execute(sql_query, (first_name, last_name, email,
+                cursor.execute(sql_query, (user_id, name, email,
                                            phone_num, gender, age, job_title, special_role))
                 # Fetch the result and get the id of the inserted row
                 result = cursor.fetchone()
@@ -40,11 +40,11 @@ class QuickParkingDB():
 
         return user_id
 
-    def update_user(self, user_id: int, first_name: str, last_name: str, email: str, phone_num: str,
+    def update_user(self, user_id: str, name: str, email: str, phone_num: str,
                     gender: Gender, age: int, job_title: Role, special_role: str) -> None:
         '''Update a user's information in the database'''
         sql_query = """
-        UPDATE "Users" SET "firstName" = %s, "lastName" = %s, "email" = %s, 
+        UPDATE "Users" SET "name" = %s, "email" = %s, 
         "phoneNo" = %s, "gender" = %s, "age" = %s, "jobTitle" = %s, "specialRole" = %s 
         WHERE id = %s;
         """
@@ -52,11 +52,11 @@ class QuickParkingDB():
         with self._connection_pools.connection() as conn:
             with conn.cursor() as cursor:
                 # Execute the SQL query with the user information as parameters
-                cursor.execute(sql_query, (first_name, last_name, email, phone_num,
+                cursor.execute(sql_query, (name, email, phone_num,
                                            gender, age, job_title, special_role, user_id))
                 conn.commit()
 
-    def delete_user(self, user_id: int) -> None:
+    def delete_user(self, user_id: str) -> None:
         '''Delete a user's information in the database'''
         sql_query = """
         DELETE FROM "Users" WHERE "id" = %s;
@@ -67,7 +67,7 @@ class QuickParkingDB():
                 cursor.execute(sql_query, (user_id,))
                 conn.commit()
 
-    def add_vehicle(self, user_id: int, license_plate_no: str, nick_name: str,
+    def add_vehicle(self, user_id: str, license_plate_no: str, nick_name: str,
                     car_size: VehicleSize = "small") -> None:
         '''Add a new vehicle to the database'''
         sql_query = """
@@ -104,7 +104,38 @@ class QuickParkingDB():
                 cursor.execute(sql_query, (license_plate_no,))
                 conn.commit()
 
-    def get_user_vehicles(self, user_id: int) -> list[Vehicle]:
+    def get_vehicle_owner_info(self, license_plate_no: str) -> OwnerInfo:
+        '''Retrieves the owner info of a vehicle'''
+        sql_qeury = """
+        SELECT 
+            users.id,
+            users.name,
+            users."jobTitle" AS job_title,
+            users.email,
+            users."phoneNo" AS phone,
+            users."specialRole" AS special_role
+        FROM (
+            SELECT
+                "userID"
+            FROM "Cars"
+            WHERE "licensePlateNo" = %s
+        ) AS cars
+        LEFT JOIN "Users" AS users
+            ON cars."userID" = users.id;
+        """
+
+        with self._connection_pools.connection() as conn:
+            with conn.cursor(row_factory=class_row(OwnerInfo)) as cursor:
+                cursor.execute(sql_qeury, params=(license_plate_no,))
+                res = cursor.fetchall()
+
+        if len(res) > 1:
+            raise ValueError("The vehicle has two or more users")
+        if len(res) == 0:
+            return OwnerInfo()
+        return res[0]
+
+    def get_user_vehicles(self, user_id: str) -> list[Vehicle]:
         '''Retrive the user vehicles info and their current states in the parking lot'''
         sql_query = """
         SELECT
@@ -136,7 +167,7 @@ class QuickParkingDB():
                 res = cursor.fetchall()
         return res
 
-    def get_free_spaces(self, parkinglot_id: int) -> list[tuple[str]]:
+    def get_free_spaces(self, parkinglot_id: int) -> list[tuple[int]]:
         '''
         Given a parkinglot id, returns all free spaces, 
         each of which is represented by a tuple (floor, index)
@@ -208,7 +239,7 @@ class QuickParkingDB():
                 cursor.close()
                 conn.close()
 
-    def get_latest_records(self, license_plate_no: str, user_id: int) -> list[ParkingRecord]:
+    def get_latest_records(self, license_plate_no: str, user_id: str) -> list[ParkingRecord]:
         '''Retrieve the lastest 10 parking records'''
         num_records = 10
 
@@ -216,10 +247,10 @@ class QuickParkingDB():
         cond1 = "1 = 1"
         cond2 = "1 = 1"
         if license_plate_no is not None:
-            cond1 = ''' vehicles."licensePlateNo" = %s '''
+            cond1 = ''' "licensePlateNo" = %s '''
             params.append(license_plate_no)
         if user_id is not None:
-            cond2 = ''' vehicles."userID" = %s '''
+            cond2 = ''' "userID" = %s '''
             params.append(user_id)
         params.append(num_records)
 
@@ -230,15 +261,17 @@ class QuickParkingDB():
             CONCAT('B', slots.floor, '#', slots.index) AS position,
             records."startTime" AS start_time,
             records."endTime" AS end_time
-        FROM "Cars" AS vehicles
-        INNER JOIN "ParkingRecords" AS records
-            ON
-                {cond1} AND
-                {cond2} AND
-                vehicles."licensePlateNo" = records."licensePlateNo"
-        INNER JOIN "ParkingSlots" AS slots
+        FROM (
+            SELECT
+                *
+            FROM "Cars"
+            WHERE {cond1} AND {cond2}
+        ) AS vehicles
+        LEFT JOIN "ParkingRecords" AS records
+            ON vehicles."licensePlateNo" = records."licensePlateNo"
+        LEFT JOIN "ParkingSlots" AS slots
             ON slots.id = records."slotID"
-        INNER JOIN "ParkingLots" AS parkinglots
+        LEFT JOIN "ParkingLots" AS parkinglots
             ON parkinglots.id = slots."parkingLotID"
         ORDER BY start_time DESC
         LIMIT %s;
