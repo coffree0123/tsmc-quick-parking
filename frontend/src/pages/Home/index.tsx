@@ -40,6 +40,7 @@ const LotCard = (props: SlotCardProps): React.ReactElement => {
 }
 
 interface BuildingInfo {
+  build_id: number
   building_name: string
   free_num: string
 }
@@ -53,15 +54,15 @@ interface VehicleInfo {
 }
 
 interface UserInfo {
-  favorite_buildings_and_free_num: BuildingInfo[]
-  user_vehicles: VehicleInfo[]
+  favorite_buildings: BuildingInfo[]
+  parked_vehicles: VehicleInfo[]
 }
 
 const Home = ({ instance }: any): React.ReactElement => {
   const [userInfo, setUserInfo] = useState<UserInfo>()
 
   useEffect(() => {
-    const id = 1
+    const id = '21EC2020-3AEA-1069-A2DD-08002B30309D'
     axios.get<UserInfo>(`users/${id}`)
       .then(response => {
         setUserInfo(response.data)
@@ -82,8 +83,8 @@ const Home = ({ instance }: any): React.ReactElement => {
               : (
                 <Flex gap='large' style={{ width: '150%' }}>
                   {
-                    userInfo.favorite_buildings_and_free_num.map((item, index) => (
-                      <LotCard key={index} title={item.building_name} value={Number(item.free_num)} id={index + 1} />
+                    userInfo.favorite_buildings.map((item, index) => (
+                      <LotCard key={index} title={item.building_name} value={Number(item.free_num)} id={item.build_id} />
                     ))
                   }
                 </Flex>
@@ -100,7 +101,7 @@ const Home = ({ instance }: any): React.ReactElement => {
               <List
                 size='large'
                 bordered
-                dataSource={userInfo.user_vehicles}
+                dataSource={userInfo.parked_vehicles}
                 renderItem={(item) => (
                   <List.Item>
                     <Flex justify='space-between' style={{ width: '100%' }}>
