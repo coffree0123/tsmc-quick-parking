@@ -10,7 +10,7 @@ After install the dependency, please install the precommit hook by running the f
 
 ## How to run the server
 
-### Normal Usage
+### Frontend development
 Start the service by
 ```bash
 $ docker-compose up --build -d
@@ -32,6 +32,13 @@ The database data is stored in the docker volume `quick-parking-data`. To start 
 $ docker volume rm backend_quick-parking-data
 ```
 Note the directory name `backend` is prepended before `quick-parking-data` because docker-compose use this kind of naming convention.
+
+Also, we provide a sample data file `sample.sql` to test with our APIs.
+By default, this file is NOT loaded into the database when booting the application.
+To use it, run
+```bash
+$ docker cp docker/db/sample.sql quick-parking-db:/tmp/sample.sql && docker exec quick-parking-db bash -c "psql -U quickparking < /tmp/sample.sql"
+```
 
 ### Backend Development
 Run the following command under backend/
