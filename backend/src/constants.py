@@ -15,16 +15,6 @@ class ParkingRecord:
     start_time: datetime
     end_time: datetime
 
-
-# Parking Lot module constants
-class FreeSpace(BaseModel):
-    '''Return class of free space'''
-    num_row: int = 0
-    num_col: int = 0
-    num_floor: int = 0
-    free_slots: dict[str, list[int]] = Field(default_factory=dict)
-
-
 # Vehicles constants
 class VehicleSize(str, Enum):
     '''Vehicle sizes'''
@@ -114,3 +104,18 @@ class UserData(BaseModel):
     age: int
     job_title: Role
     special_role: str = "None"
+
+
+@dataclass
+class FloorInfo:
+    '''object containing information of one parking lot floor'''
+    floor: str
+    free_slots: list[int]
+
+
+class ParkingLot(BaseModel):
+    '''Return class of parking lot (for user)'''
+    num_row: int = 0
+    num_col: int = 0
+    num_floor: int = 0
+    floor_info: list[FloorInfo] = Field(default_factory=list)
