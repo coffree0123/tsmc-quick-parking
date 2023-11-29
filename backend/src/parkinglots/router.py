@@ -1,7 +1,7 @@
 '''Parking Space Management Module'''
 from collections import defaultdict
 from fastapi import APIRouter, Request
-from src.parkinglots.constants import FreeSpace
+from src.constants import FreeSpace
 
 
 router = APIRouter()

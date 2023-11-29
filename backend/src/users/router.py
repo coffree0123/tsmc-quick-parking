@@ -1,7 +1,7 @@
 '''User management module'''
 from fastapi import APIRouter, Request
 from src.users.utils import get_user_favorite_parkinglot
-from src.users.constants import UserRequest, UserInfo
+from src.constants import UserRequest, UserInfo
 
 router = APIRouter()
 
@@ -23,7 +23,7 @@ def update_user(r: Request, user_id: str, user_request: UserRequest) -> None:
     r.app.state.database.update_user(user_id, user_request.name,
                                      user_request.email, user_request.phone_num,
                                      user_request.gender, user_request.age,
-                                     user_request.job_title,user_request.special_role)
+                                     user_request.job_title, user_request.special_role)
 
 
 @router.delete("/users/{user_id}")
