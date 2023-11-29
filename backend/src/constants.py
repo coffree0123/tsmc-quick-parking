@@ -104,8 +104,8 @@ class Gender(str, Enum):
     FEMALE = "female"
 
 
-class UserRequest(BaseModel):
-    '''User request data'''
+class UserData(BaseModel):
+    '''User info data'''
     user_id: str
     name: str
     email: str
