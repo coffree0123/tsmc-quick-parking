@@ -1,7 +1,6 @@
 '''Vehicles management module'''
 from fastapi import APIRouter, Request, HTTPException, status
-from src.vehicles.constants import VehicleAndOwner, VehicleRequest
-from src.parking.constants import ParkingRecord
+from src.constants import ParkingRecord, VehicleAndOwner, VehicleRequest
 
 router = APIRouter()
 
@@ -23,7 +22,8 @@ def delete_vehicle(r: Request, license_plate_no: str) -> None:
 def get_vehicle_and_owner_info(r: Request, license_plate_no: str) -> VehicleAndOwner:
     '''Get info of the vehicle and its owner'''
     # get records of the query vehicle
-    vehicle_records = r.app.state.database.get_latest_records(license_plate_no, None)
+    vehicle_records = r.app.state.database.get_latest_records(
+        license_plate_no, None)
     if not vehicle_records:
         raise HTTPException(
             status.HTTP_404_NOT_FOUND,
@@ -49,6 +49,8 @@ def get_vehicle_and_owner_info(r: Request, license_plate_no: str) -> VehicleAndO
 
 # need: extend the api, and then deprecate this one
 # need: concat floor and index
+
+
 @router.get(path="/vehicles/records")
 def get_latest_records(
     r: Request, vehicle_id: str = None, user_id: str = None
