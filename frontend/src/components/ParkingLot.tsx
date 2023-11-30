@@ -21,52 +21,60 @@ const ParkingSlot = (props: { name: string, isOccupied: boolean }): React.ReactE
   )
 }
 
+type FreeSlots = number[]
+
 interface ParkingLotMapProps {
   prefix: string
-  map: boolean[][]
+  numRows: number
+  numCols: number
+  freeSlots: FreeSlots
 }
 
 const ParkingLotMap = (props: ParkingLotMapProps): React.ReactElement => {
-  const numRows = props.map.length
-  const numCols = props.map[0].length
-  const numPads = Math.floor(Math.log10(numRows * numCols)) + 1
+  const [map, setMap] = useState<boolean[][]>(Array(props.numRows).fill(null).map(() => Array(props.numCols).fill(false)))
+  const numPads = Math.floor(Math.log10(props.numRows * props.numCols)) + 1
+
+  useEffect(() => {
+    const newMap = Array(props.numRows).fill(null).map(() => Array(props.numCols).fill(false))
+    props.freeSlots.forEach(index => {
+      const row = Math.floor(index / props.numCols)
+      const col = index % props.numCols
+      newMap[row][col] = true
+    })
+    setMap(newMap)
+  }, [props.freeSlots])
+
   return (
     <Flex vertical gap='middle' style={{ width: '100%', height: '500px', overflow: 'scroll' }}>
-      {props.map.map((item, i) => (
-        <Flex key={i} gap='small' style={{ width: `${66 * numCols + 8 * (numCols - 1)}px` }}>
-          {item.map((isOccupied, j) => <ParkingSlot key={j} name={`${props.prefix}${String(i * numCols + j + 1).padStart(numPads, '0')}`} isOccupied={isOccupied} />)}
+      {map.map((item, i) => (
+        <Flex key={i} gap='small' style={{ width: `${66 * props.numCols + 8 * (props.numCols - 1)}px` }}>
+          {item.map((isOccupied, j) => <ParkingSlot key={j} name={`${props.prefix}${String(i * props.numCols + j + 1).padStart(numPads, '0')}`} isOccupied={isOccupied} />)}
         </Flex>
       ))}
     </Flex>
   )
 }
 
+interface FloorInfo {
+  floor: string
+  free_slots: FreeSlots
+}
+
 interface LotInfo {
   num_row: number
   num_col: number
   num_floor: number
-  free_slots: string[]
+  floor_info: FloorInfo[]
 }
 
 const ParkingLot = (props: { id: number }): React.ReactElement => {
   const [floorId, setFloorId] = useState<number>(0)
   const [lotInfo, setLotInfo] = useState<LotInfo>()
-  const [maps, setMaps] = useState<boolean[][][]>()
 
   useEffect(() => {
-    axios.get<LotInfo>(`parkinglots/${props.id}/free-slots`)
+    axios.get<LotInfo>(`parkinglots/${props.id}`)
       .then(response => {
         setLotInfo(response.data)
-        const resMaps = Array(response.data.num_floor).fill(null).map(() =>
-          Array(response.data.num_row).fill(null).map(() => Array(response.data.num_col).fill(false))
-        )
-        response.data.free_slots.forEach(slot => {
-          const [floor, index] = slot.split('#')
-          const row = Math.floor(Number(index) / response.data.num_col)
-          const col = Number(index) % response.data.num_col
-          resMaps[Number(floor) - 1][row][col] = true
-        })
-        setMaps(resMaps)
       })
       .catch(error => { console.error(error) })
   }, [])
@@ -79,16 +87,21 @@ const ParkingLot = (props: { id: number }): React.ReactElement => {
     <Flex vertical style={{ overflow: 'hidden' }}>
       <Title level={3}>Map id: {props.id}</Title>
       {
-        lotInfo === undefined || maps === undefined
+        lotInfo === undefined
           ? <Skeleton active />
           : (
             <>
               <Tabs
                 type='card'
-                items={Array.from(Array(lotInfo.num_floor).keys()).map(index => ({ key: String(index), label: `B${index + 1}` }))}
+                items={lotInfo.floor_info.map((item, index) => ({ key: String(index), label: item.floor }))}
                 onChange={changeMap}
               />
-              <ParkingLotMap prefix={String(floorId + 1)} map={maps[floorId]} />
+              <ParkingLotMap
+                prefix={String(floorId + 1)}
+                numRows={lotInfo.num_row}
+                numCols={lotInfo.num_col}
+                freeSlots={lotInfo.floor_info[floorId].free_slots}
+              />
             </>
             )
       }
