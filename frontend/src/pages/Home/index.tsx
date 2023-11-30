@@ -63,7 +63,7 @@ const Home = ({ instance }: any): React.ReactElement => {
 
   useEffect(() => {
     const id = '21EC2020-3AEA-1069-A2DD-08002B30309D'
-    axios.get<UserInfo>(`users/${id}`)
+    axios.get<UserInfo>(`users/page_info/${id}`)
       .then(response => {
         setUserInfo(response.data)
       })

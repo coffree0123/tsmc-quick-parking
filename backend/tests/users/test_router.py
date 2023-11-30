@@ -45,5 +45,5 @@ def test_update_user(mocker, mock_db, user_data):
     mocker.patch("src.main.QuickParkingDB", return_value=mock_db)
 
     with TestClient(app) as client:
-        response = client.put("/api/users/1", json=user_data)
+        response = client.put("/api/users/", json=user_data)
         assert response.status_code == 200
