@@ -13,7 +13,7 @@ def add_vehicle(r: Request, vehicle_data: VehicleData) -> None:
 
 
 @router.get("/vehicles/{license_plate_no}")
-def get_vehicle(r: Request, license_plate_no: str) -> None:
+def get_vehicle(r: Request, license_plate_no: str) -> VehicleData:
     '''Get a vehicle from the database'''
     try:
         vehicle_data = r.app.state.database.get_vehicle(license_plate_no)
