@@ -1,15 +1,29 @@
 '''Vehicles management module'''
 from fastapi import APIRouter, Request, HTTPException, status
-from src.constants import ParkingRecord, VehicleAndOwner, VehicleRequest
+from src.constants import ParkingRecord, VehicleAndOwner, VehicleData
 
 router = APIRouter()
 
 
 @router.post("/vehicles/")
-def add_vehicle(r: Request, vehicle_request: VehicleRequest) -> None:
+def add_vehicle(r: Request, vehicle_data: VehicleData) -> None:
     '''Add a new vehicle to the database'''
-    r.app.state.database.add_vehicle(vehicle_request.user_id, vehicle_request.license_plate_no,
-                                     vehicle_request.nick_name, vehicle_request.car_size)
+    r.app.state.database.add_vehicle(vehicle_data.user_id, vehicle_data.license_plate_no,
+                                     vehicle_data.nick_name, vehicle_data.car_size)
+
+
+@router.get("/vehicles/{license_plate_no}")
+def get_vehicle(r: Request, license_plate_no: str) -> None:
+    '''Get a vehicle from the database'''
+    try:
+        vehicle_data = r.app.state.database.get_vehicle(license_plate_no)
+    except ValueError as exc:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            detail="The requested vehicle is not found in the database"
+        ) from exc
+
+    return vehicle_data
 
 
 @router.delete("/vehicles/{license_plate_no}")

@@ -67,8 +67,8 @@ class VehicleAndOwner(BaseModel):
     owner_other_vehicles: list[Vehicle] = Field(default_factory=list)
 
 
-class VehicleRequest(BaseModel):
-    '''Vehicle request data'''
+class VehicleData(BaseModel):
+    '''Vehicle data'''
     user_id: str
     license_plate_no: str
     nick_name: str

@@ -2,7 +2,8 @@
 import os
 from psycopg.rows import dict_row, class_row
 from psycopg_pool import ConnectionPool
-from src.constants import Role, Gender, VehicleSize, Vehicle, OwnerInfo, ParkingRecord, UserData
+from src.constants import Role, Gender, VehicleSize, Vehicle, OwnerInfo, ParkingRecord, \
+    UserData, VehicleData
 
 DB_CONNECT = os.environ["DB_CONNECT"] \
     if "DB_CONNECT" in os.environ else "postgres://postgres:123@127.0.0.1:8080/postgres"
@@ -109,6 +110,30 @@ class QuickParkingDB():
                     sql_query, (user_id, license_plate_no, car_size, nick_name))
                 # Commit the changes to the database
                 conn.commit()
+
+    def get_vehicle(self, license_plate_no: str) -> VehicleData:
+        '''Retrieves a vehicle's information from the database'''
+        sql_qeury = """
+        SELECT
+            "Cars"."userID" AS user_id,
+            "Cars"."licensePlateNo" AS license_plate_no,
+            "Cars"."model" AS nick_name,
+            "Cars"."size" AS car_size
+        FROM
+            "Cars"
+        WHERE
+            "licensePlateNo" = %s
+        """
+
+        with self._connection_pools.connection() as conn:
+            with conn.cursor(row_factory=class_row(VehicleData)) as cursor:
+                cursor.execute(sql_qeury, params=(license_plate_no,))
+                res = cursor.fetchall()
+
+        if len(res) == 0:
+            raise ValueError("The vehicle does not exist")
+
+        return res[0]
 
     def delete_vehicle(self, license_plate_no: str) -> None:
         '''Delete a vehicle's information in the database'''
