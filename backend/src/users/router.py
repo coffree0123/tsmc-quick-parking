@@ -1,5 +1,5 @@
 '''User management module'''
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, HTTPException, status
 from src.users.utils import get_user_favorite_parkinglot
 from src.constants import UserData, UserInfo
 
@@ -24,6 +24,20 @@ def update_user(r: Request, user_data: UserData) -> None:
                                      user_data.email, user_data.phone_num,
                                      user_data.gender, user_data.age,
                                      user_data.job_title, user_data.special_role)
+
+
+@router.get("/users/{user_id}")
+def get_user(r: Request, user_id: str) -> UserData:
+    '''Get user information'''
+    try:
+        user_data = r.app.state.database.get_user(user_id)
+    except ValueError as exc:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            detail="The requested user is not found in the database"
+        ) from exc
+
+    return user_data
 
 
 @router.delete("/users/{user_id}")

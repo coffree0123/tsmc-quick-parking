@@ -11,12 +11,12 @@ VALUES
 
 INSERT INTO "Users" ("id", "name", "email", "phoneNo", "gender", "age", "jobTitle", "specialRole")
 VALUES
-    ('21EC2020-3AEA-1069-A2DD-08002B30309D', 'Emil Wang', 'emily.wang@tsmc.com', '', 'Female', 29, 'PM', 'None'),
-    ('21EC2020-3AEA-1069-A2DD-08002B30309A', 'Johnson Lee', 'jlee@tsmc.com', '', 'Male', 32, 'Process Engineer', 'None'),
-    ('21EC2020-3AEA-1069-A2DD-08002B30309B', 'John Doe', 'johndoe@tsmc.com', '123-456-7891', 'Male', 25, 'Software Engineer', 'None'),
-    ('21EC2020-3AEA-1069-A2DD-08002B30309C', 'Jane Doe', 'janedoe@tsmc.com', '123-456-7892', 'Female', 23, 'Data Analyst', 'None'),
-    ('21EC2020-3AEA-1069-A2DD-08002B30309E', 'Bob Smith', 'bobsmith@tsmc.com', '123-456-7893', 'Male', 30, 'Product Manager', 'None'),
-    ('21EC2020-3AEA-1069-A2DD-08002B30309F', 'Alice Johnson', 'alicejohnson@tsmc.com', '123-456-7894', 'Female', 27, 'Software Engineer', 'None');
+    ('21EC2020-3AEA-1069-A2DD-08002B30309D', 'Emil Wang', 'emily.wang@tsmc.com', '', 'female', 29, 'pm', 'None'),
+    ('21EC2020-3AEA-1069-A2DD-08002B30309A', 'Johnson Lee', 'jlee@tsmc.com', '', 'male', 32, 'engineer', 'None'),
+    ('21EC2020-3AEA-1069-A2DD-08002B30309B', 'John Doe', 'johndoe@tsmc.com', '123-456-7891', 'male', 25, 'engineer', 'None'),
+    ('21EC2020-3AEA-1069-A2DD-08002B30309C', 'Jane Doe', 'janedoe@tsmc.com', '123-456-7892', 'female', 23, 'engineer', 'None'),
+    ('21EC2020-3AEA-1069-A2DD-08002B30309E', 'Bob Smith', 'bobsmith@tsmc.com', '123-456-7893', 'male', 30, 'pm', 'None'),
+    ('21EC2020-3AEA-1069-A2DD-08002B30309F', 'Alice Johnson', 'alicejohnson@tsmc.com', '123-456-7894', 'female', 27, 'engineer', 'None');
 
 INSERT INTO "Cars" ("userID", "licensePlateNo", "size", "model")
 VALUES
