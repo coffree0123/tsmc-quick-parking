@@ -2,7 +2,7 @@
 import os
 from psycopg.rows import dict_row, class_row
 from psycopg_pool import ConnectionPool
-from src.constants import Role, Gender, VehicleSize, Vehicle, OwnerInfo, ParkingRecord
+from src.constants import Role, Gender, VehicleSize, Vehicle, OwnerInfo, ParkingRecord, UserData
 
 DB_CONNECT = os.environ["DB_CONNECT"] \
     if "DB_CONNECT" in os.environ else "postgres://postgres:123@127.0.0.1:8080/postgres"
@@ -54,6 +54,34 @@ class QuickParkingDB():
                 cursor.execute(sql_query, (name, email, phone_num,
                                            gender, age, job_title, special_role, user_id))
                 conn.commit()
+
+    def get_user(self, user_id: str) -> UserData:
+        '''Retrieves a user's information from the database'''
+        sql_qeury = """
+        SELECT 
+            "Users"."id" AS user_id,
+            "Users".name,
+            "Users".email,
+            "Users"."phoneNo" AS phone_num,
+            "Users".gender,
+            "Users".age,
+            "Users"."jobTitle" AS job_title,
+            "Users"."specialRole" AS special_role
+        FROM
+            "Users"
+        WHERE 
+            "id" = %s
+        """
+
+        with self._connection_pools.connection() as conn:
+            with conn.cursor(row_factory=class_row(UserData)) as cursor:
+                cursor.execute(sql_qeury, params=(user_id,))
+                res = cursor.fetchall()
+
+        if len(res) == 0:
+            raise ValueError("The user does not exist")
+
+        return res[0]
 
     def delete_user(self, user_id: str) -> None:
         '''Delete a user's information in the database'''
