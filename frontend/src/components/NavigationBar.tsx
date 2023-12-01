@@ -1,9 +1,10 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from '@azure/msal-react'
 import { Button, Layout } from 'antd'
 import { loginRequest } from '../authConfig'
 import { AuthContext } from '../contexts/AuthContext'
 import { EventType } from '@azure/msal-browser'
+import axios from 'axios'
 
 export const NavigationBar = (): any => {
   const { instance } = useMsal()
@@ -18,18 +19,50 @@ export const NavigationBar = (): any => {
     instance.logoutRedirect().catch((error) => { console.log(error) })
   }
 
-  // Listen for sign-in event and set active account
-  instance.addEventCallback((event: any) => {
-    if (event.eventType === EventType.LOGIN_SUCCESS && event.payload.account != null) {
-      const idTokenClaims = event.payload.account.idTokenClaims
-      console.log(idTokenClaims.roles)
-      if (typeof idTokenClaims.roles === 'undefined') {
-        login(idTokenClaims.sub, false)
-      } else {
-        login(idTokenClaims.sub, true)
+  useEffect(() => {
+    // This will be run on component mount
+    const callbackId = instance.addEventCallback((event: any) => {
+      if (event.eventType === EventType.LOGIN_SUCCESS && event.payload.account != null) {
+        const idTokenClaims = event.payload.account.idTokenClaims
+        axios.get(`users/${idTokenClaims.sub}`)
+          .then(response => {
+            console.log('user exists ' + idTokenClaims.sub)
+          })
+          .catch(error => {
+            console.error(error)
+            console.log('new user')
+            axios.post('users/', {
+              user_id: idTokenClaims.sub,
+              name: idTokenClaims.name,
+              email: idTokenClaims.preferred_username,
+              phone_num: idTokenClaims.phone_num,
+              gender: idTokenClaims.gender,
+              age: idTokenClaims.age,
+              job_title: idTokenClaims.job_title,
+              special_role: idTokenClaims.special_role
+            })
+              .then(function (response) {
+                console.log(response)
+              })
+              .catch(function (error) {
+                console.log(error)
+              })
+          })
+        if (typeof idTokenClaims.roles === 'undefined') {
+          login(idTokenClaims.sub, false)
+        } else {
+          login(idTokenClaims.sub, true)
+        }
+      }
+    })
+
+    return () => {
+      // This will be run on component unmount
+      if (callbackId != null) {
+        instance.removeEventCallback(callbackId)
       }
     }
-  })
+  }, [])
 
   /**
      * Most applications will need to conditionally render certain components based on whether a user is signed in or not.
