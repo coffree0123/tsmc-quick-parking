@@ -9,12 +9,12 @@ import Home from './pages/Home'
 import { PublicClientApplication, EventType } from '@azure/msal-browser'
 import { msalConfig } from './authConfig'
 
-import 'bootstrap/dist/css/bootstrap.min.css'
 import './styles/index.css'
 import Dashboard from './pages/Dashboard'
 import ParkingLotPage from './pages/ParkingLotPage'
 import Login from './pages/Login'
 import Setting from './pages/Setting'
+import Vehicle from './pages/Vehicle'
 import AuthContextProvider, { AuthContext } from './contexts/AuthContext'
 import axios from 'axios'
 
@@ -78,7 +78,8 @@ root.render(
           <Route element={<UserRoutes />}>
             <Route path="/" element={<Home instance={msalInstance}/>} />
             <Route path="/parkingLot/:id" element={<ParkingLotPage />} />
-            <Route path="/setting" element={<Setting />} />
+            <Route path="/setting" element={<Setting instance={msalInstance}/>} />
+            <Route path="/vehicle" element={<Vehicle />} />
           </Route>
           <Route element={<GuardRoutes />}>
             <Route path='/dashboard' element={<Dashboard instance={msalInstance}/>} />
