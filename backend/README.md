@@ -10,6 +10,21 @@ After install the dependency, please install the precommit hook by running the f
 
 ## How to run the server
 
+### Backend development
+This part is for backend development only. For frontend development, please refer to the next section.
+1. Start the database container by
+    ```bash
+    $ docker run --name park -p 8080:5432 -e PGUSER=postgres -e POSTGRES_PASSWORD='123' -d postgres
+    ```
+2. Run the following command under backend/ to initialize the database
+    ```bash
+    $ bash init_db.sh
+    ```
+3. If you want to remove the database, run
+    ```bash
+    $ docker rm -f park
+    ```
+
 ### Frontend development
 Start the service by
 ```bash
