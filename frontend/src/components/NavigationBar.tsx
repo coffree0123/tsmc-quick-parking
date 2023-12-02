@@ -24,15 +24,15 @@ export const NavigationBar = (): any => {
     const callbackId = instance.addEventCallback((event: any) => {
       if (event.eventType === EventType.LOGIN_SUCCESS && event.payload.account != null) {
         const idTokenClaims = event.payload.account.idTokenClaims
-        axios.get(`users/${idTokenClaims.sub}`)
+        axios.get(`users/${idTokenClaims.oid}`)
           .then(response => {
-            console.log('user exists ' + idTokenClaims.sub)
+            console.log('user exists ' + idTokenClaims.oid)
           })
           .catch(error => {
             console.error(error)
             console.log('new user')
             axios.post('users/', {
-              user_id: idTokenClaims.sub,
+              user_id: idTokenClaims.oid,
               name: idTokenClaims.name,
               email: idTokenClaims.preferred_username,
               phone_num: idTokenClaims.phone_num,
