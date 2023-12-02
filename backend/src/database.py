@@ -29,13 +29,10 @@ class QuickParkingDB():
 
         with self._connection_pools.connection() as conn:
             with conn.cursor() as cursor:
-                # Execute the SQL query with the user information as parameters
                 cursor.execute(sql_query, (user_id, name, email,
                                            phone_num, gender, age, job_title, special_role))
-                # Fetch the result and get the id of the inserted row
                 result = cursor.fetchone()
                 user_id = result[0]
-                # Commit the changes to the database
                 conn.commit()
 
         return user_id
@@ -51,7 +48,6 @@ class QuickParkingDB():
 
         with self._connection_pools.connection() as conn:
             with conn.cursor() as cursor:
-                # Execute the SQL query with the user information as parameters
                 cursor.execute(sql_query, (name, email, phone_num,
                                            gender, age, job_title, special_role, user_id))
                 conn.commit()
@@ -91,7 +87,6 @@ class QuickParkingDB():
         """
         with self._connection_pools.connection() as conn:
             with conn.cursor() as cursor:
-                # Execute the SQL query with the user information as parameters
                 cursor.execute(sql_query, (user_id,))
                 conn.commit()
 
@@ -105,10 +100,29 @@ class QuickParkingDB():
 
         with self._connection_pools.connection() as conn:
             with conn.cursor() as cursor:
-                # Execute the SQL query with the vehicle information as parameters
                 cursor.execute(
                     sql_query, (user_id, license_plate_no, car_size, nick_name))
-                # Commit the changes to the database
+                conn.commit()
+
+    def update_vehicle(self, license_plate_no: str, nick_name: str,
+                       car_size: VehicleSize = "small") -> None:
+        '''Update a vehicle's information in the database'''
+        sql_query = """
+        WITH updated AS (
+            UPDATE "Cars" SET "size" = %s, "model" = %s
+            WHERE "licensePlateNo" = %s
+            RETURNING *
+        )
+        SELECT * FROM updated;
+        """
+
+        with self._connection_pools.connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    sql_query, (car_size, nick_name, license_plate_no))
+                result = cursor.fetchall()
+                if len(result) == 0:
+                    raise ValueError("The vehicle does not exist")
                 conn.commit()
 
     def get_vehicle(self, license_plate_no: str) -> VehicleData:
@@ -143,7 +157,6 @@ class QuickParkingDB():
         """
         with self._connection_pools.connection() as conn:
             with conn.cursor() as cursor:
-                # Execute the SQL query with the user information as parameters
                 cursor.execute(sql_query, (license_plate_no,))
                 conn.commit()
         # Delete car information
@@ -152,7 +165,6 @@ class QuickParkingDB():
         """
         with self._connection_pools.connection() as conn:
             with conn.cursor() as cursor:
-                # Execute the SQL query with the user information as parameters
                 cursor.execute(sql_query, (license_plate_no,))
                 conn.commit()
 

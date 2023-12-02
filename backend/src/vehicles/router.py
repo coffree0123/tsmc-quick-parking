@@ -12,6 +12,19 @@ def add_vehicle(r: Request, vehicle_data: VehicleData) -> None:
                                      vehicle_data.nick_name, vehicle_data.car_size)
 
 
+@router.put("/vehicles/")
+def update_vehicle(r: Request, vehicle_data: VehicleData) -> None:
+    '''Update vehicle information'''
+    try:
+        r.app.state.database.update_vehicle(vehicle_data.license_plate_no,
+                                            vehicle_data.nick_name, vehicle_data.car_size)
+    except ValueError as exc:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            detail="The requested vehicle is not found in the database"
+        ) from exc
+
+
 @router.get("/vehicles/{license_plate_no}")
 def get_vehicle(r: Request, license_plate_no: str) -> VehicleData:
     '''Get a vehicle from the database'''
