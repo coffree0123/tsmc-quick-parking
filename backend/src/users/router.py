@@ -10,7 +10,7 @@ router = APIRouter(
 )
 
 
-@router.post("/")
+@router.post("/", tags=['user'])
 def create_user(r: Request, user_data: UserData) -> dict[str, str]:
     '''Create a new user'''
     user_data.user_id = r.state.token_claims['sub']
@@ -22,7 +22,7 @@ def create_user(r: Request, user_data: UserData) -> dict[str, str]:
     return {"user_id": user_id}
 
 
-@router.put("/")
+@router.put("/", tags=['user'])
 def update_user(r: Request, user_data: UserData) -> None:
     '''Update user information'''
     user_data.user_id = r.state.token_claims['sub']
@@ -32,7 +32,7 @@ def update_user(r: Request, user_data: UserData) -> None:
                                      user_data.job_title, user_data.special_role)
 
 
-@router.get("/")
+@router.get("/", tags=['user'])
 def get_user(r: Request) -> UserData:
     '''Get user information'''
     user_id = r.state.token_claims['sub']
@@ -47,14 +47,14 @@ def get_user(r: Request) -> UserData:
     return user_data
 
 
-@router.delete("/")
+@router.delete("/", tags=['user'])
 def delete_user(r: Request) -> None:
     '''Delete user'''
     user_id = r.state.token_claims['sub']
     user_id = r.app.state.database.delete_user(user_id)
 
 
-@router.get("/page_info/")
+@router.get("/page_info/", tags=['user'])
 def get_user_info(r: Request) -> UserInfo:
     '''Get user information'''
     # Get user's favorite parking lot

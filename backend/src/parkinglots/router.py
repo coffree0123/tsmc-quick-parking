@@ -11,7 +11,7 @@ router = APIRouter(
 )
 
 # user api
-@router.get(path="/user/{parkinglot_id}")
+@router.get(path="/user/{parkinglot_id}", tags=['user'])
 def get_parkinglot(r: Request, parkinglot_id: int) -> ParkingLot:
     '''Returns a list of free spaces of a parking lot'''
     # parking lot info
@@ -40,7 +40,7 @@ def get_parkinglot(r: Request, parkinglot_id: int) -> ParkingLot:
 
 
 # guard api
-@router.get(path="/guard/{parkinglot_id}/long-term-occupants")
+@router.get(path="/guard/{parkinglot_id}/long-term-occupants", tags=['guard'])
 def get_long_term_occupants(r: Request, parkinglot_id: int) -> list[dict]:
     '''Search the vehicles that park the longest in a parking lot'''
     token_claims = r.state.token_claims
