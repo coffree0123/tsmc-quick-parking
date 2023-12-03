@@ -1,14 +1,16 @@
 '''Parking Space Management Module'''
 from collections import defaultdict
-from fastapi import APIRouter, Request, HTTPException, status
+from fastapi import APIRouter, Request, HTTPException, status, Depends
 from src.constants import ParkingLot, FloorInfo
+from src.security import authentication, is_guard
 
 
-router = APIRouter()
-
+router = APIRouter(
+    dependencies=[Depends(authentication)]
+)
 
 # user api
-@router.get(path="/parkinglots/{parkinglot_id}")
+@router.get(path="/users/parkinglots/{parkinglot_id}", tags=['user'])
 def get_parkinglot(r: Request, parkinglot_id: int) -> ParkingLot:
     '''Returns a list of free spaces of a parking lot'''
     # parking lot info
@@ -37,7 +39,12 @@ def get_parkinglot(r: Request, parkinglot_id: int) -> ParkingLot:
 
 
 # guard api
-@router.get(path="/parkinglots/{parkinglot_id}/long-term-occupants")
+@router.get(path="/guards/parkinglots/{parkinglot_id}/long-term-occupants", tags=['guard'])
 def get_long_term_occupants(r: Request, parkinglot_id: int) -> list[dict]:
     '''Search the vehicles that park the longest in a parking lot'''
+    if not is_guard(r):
+        raise HTTPException(
+            status_code=403,
+            detail="Permission denied"
+        )
     return r.app.state.database.get_long_term_occupants(parkinglot_id)

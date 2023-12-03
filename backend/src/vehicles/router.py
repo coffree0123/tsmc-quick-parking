@@ -1,18 +1,21 @@
 '''Vehicles management module'''
-from fastapi import APIRouter, Request, HTTPException, status
+from fastapi import APIRouter, Request, HTTPException, status, Depends
 from src.constants import ParkingRecord, VehicleAndOwner, VehicleData
+from src.security import authentication, get_user_id, is_guard
 
-router = APIRouter()
+router = APIRouter(
+    dependencies=[Depends(authentication)]
+)
 
-
-@router.post("/vehicles/")
+@router.post("/users/vehicles/", tags=['user'])
 def add_vehicle(r: Request, vehicle_data: VehicleData) -> None:
     '''Add a new vehicle to the database'''
+    vehicle_data.user_id = get_user_id(r)
     r.app.state.database.add_vehicle(vehicle_data.user_id, vehicle_data.license_plate_no,
                                      vehicle_data.nick_name, vehicle_data.car_size)
 
 
-@router.put("/vehicles/")
+@router.put("/users/vehicles/", tags=['user'])
 def update_vehicle(r: Request, vehicle_data: VehicleData) -> None:
     '''Update vehicle information'''
     try:
@@ -25,9 +28,10 @@ def update_vehicle(r: Request, vehicle_data: VehicleData) -> None:
         ) from exc
 
 
-@router.get("/vehicles/{license_plate_no}")
+@router.get("/users/vehicles/{license_plate_no}", tags=['user'])
 def get_vehicle(r: Request, license_plate_no: str) -> VehicleData:
     '''Get a vehicle from the database'''
+    user_id = get_user_id(r)
     try:
         vehicle_data = r.app.state.database.get_vehicle(license_plate_no)
     except ValueError as exc:
@@ -35,19 +39,42 @@ def get_vehicle(r: Request, license_plate_no: str) -> VehicleData:
             status.HTTP_404_NOT_FOUND,
             detail="The requested vehicle is not found in the database"
         ) from exc
+    if vehicle_data.user_id != user_id:
+        raise HTTPException(
+            status_code=403,
+            detail="Permission denied"
+        )
 
     return vehicle_data
 
 
-@router.delete("/vehicles/{license_plate_no}")
+@router.delete("/users/vehicles/{license_plate_no}", tags=['user'])
 def delete_vehicle(r: Request, license_plate_no: str) -> None:
-    '''Add a new vehicle to the database'''
+    '''Delete a vehicle to the database'''
+    user_id = get_user_id(r)
+    try:
+        vehicle_data = r.app.state.database.get_vehicle(license_plate_no)
+    except ValueError as exc:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            detail="The requested vehicle is not found in the database"
+        ) from exc
+    if vehicle_data.user_id != user_id:
+        raise HTTPException(
+            status_code=403,
+            detail="Permission denied"
+        )
     r.app.state.database.delete_vehicle(license_plate_no)
 
 
-@router.get("/vehicles/{license_plate_no}/")
+@router.get("/guards/vehicles/{license_plate_no}", tags=['guard'])
 def get_vehicle_and_owner_info(r: Request, license_plate_no: str) -> VehicleAndOwner:
     '''Get info of the vehicle and its owner'''
+    if not is_guard(r):
+        raise HTTPException(
+            status_code=403,
+            detail="Permission denied"
+        )
     # get records of the query vehicle
     vehicle_records = r.app.state.database.get_latest_records(
         license_plate_no, None)
