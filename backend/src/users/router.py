@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Request, HTTPException, status, Depends
 from src.users.utils import get_user_favorite_parkinglot
 from src.constants import UserData, UserInfo
-from src.security import authentication
+from src.security import authentication, get_user_id
 
 router = APIRouter(
     prefix='/users',
@@ -13,7 +13,7 @@ router = APIRouter(
 @router.post("/", tags=['user'])
 def create_user(r: Request, user_data: UserData) -> dict[str, str]:
     '''Create a new user'''
-    user_data.user_id = r.state.token_claims['sub']
+    user_data.user_id = get_user_id(r)
     user_id = r.app.state.database.add_user(user_data.user_id, user_data.name,
                                             user_data.email, user_data.phone_num,
                                             user_data.gender, user_data.age,
@@ -25,7 +25,7 @@ def create_user(r: Request, user_data: UserData) -> dict[str, str]:
 @router.put("/", tags=['user'])
 def update_user(r: Request, user_data: UserData) -> None:
     '''Update user information'''
-    user_data.user_id = r.state.token_claims['sub']
+    user_data.user_id = get_user_id(r)
     r.app.state.database.update_user(user_data.user_id, user_data.name,
                                      user_data.email, user_data.phone_num,
                                      user_data.gender, user_data.age,
@@ -35,7 +35,7 @@ def update_user(r: Request, user_data: UserData) -> None:
 @router.get("/", tags=['user'])
 def get_user(r: Request) -> UserData:
     '''Get user information'''
-    user_id = r.state.token_claims['sub']
+    user_id = get_user_id(r)
     try:
         user_data = r.app.state.database.get_user(user_id)
     except ValueError as exc:
@@ -50,7 +50,7 @@ def get_user(r: Request) -> UserData:
 @router.delete("/", tags=['user'])
 def delete_user(r: Request) -> None:
     '''Delete user'''
-    user_id = r.state.token_claims['sub']
+    user_id = get_user_id(r)
     user_id = r.app.state.database.delete_user(user_id)
 
 
@@ -58,7 +58,7 @@ def delete_user(r: Request) -> None:
 def get_user_info(r: Request) -> UserInfo:
     '''Get user information'''
     # Get user's favorite parking lot
-    user_id = r.state.token_claims['sub']
+    user_id = get_user_id(r)
     building_info_list = get_user_favorite_parkinglot()
 
     # Get user's parked vehicles

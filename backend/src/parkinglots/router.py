@@ -2,7 +2,7 @@
 from collections import defaultdict
 from fastapi import APIRouter, Request, HTTPException, status, Depends
 from src.constants import ParkingLot, FloorInfo
-from src.security import authentication
+from src.security import authentication, is_guard
 
 
 router = APIRouter(
@@ -42,8 +42,7 @@ def get_parkinglot(r: Request, parkinglot_id: int) -> ParkingLot:
 @router.get(path="/guards/parkinglots/{parkinglot_id}/long-term-occupants", tags=['guard'])
 def get_long_term_occupants(r: Request, parkinglot_id: int) -> list[dict]:
     '''Search the vehicles that park the longest in a parking lot'''
-    token_claims = r.state.token_claims
-    if token_claims.get('roles', None) is None:
+    if not is_guard(r):
         raise HTTPException(
             status_code=403,
             detail="Permission denied"

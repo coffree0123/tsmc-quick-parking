@@ -1,7 +1,7 @@
 '''Vehicles management module'''
 from fastapi import APIRouter, Request, HTTPException, status, Depends
 from src.constants import ParkingRecord, VehicleAndOwner, VehicleData
-from src.security import authentication
+from src.security import authentication, get_user_id, is_guard
 
 router = APIRouter(
     dependencies=[Depends(authentication)]
@@ -10,7 +10,7 @@ router = APIRouter(
 @router.post("/users/vehicles/", tags=['user'])
 def add_vehicle(r: Request, vehicle_data: VehicleData) -> None:
     '''Add a new vehicle to the database'''
-    vehicle_data.user_id = r.state.token_claims['sub']
+    vehicle_data.user_id = get_user_id(r)
     r.app.state.database.add_vehicle(vehicle_data.user_id, vehicle_data.license_plate_no,
                                      vehicle_data.nick_name, vehicle_data.car_size)
 
@@ -31,8 +31,7 @@ def update_vehicle(r: Request, vehicle_data: VehicleData) -> None:
 @router.get("/users/vehicles/{license_plate_no}", tags=['user'])
 def get_vehicle(r: Request, license_plate_no: str) -> VehicleData:
     '''Get a vehicle from the database'''
-    token_claims = r.state.token_claims
-    user_id = token_claims['sub']
+    user_id = get_user_id(r)
     try:
         vehicle_data = r.app.state.database.get_vehicle(license_plate_no)
     except ValueError as exc:
@@ -52,8 +51,7 @@ def get_vehicle(r: Request, license_plate_no: str) -> VehicleData:
 @router.delete("/users/vehicles/{license_plate_no}", tags=['user'])
 def delete_vehicle(r: Request, license_plate_no: str) -> None:
     '''Delete a vehicle to the database'''
-    token_claims = r.state.token_claims
-    user_id = token_claims['sub']
+    user_id = get_user_id(r)
     try:
         vehicle_data = r.app.state.database.get_vehicle(license_plate_no)
     except ValueError as exc:
@@ -72,13 +70,12 @@ def delete_vehicle(r: Request, license_plate_no: str) -> None:
 @router.get("/guards/vehicles/{license_plate_no}", tags=['guard'])
 def get_vehicle_and_owner_info(r: Request, license_plate_no: str) -> VehicleAndOwner:
     '''Get info of the vehicle and its owner'''
-    # get records of the query vehicle
-    token_claims = r.state.token_claims
-    if token_claims.get('roles', None) is None:
+    if not is_guard(r):
         raise HTTPException(
             status_code=403,
             detail="Permission denied"
         )
+    # get records of the query vehicle
     vehicle_records = r.app.state.database.get_latest_records(
         license_plate_no, None)
     if not vehicle_records:
