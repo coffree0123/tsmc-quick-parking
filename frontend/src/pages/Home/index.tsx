@@ -62,8 +62,7 @@ const Home = ({ instance }: any): React.ReactElement => {
   const [userInfo, setUserInfo] = useState<UserInfo>()
 
   useEffect(() => {
-    const id = '21EC2020-3AEA-1069-A2DD-08002B30309D'
-    axios.get<UserInfo>(`users/page_info/${id}`)
+    axios.get<UserInfo>('users/page_info/', { headers: { Authorization: `Bearer ${localStorage.getItem('idToken')}` } })
       .then(response => {
         setUserInfo(response.data)
       })
