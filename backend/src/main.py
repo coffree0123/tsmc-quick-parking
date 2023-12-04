@@ -9,6 +9,7 @@ from src.users.router import router as user_router
 from src.vehicles.router import router as vehicle_router
 from src.parkinglots.router import router as parkinglot_router
 from src.parking.router import router as parking_router
+from src.dashboard.router import router as dashboard_router
 from src.database import QuickParkingDB, DB_CONNECT
 
 
@@ -20,6 +21,7 @@ async def lifespan(app: FastAPI):
     app.include_router(vehicle_router, prefix="/api")
     app.include_router(parkinglot_router, prefix="/api")
     app.include_router(parking_router, prefix="/api")
+    app.include_router(dashboard_router, prefix="/api")
 
     # set up database
     app.state.database = QuickParkingDB(DB_CONNECT)

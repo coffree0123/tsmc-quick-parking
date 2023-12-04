@@ -383,3 +383,23 @@ class QuickParkingDB():
             with conn.cursor(row_factory=dict_row) as cursor:
                 res = cursor.execute(sql_query, (parkinglot_id,)).fetchall()
         return res
+
+    def get_records_from_parkinglot_id_and_time(
+            self, parkinglot_id: int, start_time: str, end_time: str
+        ) -> list[ParkingRecord]:
+        '''Retrieves records of a parkinglot and given timestamps'''
+        sql_qeury = """
+        SELECT pr.*, ps.floor
+        FROM "ParkingRecords" pr
+        JOIN "ParkingSlots" ps ON pr."slotID" = ps.id
+        WHERE ps."parkingLotID" = %s
+        AND pr."endTime" >= %s
+        AND pr."startTime" < %s;
+        """
+
+        with self._connection_pools.connection() as conn:
+            with conn.cursor(row_factory=dict_row) as cursor:
+                cursor.execute(sql_qeury, params=(parkinglot_id, start_time, end_time,))
+                res = cursor.fetchall()
+
+        return res
