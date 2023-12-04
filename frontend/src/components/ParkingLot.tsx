@@ -72,7 +72,7 @@ const ParkingLot = (props: { id: number }): React.ReactElement => {
   const [lotInfo, setLotInfo] = useState<LotInfo>()
 
   useEffect(() => {
-    axios.get<LotInfo>(`parkinglots/${props.id}`)
+    axios.get<LotInfo>(`users/parkinglots/${props.id}`, { headers: { Authorization: `Bearer ${localStorage.getItem('idToken')}` } })
       .then(response => {
         setLotInfo(response.data)
       })
