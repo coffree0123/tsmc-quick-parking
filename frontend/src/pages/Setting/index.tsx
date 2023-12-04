@@ -44,7 +44,7 @@ const Setting = ({ instance }: any): React.ReactElement => {
         const accessToken = jwtDecode<AccessToken>(accessTokenResponse.accessToken)
         console.log(accessToken)
         // Call your API with token
-        axios.get<UserInfo>(`users/${accessToken.oid}`)
+        axios.get<UserInfo>('users/', { headers: { Authorization: `Bearer ${localStorage.getItem('idToken')}` } })
           .then(response => {
             setUserInfo(response.data)
           })
