@@ -1,7 +1,7 @@
 '''User management module'''
 from fastapi import APIRouter, Request, HTTPException, status, Depends
 from src.users.utils import get_user_favorite_parkinglot
-from src.constants import UserData, UserInfo
+from src.constants import UserData, UserInfo, Vehicle
 from src.security import authentication, get_user_id
 
 router = APIRouter(
@@ -54,8 +54,17 @@ def delete_user(r: Request) -> None:
     user_id = r.app.state.database.delete_user(user_id)
 
 
+@router.get("/user_vehicles/", tags=['user'])
+def get_user_vehicles(r: Request) -> list[Vehicle]:
+    '''Get user's all vehicles'''
+    # Get user's favorite parking lot
+    user_id = get_user_id(r)
+
+    return r.app.state.database.get_user_vehicles(user_id)
+
+
 @router.get("/page_info/", tags=['user'])
-def get_user_info(r: Request) -> UserInfo:
+def get_page_info(r: Request) -> UserInfo:
     '''Get user information'''
     # Get user's favorite parking lot
     user_id = get_user_id(r)
