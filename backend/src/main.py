@@ -1,4 +1,5 @@
 '''Entry point for the FastAPI application'''
+import os
 import argparse
 import logging
 from logging.handlers import RotatingFileHandler
@@ -55,6 +56,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--skip_auth", action="store_true",
                         help="Skip authentication")
+    parser.add_argument("--host", default="127.0.0.1", type=str,
+                        help="Host address")
+    parser.add_argument("--port", default=os.environ.get("PROD_PORT",
+                        '8000'), type=str, help="Port number")
     args = parser.parse_args()
 
     # set up CORS
@@ -85,7 +90,7 @@ if __name__ == '__main__':
         print("Enable authentication")
 
     # Start the server
-    uvicorn.run(app)
+    uvicorn.run(app, host=args.host, port=int(args.port))
 
 
 @app.get("/")

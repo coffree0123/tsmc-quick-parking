@@ -19,4 +19,4 @@ COPY --from=builder /requirements.txt /tmp/requirements.txt
 RUN python -m pip install --user --upgrade --no-cache-dir -r /tmp/requirements.txt
 COPY src /home/${APP_USER}/src
 
-ENTRYPOINT ./.local/bin/uvicorn src.main:app --reload ${PROD_PORT} --host 0.0.0.0
+ENTRYPOINT python -m src.main --host=0.0.0.0
