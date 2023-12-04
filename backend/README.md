@@ -58,5 +58,9 @@ $ docker cp docker/db/sample.sql quick-parking-db:/tmp/sample.sql && docker exec
 ### Backend Development
 Run the following command under backend/
 ```bash
-uvicorn src.main:app --reload
+python -m src.main
+```
+If you want to skip the authentication, run the following command under backend/
+```bash
+python -m src.main --skip_auth
 ```
