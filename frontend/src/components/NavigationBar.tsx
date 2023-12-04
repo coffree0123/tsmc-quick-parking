@@ -23,16 +23,19 @@ export const NavigationBar = (): any => {
     // This will be run on component mount
     const callbackId = instance.addEventCallback((event: any) => {
       if (event.eventType === EventType.LOGIN_SUCCESS && event.payload.account != null) {
-        const idTokenClaims = event.payload.account.idTokenClaims
-        axios.get(`users/${idTokenClaims.oid}`)
+        console.log(event)
+        const idTokenClaims = event.payload.idTokenClaims
+        const idToken = event.payload.idToken
+        localStorage.setItem('idToken', idToken)
+        axios.get('users/', { headers: { Authorization: `Bearer ${idToken}` } })
           .then(response => {
-            console.log('user exists ' + idTokenClaims.oid)
+            console.log('user exists ' + idTokenClaims.sub)
           })
           .catch(error => {
             console.error(error)
             console.log('new user')
             axios.post('users/', {
-              user_id: idTokenClaims.oid,
+              user_id: idTokenClaims.sub,
               name: idTokenClaims.name,
               email: idTokenClaims.preferred_username,
               phone_num: idTokenClaims.phone_num,
@@ -40,7 +43,7 @@ export const NavigationBar = (): any => {
               age: idTokenClaims.age,
               job_title: idTokenClaims.job_title,
               special_role: idTokenClaims.special_role
-            })
+            }, { headers: { Authorization: `Bearer ${localStorage.getItem('idToken')}` } })
               .then(function (response) {
                 console.log(response)
               })
