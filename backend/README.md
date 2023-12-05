@@ -12,6 +12,8 @@ After install the dependency, please install the precommit hook by running the f
 
 ### Backend development
 This part is for backend development only. For frontend development, please refer to the next section.
+
+#### Database
 1. Start the database container by
     ```bash
     $ docker run --name park -p 8080:5432 -e PGUSER=postgres -e POSTGRES_PASSWORD='123' -d postgres
@@ -24,6 +26,16 @@ This part is for backend development only. For frontend development, please refe
     ```bash
     $ docker rm -f park
     ```
+
+#### Start the server
+Run the following command under backend/
+```bash
+python -m src.main
+```
+If you want to skip the authentication, run the following command under backend/
+```bash
+python -m src.main --skip_auth
+```
 
 ### Frontend development
 Start the service by
@@ -53,10 +65,4 @@ By default, this file is NOT loaded into the database when booting the applicati
 To use it, run
 ```bash
 $ docker cp docker/db/sample.sql quick-parking-db:/tmp/sample.sql && docker exec quick-parking-db bash -c "psql -U quickparking < /tmp/sample.sql"
-```
-
-### Backend Development
-Run the following command under backend/
-```bash
-uvicorn src.main:app --reload
 ```

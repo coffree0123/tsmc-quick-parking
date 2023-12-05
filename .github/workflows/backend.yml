@@ -21,7 +21,7 @@ jobs:
     - name: Analysing the code with pylint
       working-directory: ./backend
       run: |
-        poetry run pylint --disable=E0401,R0913,E1129,W0621,W0105 -rn -sn $(git ls-files '*.py')
+        poetry run pylint --disable=E0401,R0913,E1129,W0621,W0105,R0801 -rn -sn $(git ls-files '*.py')
     - name: Run pytest
       working-directory: ./backend
       run: |

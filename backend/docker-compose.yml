@@ -14,6 +14,7 @@ services:
     ports:
       - ${PROD_PORT}:${PROD_PORT}
     environment:
+      - PROD_PORT=${PROD_PORT}
       - DB_CONNECT=${DB_CONNECT}
     networks:
       - quick-parking-network
