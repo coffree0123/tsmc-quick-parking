@@ -1,7 +1,7 @@
 '''User management module'''
 import psycopg
 from fastapi import APIRouter, Request, HTTPException, status, Depends
-from src.constants import UserData, UserInfo, Vehicle
+from src.constants import UserData, UserInfo, VehicleData
 from src.security import authentication, get_user_id
 
 router = APIRouter(
@@ -55,7 +55,7 @@ def delete_user(r: Request) -> None:
 
 
 @router.get("/user_vehicles/", tags=['user'])
-def get_user_vehicles(r: Request) -> list[Vehicle]:
+def get_user_vehicles(r: Request) -> list[VehicleData]:
     '''Get user's all vehicles'''
     user_id = get_user_id(r)
 
