@@ -3,7 +3,7 @@ import os
 from psycopg.rows import dict_row, class_row
 from psycopg_pool import ConnectionPool
 from src.constants import Role, Gender, VehicleSize, Vehicle, OwnerInfo, ParkingRecord, \
-    UserData, VehicleData
+    UserData, VehicleData, BuildingInfo
 
 DB_CONNECT = os.environ["DB_CONNECT"] \
     if "DB_CONNECT" in os.environ else "postgres://postgres:123@127.0.0.1:8080/postgres"
@@ -89,6 +89,30 @@ class QuickParkingDB():
             with conn.cursor() as cursor:
                 cursor.execute(sql_query, (user_id,))
                 conn.commit()
+
+    def get_user_favorite_parkinglots(self, user_id: str) -> list[BuildingInfo]:
+        '''Get user's favorite parking lots'''
+        sql_query = """
+        SELECT
+            favs."parkingLotID",
+            lots."name"
+        FROM "UserFavorites" AS favs
+        JOIN "ParkingLots" AS lots
+        ON favs."parkingLotID" = lots.id
+        WHERE favs."userID" = %s;
+        """
+
+        with self._connection_pools.connection() as conn:
+            with conn.execute(sql_query, (user_id,)) as cursor:
+                favorite_lots = cursor.fetchall()
+
+        result = []
+        for (fav_id, fav_name) in favorite_lots:
+            free_spaces = self.get_free_spaces(fav_id)
+            result.append(BuildingInfo(build_id=fav_id,
+                          building_name=fav_name, free_num=len(free_spaces)))
+
+        return result
 
     def add_vehicle(self, user_id: str, license_plate_no: str, nick_name: str,
                     car_size: VehicleSize = "small") -> None:
@@ -385,8 +409,8 @@ class QuickParkingDB():
         return res
 
     def get_records_from_parkinglot_id_and_time(
-            self, parkinglot_id: int, start_time: str, end_time: str
-        ) -> list[ParkingRecord]:
+        self, parkinglot_id: int, start_time: str, end_time: str
+    ) -> list[ParkingRecord]:
         '''Retrieves records of a parkinglot and given timestamps'''
         sql_qeury = """
         SELECT pr.*, ps.floor
@@ -399,7 +423,8 @@ class QuickParkingDB():
 
         with self._connection_pools.connection() as conn:
             with conn.cursor(row_factory=dict_row) as cursor:
-                cursor.execute(sql_qeury, params=(parkinglot_id, start_time, end_time,))
+                cursor.execute(sql_qeury, params=(
+                    parkinglot_id, start_time, end_time,))
                 res = cursor.fetchall()
 
         return res
