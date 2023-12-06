@@ -441,7 +441,20 @@ class QuickParkingDB():
                     parkinglot_id, num_records)).fetchall()
         return res
 
-    def get_parkinglot_info(self, parkinglot_id: int):
+    def get_parkinglot_list(self) -> list[dict]:
+        '''Get all parking lot names and id'''
+        sql_query = """
+        SELECT
+            id,
+            name
+        FROM "ParkingLots"
+        """
+        with self._connection_pools.connection() as conn:
+            with conn.cursor(row_factory=dict_row) as cursor:
+                res = cursor.execute(sql_query).fetchall()
+        return res
+
+    def get_parkinglot_info(self, parkinglot_id: int) -> list[dict]:
         '''Get all info of a parking lot'''
         sql_query = """
         SELECT

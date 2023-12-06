@@ -9,6 +9,13 @@ router = APIRouter(
 )
 
 
+@router.get(path="/users/parkinglots/list", tags=['user'])
+def get_parkinglot_list(r: Request):
+    '''Returns a list of (id, name) of all parking lots'''
+    res = r.app.state.database.get_parkinglot_list()
+    return sorted([(pklt["id"], pklt["name"]) for pklt in res])
+
+
 @router.get(path="/users/parkinglots/{parkinglot_id}", tags=['user'])
 def get_parkinglot(r: Request, parkinglot_id: int) -> ParkingLot:
     '''Returns a list of free spaces of a parking lot'''
