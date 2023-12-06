@@ -415,13 +415,14 @@ class QuickParkingDB():
                 res = cursor.execute(sql_query, params=params).fetchall()
         return res
 
-    def get_long_term_occupants(self, parkinglot_id):
+    def get_long_term_occupants(self, parkinglot_id) -> list[dict]:
         '''Retrieve top 10 vehicles that occupies longest til now in the given parking lot'''
         num_records = 10
 
         sql_query = """
         SELECT
-            CONCAT('B', "floor", '#', "index") AS postion,
+            slots.floor AS floor,
+            slots.index AS index,
             records."licensePlateNo" AS license_plate_no,
             records."startTime" AS start_time
         FROM "ParkingSlots" AS slots
@@ -444,7 +445,9 @@ class QuickParkingDB():
         '''Get all info of a parking lot'''
         sql_query = """
         SELECT
-            *
+            "numRow",
+            "numCol",
+            "numFloor"
         FROM "ParkingLots"
         WHERE "id" = %s
         """
