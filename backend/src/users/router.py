@@ -98,7 +98,7 @@ def get_page_info(r: Request) -> UserInfo:
     # Get user's parked vehicles
     parked_vehicles = [
         vehicle
-        for vehicle in r.app.state.database.get_user_vehicles(user_id)
+        for vehicle in r.app.state.database.get_user_vehicle_states(user_id)
         if vehicle.start_time is not None
     ]
 
