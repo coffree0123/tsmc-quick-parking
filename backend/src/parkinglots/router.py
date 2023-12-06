@@ -8,7 +8,7 @@ router = APIRouter(
     dependencies=[Depends(authentication)]
 )
 
-# user api
+
 @router.get(path="/users/parkinglots/{parkinglot_id}", tags=['user'])
 def get_parkinglot(r: Request, parkinglot_id: int) -> ParkingLot:
     '''Returns a list of free spaces of a parking lot'''
@@ -40,7 +40,6 @@ def get_parkinglot(r: Request, parkinglot_id: int) -> ParkingLot:
     )
 
 
-# guard api
 @router.get(path="/guards/parkinglots/{parkinglot_id}/long-term-occupants", tags=['guard'])
 def get_long_term_occupants(r: Request, parkinglot_id: int) -> list[dict]:
     '''Search the vehicles that park the longest in a parking lot'''
@@ -49,4 +48,28 @@ def get_long_term_occupants(r: Request, parkinglot_id: int) -> list[dict]:
             status_code=403,
             detail="Permission denied"
         )
-    return r.app.state.database.get_long_term_occupants(parkinglot_id)
+
+    # get number of parking lot in a floor
+    parkinglot_info = r.app.state.database.get_parkinglot_info(parkinglot_id)
+    if not parkinglot_info:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            detail=f"Parking lot of id {parkinglot_id} doesn't exist"
+        )
+    parkinglot_info = parkinglot_info[0]
+
+    # format the positions
+    num_slots_per_floor = int(parkinglot_info["numRow"]) * int(parkinglot_info["numCol"])
+    num_digits = len(str(num_slots_per_floor))
+    occupants = r.app.state.database.get_long_term_occupants(parkinglot_id)
+    for ocpt in occupants:
+        floor, idx = ocpt["floor"], ocpt["index"]
+        ocpt["position"] = f"B{floor}#{floor}{idx:0{num_digits}}"
+
+    return [
+        {
+            "position": ocpt["position"],
+            "license_plate_no": ocpt["license_plate_no"],
+            "start_time": ocpt["start_time"],
+        } for ocpt in occupants
+    ]
