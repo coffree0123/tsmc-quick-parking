@@ -38,17 +38,10 @@ app = FastAPI(lifespan=lifespan)
 
 def mock_authentication(request: Request):
     '''Mock authentication'''
-    user_data = {
-        "user_id": "21EC2020-3AEA-1069-A2DD-08002B30309D",
-        "name": "John Doe",
-        "email": "john.doe@example.com",
-        "phone_num": "1234567890",
-        "gender": "male",
-        "age": 30,
-        "job_title": "engineer",
-        "special_role": ""
+    request.state.token_claims = {
+        "sub": request.headers['authorization'].split(' ')[1], 
+        "roles": "guard"
     }
-    request.state.token_claims = {"sub": user_data["user_id"]}
 
 
 if __name__ == '__main__':
