@@ -248,7 +248,27 @@ class QuickParkingDB():
             return OwnerInfo()
         return res[0]
 
-    def get_user_vehicles(self, user_id: str) -> list[Vehicle]:
+    def get_user_vehicles(self, user_id: str) -> list[VehicleData]:
+        '''Retrieves all vehicles of a user'''
+        sql_query = """
+        SELECT
+            "Cars"."userID" AS user_id,
+            "Cars"."licensePlateNo" AS license_plate_no,
+            "Cars"."model" AS nick_name,
+            "Cars"."size" AS car_size
+        FROM
+            "Cars"
+        WHERE
+            "userID" = %s
+        """
+
+        with self._connection_pools.connection() as conn:
+            with conn.cursor(row_factory=class_row(VehicleData)) as cursor:
+                cursor.execute(sql_query, params=(user_id,))
+                res = cursor.fetchall()
+        return res
+
+    def get_user_vehicle_states(self, user_id: str) -> list[Vehicle]:
         '''Retrive the user vehicles info and their current states in the parking lot'''
         sql_query = """
         SELECT

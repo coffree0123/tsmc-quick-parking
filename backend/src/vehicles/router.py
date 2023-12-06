@@ -91,7 +91,7 @@ def get_vehicle_and_owner_info(r: Request, license_plate_no: str) -> VehicleAndO
     else:
         owner_other_vehicles = [
             vehicle
-            for vehicle in r.app.state.database.get_user_vehicles(owner_info.id)
+            for vehicle in r.app.state.database.get_user_vehicle_states(owner_info.id)
             if vehicle.license_plate_no != license_plate_no
         ]
 

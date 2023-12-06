@@ -16,7 +16,7 @@ repos:
         types: [python]
         args:
           [
-            "--disable=E0401,R0913,E1129,W0621,W0105,R0801",
+            "--disable=E0401,R0913,E1129,W0621,W0105,R0801,R0904",
             "-rn", # Only display messages
             "-sn", # Don't display the score
           ]
