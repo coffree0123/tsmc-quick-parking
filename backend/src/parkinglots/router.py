@@ -1,5 +1,4 @@
 '''Parking Space Management Module'''
-from collections import defaultdict
 from fastapi import APIRouter, Request, HTTPException, status, Depends
 from src.constants import ParkingLot, FloorInfo
 from src.security import authentication, is_guard
@@ -23,11 +22,14 @@ def get_parkinglot(r: Request, parkinglot_id: int) -> ParkingLot:
     parkinglot_info = parkinglot_info[0]
 
     # get floor information (currently only free slots)
-    free_slots = defaultdict(list)
+    free_slots = [[] for _ in range(parkinglot_info["numFloor"] + 1)]
     for floor, idx in sorted(r.app.state.database.get_free_spaces(parkinglot_id)):
         free_slots[floor].append(idx)
     floor_info = [
-        FloorInfo(floor=f"B{k}", free_slots=v) for k, v in sorted(free_slots.items())
+        FloorInfo(
+            floor=f"B{i}",
+            free_slots=free_slots[i]
+        ) for i in range(1, parkinglot_info["numFloor"] + 1)
     ]
 
     return ParkingLot(
