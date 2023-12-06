@@ -421,7 +421,7 @@ class QuickParkingDB():
 
         sql_query = """
         SELECT
-            CONCAT('B', "floor", '#', "index") AS postion,
+            CONCAT('B', "floor", '#', "index") AS position,
             records."licensePlateNo" AS license_plate_no,
             records."startTime" AS start_time
         FROM "ParkingSlots" AS slots
