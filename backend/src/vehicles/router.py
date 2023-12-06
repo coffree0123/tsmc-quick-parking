@@ -1,6 +1,6 @@
 '''Vehicles management module'''
 from fastapi import APIRouter, Request, HTTPException, status, Depends
-from src.constants import ParkingRecord, VehicleAndOwner, VehicleData
+from src.constants import VehicleAndOwner, VehicleData
 from src.security import authentication, get_user_id, is_guard
 
 router = APIRouter(
@@ -100,19 +100,3 @@ def get_vehicle_and_owner_info(r: Request, license_plate_no: str) -> VehicleAndO
         owner_info=owner_info,
         owner_other_vehicles=owner_other_vehicles
     )
-
-# need: extend the api, and then deprecate this one
-# need: concat floor and index
-
-
-@router.get(path="/vehicles/records")
-def get_latest_records(
-    r: Request, vehicle_id: str = None, user_id: str = None
-) -> list[ParkingRecord]:
-    '''Search the parking records by user id or vehicle id'''
-    if vehicle_id is None and user_id is None:
-        raise HTTPException(
-            status.HTTP_400_BAD_REQUEST,
-            detail="At least one of user_id and vehicle_id must be provided"
-        )
-    return r.app.state.database.get_latest_records(vehicle_id, user_id)
