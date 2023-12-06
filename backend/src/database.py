@@ -114,6 +114,31 @@ class QuickParkingDB():
 
         return result
 
+    def add_favorite_lot(self, user_id: str, parking_lot_id: int) -> None:
+        '''Add a new favorite parking lot to the database'''
+        sql_query = """
+        INSERT INTO "UserFavorites" ("userID", "parkingLotID") 
+        VALUES (%s, %s);
+        """
+
+        with self._connection_pools.connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    sql_query, (user_id, parking_lot_id))
+                conn.commit()
+
+    def delete_favorite_lot(self, user_id: str, parking_lot_id: int) -> None:
+        '''Delete a favorite parking lot from the database'''
+        sql_query = """
+        DELETE FROM "UserFavorites" WHERE ("userID", "parkingLotID") = (%s, %s);
+        """
+
+        with self._connection_pools.connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    sql_query, (user_id, parking_lot_id))
+                conn.commit()
+
     def add_vehicle(self, user_id: str, license_plate_no: str, nick_name: str,
                     car_size: VehicleSize = "small") -> None:
         '''Add a new vehicle to the database'''
