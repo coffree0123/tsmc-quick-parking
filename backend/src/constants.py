@@ -111,7 +111,7 @@ class FloorInfo:
     '''object containing information of one parking lot floor'''
     floor: str
     free_slots: list[int]
-
+    priority_slots: list[int]
 
 class ParkingLot(BaseModel):
     '''Return class of parking lot (for user)'''

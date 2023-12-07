@@ -324,6 +324,24 @@ class QuickParkingDB():
                 res = cursor.execute(sql_query, (parkinglot_id,)).fetchall()
         return res
 
+    def get_priority_spaces(self, parkinglot_id: int) -> list[dict]:
+        '''Given a parking lot id, returns all priority slots'''
+        sql_query = """
+        SELECT 
+            floor,
+            index,
+            priority
+        FROM "ParkingSlots"
+        WHERE
+            "parkingLotID" = %s AND
+            "priority" IS NOT NULL
+        ORDER BY floor ASC, index ASC;
+        """
+        with self._connection_pools.connection() as conn:
+            with conn.cursor(row_factory=dict_row) as cursor:
+                res = cursor.execute(sql_query, (parkinglot_id,)).fetchall()
+        return res
+
     def park_car(self, slot_id: int, license_plate_no: str, start_time: str) -> int:
         '''Add a parking record to the database and return the record_id'''
         check_query = """
