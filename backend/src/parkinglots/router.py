@@ -1,6 +1,6 @@
 '''Parking Space Management Module'''
 from fastapi import APIRouter, Request, HTTPException, status, Depends
-from src.constants import ParkingLot, FloorInfo, ParkingRecord
+from src.constants import ParkingLot, FloorInfo, ParkingRecord, Slot
 from src.security import authentication, is_guard
 
 
@@ -13,7 +13,7 @@ router = APIRouter(
     path="/users/parkinglots/list",
     tags=['user'],
     response_model=list[ParkingLot],
-    response_model_exclude_defaults=True
+    response_model_exclude_none=True
 )
 def get_parkinglot_list(r: Request):
     '''Returns a list of (id, name) of all parking lots'''
@@ -28,11 +28,11 @@ def get_parkinglot_list(r: Request):
     path="/users/parkinglots/{parkinglot_id}",
     tags=['user'],
     response_model=ParkingLot,
-    response_model_exclude_defaults=True,
+    response_model_exclude_none=True,
 )
 def get_parkinglot(r: Request, parkinglot_id: int) -> ParkingLot:
     '''Returns a list of free spaces of a parking lot'''
-    # parking lot info
+    # parking lot info (num_row, num_col, num_floor)
     parkinglot_info = r.app.state.database.get_parkinglot_info(parkinglot_id)
     if not parkinglot_info:
         raise HTTPException(
@@ -41,7 +41,7 @@ def get_parkinglot(r: Request, parkinglot_id: int) -> ParkingLot:
         )
     parkinglot_info = parkinglot_info[0]
 
-    # get floor information
+    # get floor information (free slots, priority slots)
     def collect_floor_info(slots: list):
         '''Process data info from slot-level into floor-level'''
         floors = [[] for _ in range(parkinglot_info["numFloor"] + 1)]
@@ -65,12 +65,60 @@ def get_parkinglot(r: Request, parkinglot_id: int) -> ParkingLot:
         floor_info=floor_info,
     )
 
+@router.get(
+    path="/guards/parkinglots/{parkinglot_id}",
+    response_model=ParkingLot,
+    response_model_exclude_none=True,
+)
+def get_parkinglot_for_guard(r: Request, parkinglot_id: int):
+    '''This API retrieves parking lot info including parked slots/vehicles & priority seat'''
+    # parking lot info (num_row, num_col, num_floor)
+    parkinglot_info = r.app.state.database.get_parkinglot_info(parkinglot_id)
+    if not parkinglot_info:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            detail=f"Parking lot of id {parkinglot_id} doesn't exist"
+        )
+    parkinglot_info = parkinglot_info[0]
+
+    # get floor information (parked slots, priority slots)
+    def collect_floor_info(slots: list, extract_fn=None):
+        '''Process data info from slot-level into floor-level'''
+        floors = [[] for _ in range(parkinglot_info["numFloor"] + 1)]
+        for slot in slots:
+            floors[slot["floor"]].append(extract_fn(slot))
+        return floors
+    parked_slots = collect_floor_info(
+        r.app.state.database.get_parked_spaces(parkinglot_id),
+        extract_fn=lambda slot: Slot(
+            license_plate_no=slot["license_plate_no"],
+            index=slot["index"]
+        ),
+    )
+    priority_slots = collect_floor_info(
+        r.app.state.database.get_priority_spaces(parkinglot_id),
+        extract_fn=lambda slot: slot["index"],
+    )
+    floor_info = [
+        FloorInfo(
+            floor=f"B{i}",
+            parked_slots=parked_slots[i],
+            priority_slots=priority_slots[i],
+        ) for i in range(1, parkinglot_info["numFloor"] + 1)
+    ]
+
+    return ParkingLot(
+        num_row=parkinglot_info["numRow"],
+        num_col=parkinglot_info["numCol"],
+        num_floor=parkinglot_info["numFloor"],
+        floor_info=floor_info,
+    )
 
 @router.get(
     path="/guards/parkinglots/{parkinglot_id}/long-term-occupants",
     tags=['guard'],
     response_model=list[ParkingRecord],
-    response_model_exclude_defaults=True
+    response_model_exclude_none=True
 )
 def get_long_term_occupants(r: Request, parkinglot_id: int):
     '''Search the vehicles that park the longest in a parking lot'''

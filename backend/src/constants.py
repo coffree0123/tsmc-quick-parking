@@ -8,11 +8,11 @@ from pydantic import BaseModel, Field
 # Parking Constants
 class ParkingRecord(BaseModel):
     '''return type of parking record'''
-    license_plate_no: str = ""
-    parkinglot_name: str = ""
-    position: str = ""
-    start_time: datetime = None
-    end_time: datetime = None
+    license_plate_no: str | None = None
+    parkinglot_name: str | None = None
+    position: str | None = None
+    start_time: datetime | None = None
+    end_time: datetime | None = None
 
 # Vehicles constants
 class VehicleSize(str, Enum):
@@ -105,18 +105,24 @@ class UserData(BaseModel):
     priority: str = "None"
 
 
+class Slot(BaseModel):
+    '''Object containing information of one slot'''
+    floor: int | None = None
+    index: int | None = None
+    license_plate_no: str | None = None
+
 class FloorInfo(BaseModel):
     '''Object containing information of one parking lot floor'''
-    floor: str = ""
-    free_slots: list[int] = Field(default_factory=list)
-    priority_slots: list[int] = Field(default_factory=list)
-
+    floor: str | None = ""
+    free_slots: list[int] | None = None
+    priority_slots: list[int] | None = None
+    parked_slots: list[Slot] | None = None
 
 class ParkingLot(BaseModel):
     '''Return class of parking lot (for user)'''
-    id: int = 0
-    name: str = ""
-    num_row: int = 0
-    num_col: int = 0
-    num_floor: int = 0
-    floor_info: list[FloorInfo] = Field(default_factory=list)
+    id: int | None = None
+    name: str | None = None
+    num_row: int | None = None
+    num_col: int | None = None
+    num_floor: int | None = None
+    floor_info: list[FloorInfo] | None = None
