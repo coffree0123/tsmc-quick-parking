@@ -5,6 +5,11 @@ CREATE TYPE "carSize" AS ENUM (
   'huge'
 );
 
+CREATE TYPE "priorityType" AS ENUM (
+  'pregnancy',
+  'disability'
+);
+
 CREATE TABLE "Cars" (
   "userID" varchar,
   "licensePlateNo" varchar PRIMARY KEY,
@@ -20,14 +25,15 @@ CREATE TABLE "Users" (
   "gender" varchar,
   "age" integer,
   "jobTitle" varchar,
-  "specialRole" varchar
+  "priority" "priorityType"
 );
 
 CREATE TABLE "ParkingSlots" (
   "id" serial PRIMARY KEY,
   "parkingLotID" integer,
   "index" integer,
-  "floor" integer
+  "floor" integer,
+  "priority" "priorityType"
 );
 
 CREATE TABLE "ParkingLots" (

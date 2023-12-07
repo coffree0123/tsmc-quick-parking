@@ -31,14 +31,20 @@ def get_parkinglot(r: Request, parkinglot_id: int) -> ParkingLot:
         )
     parkinglot_info = parkinglot_info[0]
 
-    # get floor information (currently only free slots)
-    free_slots = [[] for _ in range(parkinglot_info["numFloor"] + 1)]
-    for floor, idx in sorted(r.app.state.database.get_free_spaces(parkinglot_id)):
-        free_slots[floor].append(idx)
+    # get floor information
+    def collect_floor_info(slots: list):
+        '''Process data info from slot-level into floor-level'''
+        floors = [[] for _ in range(parkinglot_info["numFloor"] + 1)]
+        for slot in slots:
+            floors[slot["floor"]].append(slot["index"])
+        return floors
+    free_slots = collect_floor_info(r.app.state.database.get_free_spaces(parkinglot_id))
+    priority_slots = collect_floor_info(r.app.state.database.get_priority_spaces(parkinglot_id))
     floor_info = [
         FloorInfo(
             floor=f"B{i}",
-            free_slots=free_slots[i]
+            free_slots=free_slots[i],
+            priority_slots=priority_slots[i],
         ) for i in range(1, parkinglot_info["numFloor"] + 1)
     ]
 
@@ -48,7 +54,6 @@ def get_parkinglot(r: Request, parkinglot_id: int) -> ParkingLot:
         num_floor=parkinglot_info["numFloor"],
         floor_info=floor_info,
     )
-
 
 @router.get(path="/guards/parkinglots/{parkinglot_id}/long-term-occupants", tags=['guard'])
 def get_long_term_occupants(r: Request, parkinglot_id: int) -> list[dict]:
