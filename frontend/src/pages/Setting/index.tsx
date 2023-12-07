@@ -3,7 +3,6 @@ import { Input, Flex, Button, Radio, InputNumber, Form } from 'antd'
 import LogOutButton from '../../components/LogOutButton'
 import { MsalProvider } from '@azure/msal-react'
 import axios from 'axios'
-import { jwtDecode } from 'jwt-decode'
 import { getAxiosConfig } from '../../utils/api'
 
 interface UserInfo {
@@ -17,44 +16,28 @@ interface UserInfo {
   user_id: string
 }
 
-interface AccessToken {
-  oid: string
-  // whatever else is in the JWT.
-}
-
 const Setting = ({ instance }: any): React.ReactElement => {
   const [userInfo, setUserInfo] = useState<UserInfo>()
 
-  const account = instance.getAllAccounts()[0]
   const [form] = Form.useForm()
-
-  const accessTokenRequest = {
-    scopes: ['user.read'],
-    account
-  }
 
   const saveClick = (event: any): void => {
     console.log(form.getFieldsValue())
+    axios.put('users/', form.getFieldsValue(), getAxiosConfig())
+      .then(function (response) {
+        console.log(response)
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
   }
 
   useEffect(() => {
-    instance
-      .acquireTokenSilent(accessTokenRequest)
-      .then(function (accessTokenResponse: any) {
-        // Acquire token silent success
-        const accessToken = jwtDecode<AccessToken>(accessTokenResponse.accessToken)
-        console.log(accessToken)
-        // Call your API with token
-        axios.get<UserInfo>('users/', getAxiosConfig())
-          .then(response => {
-            setUserInfo(response.data)
-          })
-          .catch(error => { console.error(error) })
+    axios.get<UserInfo>('users/', getAxiosConfig())
+      .then(response => {
+        setUserInfo(response.data)
       })
-      .catch(function (error: any) {
-        // Acquire token silent failure
-        console.log(error)
-      })
+      .catch(error => { console.error(error) })
   }, [])
 
   useEffect(() => {
@@ -66,6 +49,9 @@ const Setting = ({ instance }: any): React.ReactElement => {
     <MsalProvider instance={instance}>
     <Flex vertical style={{ overflow: 'hidden' }}>
       <Form form={form}>
+      <Form.Item name="user_id">
+        <Input type="hidden" />
+      </Form.Item>
       <Form.Item name="name">
         <Input addonBefore="Name" />
       </Form.Item>
