@@ -33,8 +33,8 @@ def get_parkinglot(r: Request, parkinglot_id: int) -> ParkingLot:
 
     # get floor information (currently only free slots)
     free_slots = [[] for _ in range(parkinglot_info["numFloor"] + 1)]
-    for floor, idx in sorted(r.app.state.database.get_free_spaces(parkinglot_id)):
-        free_slots[floor].append(idx)
+    for slot in r.app.state.database.get_free_spaces(parkinglot_id):
+        free_slots[slot['floor']].append(slot['index'])
     floor_info = [
         FloorInfo(
             floor=f"B{i}",
@@ -48,7 +48,6 @@ def get_parkinglot(r: Request, parkinglot_id: int) -> ParkingLot:
         num_floor=parkinglot_info["numFloor"],
         floor_info=floor_info,
     )
-
 
 @router.get(path="/guards/parkinglots/{parkinglot_id}/long-term-occupants", tags=['guard'])
 def get_long_term_occupants(r: Request, parkinglot_id: int) -> list[dict]:

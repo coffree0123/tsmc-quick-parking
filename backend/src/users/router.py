@@ -17,7 +17,7 @@ def create_user(r: Request, user_data: UserData) -> dict[str, str]:
     user_id = r.app.state.database.add_user(user_data.user_id, user_data.name,
                                             user_data.email, user_data.phone_num,
                                             user_data.gender, user_data.age,
-                                            user_data.job_title, user_data.special_role)
+                                            user_data.job_title, user_data.priority)
 
     return {"user_id": user_id}
 
@@ -29,7 +29,7 @@ def update_user(r: Request, user_data: UserData) -> None:
     r.app.state.database.update_user(user_data.user_id, user_data.name,
                                      user_data.email, user_data.phone_num,
                                      user_data.gender, user_data.age,
-                                     user_data.job_title, user_data.special_role)
+                                     user_data.job_title, user_data.priority)
 
 
 @router.get("/", tags=['user'])

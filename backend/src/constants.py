@@ -47,7 +47,7 @@ class OwnerInfo:
     job_title: str = ""
     email: str = ""
     phone: str = ""
-    special_role: str = ""
+    priority: str = ""
 
 
 class VehicleAndOwner(BaseModel):
@@ -103,7 +103,7 @@ class UserData(BaseModel):
     gender: Gender
     age: int
     job_title: Role
-    special_role: str = "None"
+    priority: str = "None"
 
 
 @dataclass

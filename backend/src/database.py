@@ -19,10 +19,10 @@ class QuickParkingDB():
         self._connection_pools.wait()
 
     def add_user(self, user_id: str, name: str, email: str, phone_num: str,
-                 gender: Gender, age: int, job_title: Role, special_role: str) -> str:
+                 gender: Gender, age: int, job_title: Role, priority: str) -> str:
         '''Add a new user to the database and return the user_id'''
         sql_query = """
-        INSERT INTO "Users" ("id", "name", "email", "phoneNo", "gender", "age", "jobTitle", "specialRole")
+        INSERT INTO "Users" ("id", "name", "email", "phoneNo", "gender", "age", "jobTitle", "priority")
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         RETURNING id;
         """
@@ -30,7 +30,7 @@ class QuickParkingDB():
         with self._connection_pools.connection() as conn:
             with conn.cursor() as cursor:
                 cursor.execute(sql_query, (user_id, name, email,
-                                           phone_num, gender, age, job_title, special_role))
+                                           phone_num, gender, age, job_title, priority))
                 result = cursor.fetchone()
                 user_id = result[0]
                 conn.commit()
@@ -38,18 +38,18 @@ class QuickParkingDB():
         return user_id
 
     def update_user(self, user_id: str, name: str, email: str, phone_num: str,
-                    gender: Gender, age: int, job_title: Role, special_role: str) -> None:
+                    gender: Gender, age: int, job_title: Role, priority: str) -> None:
         '''Update a user's information in the database'''
         sql_query = """
         UPDATE "Users" SET "name" = %s, "email" = %s, 
-        "phoneNo" = %s, "gender" = %s, "age" = %s, "jobTitle" = %s, "specialRole" = %s 
+        "phoneNo" = %s, "gender" = %s, "age" = %s, "jobTitle" = %s, "priority" = %s 
         WHERE id = %s;
         """
 
         with self._connection_pools.connection() as conn:
             with conn.cursor() as cursor:
                 cursor.execute(sql_query, (name, email, phone_num,
-                                           gender, age, job_title, special_role, user_id))
+                                           gender, age, job_title, priority, user_id))
                 conn.commit()
 
     def get_user(self, user_id: str) -> UserData:
@@ -63,7 +63,7 @@ class QuickParkingDB():
             "Users".gender,
             "Users".age,
             "Users"."jobTitle" AS job_title,
-            "Users"."specialRole" AS special_role
+            "Users"."priority" AS priority
         FROM
             "Users"
         WHERE 
@@ -226,7 +226,7 @@ class QuickParkingDB():
             users."jobTitle" AS job_title,
             users.email,
             users."phoneNo" AS phone,
-            users."specialRole" AS special_role
+            users."priority" AS priority
         FROM (
             SELECT
                 "userID"
@@ -300,7 +300,7 @@ class QuickParkingDB():
                 res = cursor.fetchall()
         return res
 
-    def get_free_spaces(self, parkinglot_id: int) -> list[tuple[int]]:
+    def get_free_spaces(self, parkinglot_id: int) -> list[dict]:
         '''
         Given a parkinglot id, returns all free spaces, 
         each of which is represented by a tuple (floor, index)
@@ -308,20 +308,20 @@ class QuickParkingDB():
 
         sql_query = """
             SELECT
-                slots.floor,
-                slots.index
+                floor,
+                index
             FROM "ParkingSlots" AS slots
-            WHERE 
-                slots."parkingLotID" = %s AND
+            WHERE
+                "parkingLotID" = %s AND
                 NOT EXISTS (
                     SELECT 1 FROM "ParkingRecords" AS records
                     WHERE records."endTime" IS NULL AND slots.id = records."slotID"
-                );
+                )
+            ORDER BY floor ASC, index ASC;
         """
-
         with self._connection_pools.connection() as conn:
-            with conn.execute(sql_query, [parkinglot_id]) as cursor:
-                res = cursor.fetchall()
+            with conn.cursor(row_factory=dict_row) as cursor:
+                res = cursor.execute(sql_query, (parkinglot_id,)).fetchall()
         return res
 
     def park_car(self, slot_id: int, license_plate_no: str, start_time: str) -> int:
