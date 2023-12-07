@@ -3,20 +3,20 @@ VALUES
     ('Building A', 5, 6, 2),
     ('Factory B', 10, 20, 4);
 
-INSERT INTO "ParkingSlots"("parkingLotID", "index", "floor") 
+INSERT INTO "ParkingSlots"("parkingLotID", "index", "floor", "priority") 
 VALUES
-    (1, 0, 1),
-    (1, 0, 2),
-    (2, 1, 1);
+    (1, 1, 1, 'pregnancy'),
+    (1, 1, 2, 'disability'),
+    (2, 1, 1, NULL);
 
-INSERT INTO "Users" ("id", "name", "email", "phoneNo", "gender", "age", "jobTitle", "specialRole")
+INSERT INTO "Users" ("id", "name", "email", "phoneNo", "gender", "age", "jobTitle", "priority")
 VALUES
-    ('21EC2020-3AEA-1069-A2DD-08002B30309D', 'Emil Wang', 'emily.wang@tsmc.com', '', 'female', 29, 'pm', 'None'),
-    ('21EC2020-3AEA-1069-A2DD-08002B30309A', 'Johnson Lee', 'jlee@tsmc.com', '', 'male', 32, 'engineer', 'None'),
-    ('21EC2020-3AEA-1069-A2DD-08002B30309B', 'John Doe', 'johndoe@tsmc.com', '123-456-7891', 'male', 25, 'engineer', 'None'),
-    ('21EC2020-3AEA-1069-A2DD-08002B30309C', 'Jane Doe', 'janedoe@tsmc.com', '123-456-7892', 'female', 23, 'engineer', 'None'),
-    ('21EC2020-3AEA-1069-A2DD-08002B30309E', 'Bob Smith', 'bobsmith@tsmc.com', '123-456-7893', 'male', 30, 'pm', 'None'),
-    ('21EC2020-3AEA-1069-A2DD-08002B30309F', 'Alice Johnson', 'alicejohnson@tsmc.com', '123-456-7894', 'female', 27, 'engineer', 'None');
+    ('21EC2020-3AEA-1069-A2DD-08002B30309D', 'Emil Wang', 'emily.wang@tsmc.com', '', 'female', 29, 'pm', 'pregnancy'),
+    ('21EC2020-3AEA-1069-A2DD-08002B30309A', 'Johnson Lee', 'jlee@tsmc.com', '', 'male', 32, 'engineer', 'disability'),
+    ('21EC2020-3AEA-1069-A2DD-08002B30309B', 'John Doe', 'johndoe@tsmc.com', '123-456-7891', 'male', 25, 'engineer', NULL),
+    ('21EC2020-3AEA-1069-A2DD-08002B30309C', 'Jane Doe', 'janedoe@tsmc.com', '123-456-7892', 'female', 23, 'engineer', NULL),
+    ('21EC2020-3AEA-1069-A2DD-08002B30309E', 'Bob Smith', 'bobsmith@tsmc.com', '123-456-7893', 'male', 30, 'pm', NULL),
+    ('21EC2020-3AEA-1069-A2DD-08002B30309F', 'Alice Johnson', 'alicejohnson@tsmc.com', '123-456-7894', 'female', 27, 'engineer', NULL);
 
 INSERT INTO "Cars" ("userID", "licensePlateNo", "size", "model")
 VALUES
