@@ -4,6 +4,7 @@ import LogOutButton from '../../components/LogOutButton'
 import { MsalProvider } from '@azure/msal-react'
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
+import { getAxiosConfig } from '../../utils/api'
 
 interface UserInfo {
   age: number
@@ -44,7 +45,7 @@ const Setting = ({ instance }: any): React.ReactElement => {
         const accessToken = jwtDecode<AccessToken>(accessTokenResponse.accessToken)
         console.log(accessToken)
         // Call your API with token
-        axios.get<UserInfo>('users/', { headers: { Authorization: `Bearer ${localStorage.getItem('idToken')}` } })
+        axios.get<UserInfo>('users/', getAxiosConfig())
           .then(response => {
             setUserInfo(response.data)
           })

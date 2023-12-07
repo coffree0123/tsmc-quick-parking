@@ -5,6 +5,7 @@ import { loginRequest } from '../authConfig'
 import { AuthContext } from '../contexts/AuthContext'
 import { EventType } from '@azure/msal-browser'
 import axios from 'axios'
+import { getAxiosConfig } from '../utils/api'
 
 export const NavigationBar = (): any => {
   const { instance } = useMsal()
@@ -27,7 +28,7 @@ export const NavigationBar = (): any => {
         const idTokenClaims = event.payload.idTokenClaims
         const idToken = event.payload.idToken
         localStorage.setItem('idToken', idToken)
-        axios.get('users/', { headers: { Authorization: `Bearer ${idToken}` } })
+        axios.get('users/', getAxiosConfig())
           .then(response => {
             console.log('user exists ' + idTokenClaims.sub)
           })
@@ -43,7 +44,7 @@ export const NavigationBar = (): any => {
               age: idTokenClaims.age,
               job_title: idTokenClaims.job_title,
               special_role: idTokenClaims.special_role
-            }, { headers: { Authorization: `Bearer ${localStorage.getItem('idToken')}` } })
+            }, getAxiosConfig())
               .then(function (response) {
                 console.log(response)
               })

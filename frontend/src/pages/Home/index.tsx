@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import LogOutButton from '../../components/LogOutButton'
 import { MsalProvider } from '@azure/msal-react'
 import axios from 'axios'
+import { getAxiosConfig } from '../../utils/api'
 
 const { Title } = Typography
 
@@ -62,7 +63,7 @@ const Home = ({ instance }: any): React.ReactElement => {
   const [userInfo, setUserInfo] = useState<UserInfo>()
 
   useEffect(() => {
-    axios.get<UserInfo>('users/page_info/', { headers: { Authorization: `Bearer ${localStorage.getItem('idToken')}` } })
+    axios.get<UserInfo>('users/page_info/', getAxiosConfig())
       .then(response => {
         setUserInfo(response.data)
       })
