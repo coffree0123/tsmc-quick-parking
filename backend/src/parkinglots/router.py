@@ -1,6 +1,6 @@
 '''Parking Space Management Module'''
 from fastapi import APIRouter, Request, HTTPException, status, Depends
-from src.constants import ParkingLot, FloorInfo, IdNamePair
+from src.constants import ParkingLot, FloorInfo, ParkingRecord
 from src.security import authentication, is_guard
 
 
@@ -9,17 +9,27 @@ router = APIRouter(
 )
 
 
-@router.get(path="/users/parkinglots/list", tags=['user'])
-def get_parkinglot_list(r: Request) -> list[IdNamePair]:
+@router.get(
+    path="/users/parkinglots/list",
+    tags=['user'],
+    response_model=list[ParkingLot],
+    response_model_exclude_defaults=True
+)
+def get_parkinglot_list(r: Request):
     '''Returns a list of (id, name) of all parking lots'''
     res = r.app.state.database.get_parkinglot_list()
     return sorted(
-        [IdNamePair(id=int(pklt["id"]), name=pklt["name"]) for pklt in res],
+        [ParkingLot(id=int(pklt["id"]), name=pklt["name"]) for pklt in res],
         key=lambda x: x.id
     )
 
 
-@router.get(path="/users/parkinglots/{parkinglot_id}", tags=['user'])
+@router.get(
+    path="/users/parkinglots/{parkinglot_id}",
+    tags=['user'],
+    response_model=ParkingLot,
+    response_model_exclude_defaults=True,
+)
 def get_parkinglot(r: Request, parkinglot_id: int) -> ParkingLot:
     '''Returns a list of free spaces of a parking lot'''
     # parking lot info
@@ -55,8 +65,14 @@ def get_parkinglot(r: Request, parkinglot_id: int) -> ParkingLot:
         floor_info=floor_info,
     )
 
-@router.get(path="/guards/parkinglots/{parkinglot_id}/long-term-occupants", tags=['guard'])
-def get_long_term_occupants(r: Request, parkinglot_id: int) -> list[dict]:
+
+@router.get(
+    path="/guards/parkinglots/{parkinglot_id}/long-term-occupants",
+    tags=['guard'],
+    response_model=list[ParkingRecord],
+    response_model_exclude_defaults=True
+)
+def get_long_term_occupants(r: Request, parkinglot_id: int):
     '''Search the vehicles that park the longest in a parking lot'''
     if not is_guard(r):
         raise HTTPException(
@@ -82,9 +98,9 @@ def get_long_term_occupants(r: Request, parkinglot_id: int) -> list[dict]:
         ocpt["position"] = f"B{floor}#{floor}{idx:0{num_digits}}"
 
     return [
-        {
-            "position": ocpt["position"],
-            "license_plate_no": ocpt["license_plate_no"],
-            "start_time": ocpt["start_time"],
-        } for ocpt in occupants
+        ParkingRecord(
+            position=ocpt["position"],
+            license_plate_no=ocpt["license_plate_no"],
+            start_time=ocpt["start_time"],
+        ) for ocpt in occupants
     ]

@@ -6,14 +6,13 @@ from pydantic import BaseModel, Field
 
 
 # Parking Constants
-@dataclass
-class ParkingRecord:
+class ParkingRecord(BaseModel):
     '''return type of parking record'''
-    license_plate_no: str
-    parkinglot_name: str
-    position: str
-    start_time: datetime
-    end_time: datetime
+    license_plate_no: str = ""
+    parkinglot_name: str = ""
+    position: str = ""
+    start_time: datetime = None
+    end_time: datetime = None
 
 # Vehicles constants
 class VehicleSize(str, Enum):
@@ -106,21 +105,18 @@ class UserData(BaseModel):
     priority: str = "None"
 
 
-@dataclass
-class FloorInfo:
-    '''object containing information of one parking lot floor'''
-    floor: str
-    free_slots: list[int]
-    priority_slots: list[int]
+class FloorInfo(BaseModel):
+    '''Object containing information of one parking lot floor'''
+    floor: str = ""
+    free_slots: list[int] = Field(default_factory=list)
+    priority_slots: list[int] = Field(default_factory=list)
+
 
 class ParkingLot(BaseModel):
     '''Return class of parking lot (for user)'''
+    id: int = 0
+    name: str = ""
     num_row: int = 0
     num_col: int = 0
     num_floor: int = 0
     floor_info: list[FloorInfo] = Field(default_factory=list)
-
-class IdNamePair(BaseModel):
-    '''The return model for id & name'''
-    id: int
-    name: str
