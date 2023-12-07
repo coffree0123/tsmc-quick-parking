@@ -1,6 +1,7 @@
 import { Flex, Skeleton, Tabs, Typography } from 'antd'
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
+import { getAxiosConfig } from '../utils/api'
 
 const { Title } = Typography
 
@@ -72,7 +73,7 @@ const ParkingLot = (props: { id: number }): React.ReactElement => {
   const [lotInfo, setLotInfo] = useState<LotInfo>()
 
   useEffect(() => {
-    axios.get<LotInfo>(`users/parkinglots/${props.id}`, { headers: { Authorization: `Bearer ${localStorage.getItem('idToken')}` } })
+    axios.get<LotInfo>(`users/parkinglots/${props.id}`, getAxiosConfig())
       .then(response => {
         setLotInfo(response.data)
       })
