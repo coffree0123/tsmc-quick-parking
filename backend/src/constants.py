@@ -2,18 +2,18 @@
 from enum import Enum
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Union
 from pydantic import BaseModel, Field
 
 
 # Parking Constants
-@dataclass
-class ParkingRecord:
+class ParkingRecord(BaseModel):
     '''return type of parking record'''
-    license_plate_no: str
-    parkinglot_name: str
-    position: str
-    start_time: datetime
-    end_time: datetime
+    license_plate_no: Union[str, None] = None
+    parkinglot_name: Union[str, None] = None
+    position: Union[str, None] = None
+    start_time: Union[datetime, None] = None
+    end_time: Union[datetime, None] = None
 
 # Vehicles constants
 class VehicleSize(str, Enum):
@@ -106,21 +106,24 @@ class UserData(BaseModel):
     priority: str = "None"
 
 
-@dataclass
-class FloorInfo:
-    '''object containing information of one parking lot floor'''
-    floor: str
-    free_slots: list[int]
-    priority_slots: list[int]
+class Slot(BaseModel):
+    '''Object containing information of one slot'''
+    floor: Union[int, None] = None
+    index: Union[int, None] = None
+    license_plate_no: Union[str, None] = None
+
+class FloorInfo(BaseModel):
+    '''Object containing information of one parking lot floor'''
+    floor: Union[str, None] = ""
+    free_slots: Union[list[int], None] = None
+    priority_slots: Union[list[int], None] = None
+    parked_slots: Union[list[Slot], None] = None
 
 class ParkingLot(BaseModel):
     '''Return class of parking lot (for user)'''
-    num_row: int = 0
-    num_col: int = 0
-    num_floor: int = 0
-    floor_info: list[FloorInfo] = Field(default_factory=list)
-
-class IdNamePair(BaseModel):
-    '''The return model for id & name'''
-    id: int
-    name: str
+    id: Union[int, None] = None
+    name: Union[str, None] = None
+    num_row: Union[int, None] = None
+    num_col: Union[int, None] = None
+    num_floor: Union[int, None] = None
+    floor_info: Union[list[FloorInfo], None] = None
