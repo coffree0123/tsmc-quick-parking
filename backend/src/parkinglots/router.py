@@ -30,7 +30,7 @@ def get_parkinglot_list(r: Request):
     response_model=ParkingLot,
     response_model_exclude_none=True,
 )
-def get_parkinglot(r: Request, parkinglot_id: int) -> ParkingLot:
+def get_parkinglot(r: Request, parkinglot_id: int):
     '''Returns a list of free spaces of a parking lot'''
     # parking lot info (num_row, num_col, num_floor)
     parkinglot_info = r.app.state.database.get_parkinglot_info(parkinglot_id)
