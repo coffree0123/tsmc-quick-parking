@@ -1,6 +1,6 @@
 '''Parking Space Management Module'''
 from fastapi import APIRouter, Request, HTTPException, status, Depends
-from src.constants import ParkingLot, FloorInfo
+from src.constants import ParkingLot, FloorInfo, IdNamePair
 from src.security import authentication, is_guard
 
 
@@ -10,10 +10,13 @@ router = APIRouter(
 
 
 @router.get(path="/users/parkinglots/list", tags=['user'])
-def get_parkinglot_list(r: Request):
+def get_parkinglot_list(r: Request) -> list[IdNamePair]:
     '''Returns a list of (id, name) of all parking lots'''
     res = r.app.state.database.get_parkinglot_list()
-    return sorted([(pklt["id"], pklt["name"]) for pklt in res])
+    return sorted(
+        [IdNamePair(id=int(pklt["id"]), name=pklt["name"]) for pklt in res],
+        key=lambda x: x.id
+    )
 
 
 @router.get(path="/users/parkinglots/{parkinglot_id}", tags=['user'])

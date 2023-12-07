@@ -119,3 +119,8 @@ class ParkingLot(BaseModel):
     num_col: int = 0
     num_floor: int = 0
     floor_info: list[FloorInfo] = Field(default_factory=list)
+
+class IdNamePair(BaseModel):
+    '''The return model for id & name'''
+    id: int
+    name: str
