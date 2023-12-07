@@ -24,19 +24,18 @@ export const NavigationBar = (): any => {
     // This will be run on component mount
     const callbackId = instance.addEventCallback((event: any) => {
       if (event.eventType === EventType.LOGIN_SUCCESS && event.payload.account != null) {
-        console.log(event)
         const idTokenClaims = event.payload.idTokenClaims
         const idToken = event.payload.idToken
         localStorage.setItem('idToken', idToken)
         axios.get('users/', getAxiosConfig())
           .then(response => {
-            console.log('user exists ' + idTokenClaims.sub)
+            console.log('user exists ')
           })
           .catch(error => {
             console.error(error)
             console.log('new user')
             axios.post('users/', {
-              user_id: idTokenClaims.sub,
+              user_id: idTokenClaims.oid,
               name: idTokenClaims.name,
               email: idTokenClaims.preferred_username,
               phone_num: idTokenClaims.phone_num,
