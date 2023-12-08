@@ -17,6 +17,7 @@ import Setting from './pages/Setting'
 import Vehicle from './pages/Vehicle'
 import AuthContextProvider, { AuthContext } from './contexts/AuthContext'
 import axios from 'axios'
+import ParkingLotList from './pages/ParkingLotList'
 
 /**
  * MSAL should be instantiated outside of the component tree to prevent it from being re-instantiated on re-renders.
@@ -77,7 +78,8 @@ root.render(
           </Route>
           <Route element={<UserRoutes />}>
             <Route path="/" element={<Home instance={msalInstance}/>} />
-            <Route path="/parkingLot/:id" element={<ParkingLotPage />} />
+            <Route path="/parkingLots" element={<ParkingLotList instance={msalInstance}/>} />
+            <Route path="/parkingLots/:id" element={<ParkingLotPage instance={msalInstance}/>} />
             <Route path="/setting" element={<Setting instance={msalInstance}/>} />
             <Route path="/vehicle" element={<Vehicle instance={msalInstance}/>} />
           </Route>

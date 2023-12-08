@@ -32,7 +32,7 @@ const LotCard = (props: SlotCardProps): React.ReactElement => {
       <div style={{ fontSize: '1.5em', fontWeight: 'bold' }}>{props.title}</div>
       <div style={{ fontSize: '3em', fontWeight: 'bold' }}>{props.value}</div>
       <Flex justify='flex-end' style={{ width: '80%' }}>
-        <Link to={`parkingLot/${props.id}`} style={{ color: 'white' }}>
+        <Link to={`parkingLots/${props.id}`} style={{ color: 'white' }}>
           <ArrowRightOutlined style={{ fontSize: '1.5em' }} />
         </Link>
       </Flex>
@@ -54,7 +54,7 @@ interface VehicleInfo {
   position: string
 }
 
-interface UserInfo {
+export interface UserInfo {
   favorite_buildings: BuildingInfo[]
   parked_vehicles: VehicleInfo[]
 }
