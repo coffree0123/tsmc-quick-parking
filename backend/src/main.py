@@ -30,19 +30,33 @@ async def lifespan(app: FastAPI):
     # set up database
     app.state.database = QuickParkingDB(DB_CONNECT)
 
+    
+    def mock_authentication(request: Request):
+        '''Mock authentication'''
+        request.state.token_claims = {
+            "sub": request.headers['authorization'].split(' ')[1], 
+            "roles": ["guard"]
+        }
+
+    print(os.environ.get('SKIP_AUTH', 'False'))
+    if os.environ.get('SKIP_AUTH', 'False') == 'True':
+        print("Skip authentication")
+        app.dependency_overrides[authentication] = mock_authentication
+    else:
+        print("Enable authentication")
+
     yield
     '''Shutdown Routines'''
 
 app = FastAPI(lifespan=lifespan)
 
-
-def mock_authentication(request: Request):
-    '''Mock authentication'''
-    request.state.token_claims = {
-        "sub": request.headers['authorization'].split(' ')[1], 
-        "roles": "guard"
-    }
-
+# set up CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 if __name__ == '__main__':
     # parse arguments
@@ -54,14 +68,6 @@ if __name__ == '__main__':
     parser.add_argument("--port", default=os.environ.get("PROD_PORT",
                         '8000'), type=str, help="Port number")
     args = parser.parse_args()
-
-    # set up CORS
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
 
     # logging
     logger = logging.getLogger("uvicorn.access")
@@ -76,15 +82,10 @@ if __name__ == '__main__':
     logger.addHandler(handler)
 
     # authentication
-    if args.skip_auth:
-        print("Skip authentication")
-        app.dependency_overrides[authentication] = mock_authentication
-    else:
-        print("Enable authentication")
+    os.environ['SKIP_AUTH'] = str(args.skip_auth)
 
     # Start the server
-    uvicorn.run(app, host=args.host, port=int(args.port))
-
+    uvicorn.run('src.main:app', host=args.host, port=int(args.port), reload=True)
 
 @app.get("/")
 def index():
