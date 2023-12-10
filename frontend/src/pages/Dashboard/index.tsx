@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { Col, Input, Layout, List, Row, Space, Typography } from 'antd'
+import { Col, Input, Layout, List, Row, Space, Typography, Select, DatePicker } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
-import ParkingLot from '../../components/ParkingLot'
+import { Line } from '@ant-design/charts'
+// import ParkingLot from '../../components/ParkingLot'
 import LogOutButton from '../../components/LogOutButton'
 import { MsalProvider } from '@azure/msal-react'
 import axios from 'axios'
+import dayjs from 'dayjs'
 
 const { Header, Content } = Layout
 const { Title } = Typography
+const { RangePicker } = DatePicker
 
 interface VehicleProps {
   license: string
@@ -40,11 +43,16 @@ interface OccupantRes {
   start_time: string
 }
 
+interface TimeRecordInfo {
+  time: string
+  value: number
+}
+
 const Occupants = (props: { id: number }): React.ReactElement => {
   const [occupants, setOccupants] = useState<OccupantInfo[]>([])
 
   useEffect(() => {
-    axios.get<OccupantRes[]>(`parkinglots/${props.id}/long-term-occupants`)
+    axios.get<OccupantRes[]>(`guards/parkinglots/${props.id}/long-term-occupants`)
       .then(response => {
         setOccupants(response.data.map(item => ({
           position: item.postion,
@@ -66,6 +74,79 @@ const Occupants = (props: { id: number }): React.ReactElement => {
         </List.Item>
       )}
     />
+  )
+}
+const Chart = (): React.ReactElement => {
+  const [timeRecords, setTimeRecords] = useState<TimeRecordInfo[]>([])
+  const [parkingLotID, setParkingLotID] = useState<string>('1')
+  const [floor, setFloor] = useState<string>('1')
+  const [timeRange, setTimeRange] = useState<string[]>([dayjs().subtract(1, 'day').toString(), dayjs().toString()])
+  // const [interval, setInterval] = useState<string>('1H')
+
+  useEffect(() => {
+    axios.get<TimeRecordInfo[]>(`guards/dashboard/time-records?parkinglot_id=${parkingLotID}&floor=${floor}&start_time=${timeRange[0]}&end_time=${timeRange[1]}&interval=1H`)
+      .then(response => {
+        setTimeRecords(response.data.map(item => ({
+          time: item.time,
+          value: item.value
+        })))
+      })
+      .catch(error => { console.error(error) })
+  }, [parkingLotID, floor, timeRange])
+
+  const config = {
+    data: timeRecords,
+    width: 800,
+    height: 400,
+    autoFit: false,
+    xField: 'time',
+    yField: 'value',
+    point: {
+      size: 5,
+      shape: 'diamond'
+    },
+    label: {
+      style: {
+        fill: '#aaa'
+      }
+    }
+  }
+  return (
+    <React.Fragment>
+      <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
+        <Space wrap>
+          Pakring Lot
+          <Select
+            defaultValue="1"
+            style={{ width: 120 }}
+            options={[
+              { value: '1', label: '1' },
+              { value: '2', label: '2' }
+            ]}
+            onChange={(val) => { setParkingLotID(val) }}
+          />
+          Floor
+          <Select
+            defaultValue="1"
+            style={{ width: 120 }}
+            options={[
+              { value: '1', label: '1' },
+              { value: '2', label: '2' }
+            ]}
+            onChange={(val) => { setFloor(val) }}
+          />
+        </Space>
+        <Space wrap>
+          <RangePicker
+            showTime={{ format: 'HH:mm' }}
+            format="YYYY-MM-DD HH:mm"
+            defaultValue={[dayjs().subtract(1, 'day'), dayjs()]}
+            onChange={(time, timeString) => { setTimeRange(timeString) }}
+          />
+        </Space>
+        <Line {...config} />
+      </Space>
+    </React.Fragment>
   )
 }
 
@@ -97,13 +178,18 @@ const Dashboard = ({ instance }: any): React.ReactElement => {
         }}
       >
         <Row>
+          <Col span={18} offset={6}>
+            <Chart />
+          </Col>
+        </Row>
+        <Row>
           <Col span={12}>
             <Title level={3}>Long-term occupants</Title>
             <Occupants id={1} />
           </Col>
-          <Col span={12}>
+          {/* <Col span={12}>
             <ParkingLot id={1} />
-          </Col>
+          </Col> */}
         </Row>
       </Content>
     </Layout>
