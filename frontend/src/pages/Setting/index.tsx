@@ -12,7 +12,7 @@ interface UserInfo {
   job_title: string
   name: string
   phone_num: string
-  special_role: string
+  priority: string
   user_id: string
 }
 
@@ -78,8 +78,12 @@ const Setting = ({ instance }: any): React.ReactElement => {
       <Form.Item name="age">
         <InputNumber addonBefore="age" />
       </Form.Item>
-      <Form.Item name="special_role">
-        <Input addonBefore="special role" />
+      <Form.Item name="priority">
+        <Radio.Group>
+          <Radio value={'normal'}>normal</Radio>
+          <Radio value={'disability'}>disability</Radio>
+          <Radio value={'pregnancy'}>pregnancy</Radio>
+        </Radio.Group>
       </Form.Item>
       </Form>
       <Button onClick={saveClick}>Save</Button>

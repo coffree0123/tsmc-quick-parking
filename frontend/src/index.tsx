@@ -40,7 +40,7 @@ msalInstance.addEventCallback((event: any) => {
 })
 
 const PubliceDefaultURL = '/app'
-const UserDefaultURL = '/'
+const UserDefaultURL = '/vehicle'
 const GuardDefaultURL = '/dashboard'
 
 const RestrictedPublicRoutes = (): React.ReactElement => {
