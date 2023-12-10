@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { Col, Input, Layout, List, Row, Space, Typography, Select, DatePicker } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import { Line } from '@ant-design/charts'
-// import ParkingLot from '../../components/ParkingLot'
+import ParkingLot from '../../components/ParkingLot'
 import LogOutButton from '../../components/LogOutButton'
 import { MsalProvider } from '@azure/msal-react'
 import axios from 'axios'
 import dayjs from 'dayjs'
+import { getAxiosConfig } from '../../utils/api'
 
 const { Header, Content } = Layout
 const { Title } = Typography
@@ -52,7 +53,7 @@ const Occupants = (props: { id: number }): React.ReactElement => {
   const [occupants, setOccupants] = useState<OccupantInfo[]>([])
 
   useEffect(() => {
-    axios.get<OccupantRes[]>(`guards/parkinglots/${props.id}/long-term-occupants`)
+    axios.get<OccupantRes[]>(`guards/parkinglots/${props.id}/long-term-occupants`, getAxiosConfig())
       .then(response => {
         setOccupants(response.data.map(item => ({
           position: item.postion,
@@ -84,7 +85,7 @@ const Chart = (): React.ReactElement => {
   // const [interval, setInterval] = useState<string>('1H')
 
   useEffect(() => {
-    axios.get<TimeRecordInfo[]>(`guards/dashboard/time-records?parkinglot_id=${parkingLotID}&floor=${floor}&start_time=${timeRange[0]}&end_time=${timeRange[1]}&interval=1H`)
+    axios.get<TimeRecordInfo[]>(`guards/dashboard/time-records?parkinglot_id=${parkingLotID}&floor=${floor}&start_time=${timeRange[0]}&end_time=${timeRange[1]}&interval=1H`, getAxiosConfig())
       .then(response => {
         setTimeRecords(response.data.map(item => ({
           time: item.time,
@@ -187,9 +188,9 @@ const Dashboard = ({ instance }: any): React.ReactElement => {
             <Title level={3}>Long-term occupants</Title>
             <Occupants id={1} />
           </Col>
-          {/* <Col span={12}>
+          <Col span={12}>
             <ParkingLot id={1} />
-          </Col> */}
+          </Col>
         </Row>
       </Content>
     </Layout>
