@@ -7,7 +7,8 @@ CREATE TYPE "carSize" AS ENUM (
 
 CREATE TYPE "priorityType" AS ENUM (
   'pregnancy',
-  'disability'
+  'disability',
+  'normal'
 );
 
 CREATE TABLE "Cars" (
@@ -25,7 +26,7 @@ CREATE TABLE "Users" (
   "gender" varchar,
   "age" integer,
   "jobTitle" varchar,
-  "priority" "priorityType"
+  "priority" "priorityType" DEFAULT 'normal'
 );
 
 CREATE TABLE "ParkingSlots" (
@@ -33,7 +34,7 @@ CREATE TABLE "ParkingSlots" (
   "parkingLotID" integer,
   "index" integer,
   "floor" integer,
-  "priority" "priorityType"
+  "priority" "priorityType" DEFAULT 'normal'
 );
 
 CREATE TABLE "ParkingLots" (
