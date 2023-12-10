@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Col, Input, Layout, List, Row, Space, Typography, Select, DatePicker } from 'antd'
+import { Col, Input, Layout, List, Row, Space, Typography, Select, DatePicker, InputNumber } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import { Line } from '@ant-design/charts'
 import ParkingLot from '../../components/ParkingLot'
@@ -49,6 +49,15 @@ interface TimeRecordInfo {
   value: number
 }
 
+interface TimeRecordQuery {
+  parkinglot_id: number
+  floor: number
+  start_time: string
+  end_time: string
+  interval: number
+  time_unit: string
+}
+
 const Occupants = (props: { id: number }): React.ReactElement => {
   const [occupants, setOccupants] = useState<OccupantInfo[]>([])
 
@@ -79,13 +88,20 @@ const Occupants = (props: { id: number }): React.ReactElement => {
 }
 const Chart = (): React.ReactElement => {
   const [timeRecords, setTimeRecords] = useState<TimeRecordInfo[]>([])
-  const [parkingLotID, setParkingLotID] = useState<string>('1')
-  const [floor, setFloor] = useState<string>('1')
-  const [timeRange, setTimeRange] = useState<string[]>([dayjs().subtract(1, 'day').toString(), dayjs().toString()])
-  // const [interval, setInterval] = useState<string>('1H')
+  const [query, setQuery] = useState<TimeRecordQuery>({
+    parkinglot_id: 1,
+    floor: 1,
+    start_time: dayjs().subtract(1, 'day').toString(),
+    end_time: dayjs().toString(),
+    interval: 1,
+    time_unit: 'H'
+  })
 
+  const changeQuery = (identifier: any, value: any): void => {
+    setQuery((prevQuery) => ({ ...prevQuery, [identifier]: value }))
+  }
   useEffect(() => {
-    axios.get<TimeRecordInfo[]>(`guards/dashboard/time-records?parkinglot_id=${parkingLotID}&floor=${floor}&start_time=${timeRange[0]}&end_time=${timeRange[1]}&interval=1H`, getAxiosConfig())
+    axios.get<TimeRecordInfo[]>(`guards/dashboard/time-records?parkinglot_id=${query.parkinglot_id}&floor=${query.floor}&start_time=${query.start_time}&end_time=${query.end_time}&interval=${query.interval}${query.time_unit}`, getAxiosConfig())
       .then(response => {
         setTimeRecords(response.data.map(item => ({
           time: item.time,
@@ -93,7 +109,7 @@ const Chart = (): React.ReactElement => {
         })))
       })
       .catch(error => { console.error(error) })
-  }, [parkingLotID, floor, timeRange])
+  }, [query])
 
   const config = {
     data: timeRecords,
@@ -124,7 +140,7 @@ const Chart = (): React.ReactElement => {
               { value: '1', label: '1' },
               { value: '2', label: '2' }
             ]}
-            onChange={(val) => { setParkingLotID(val) }}
+            onChange={(val) => { changeQuery('parkinglot_id', val) }}
           />
           Floor
           <Select
@@ -134,7 +150,7 @@ const Chart = (): React.ReactElement => {
               { value: '1', label: '1' },
               { value: '2', label: '2' }
             ]}
-            onChange={(val) => { setFloor(val) }}
+            onChange={(val) => { changeQuery('floor', val) }}
           />
         </Space>
         <Space wrap>
@@ -142,7 +158,23 @@ const Chart = (): React.ReactElement => {
             showTime={{ format: 'HH:mm' }}
             format="YYYY-MM-DD HH:mm"
             defaultValue={[dayjs().subtract(1, 'day'), dayjs()]}
-            onChange={(time, timeString) => { setTimeRange(timeString) }}
+            onChange={(time, timeString) => {
+              changeQuery('start_time', timeString[0])
+              changeQuery('end_time', timeString[1])
+            }}
+          />
+          every
+          <InputNumber min={1} defaultValue={1} onChange={(val) => { changeQuery('interval', val) }} />
+          <Select
+            defaultValue="H"
+            style={{ width: 120 }}
+            options={[
+              { value: 'D', label: 'Day' },
+              { value: 'H', label: 'Hour' },
+              { value: 'T', label: 'Minute' },
+              { value: 'S', label: 'Second' }
+            ]}
+            onChange={(val) => { changeQuery('time_unit', val) }}
           />
         </Space>
         <Line {...config} />

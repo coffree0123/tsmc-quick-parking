@@ -3,11 +3,22 @@ VALUES
     ('Building A', 5, 6, 2),
     ('Factory B', 10, 20, 4);
 
-INSERT INTO "ParkingSlots"("parkingLotID", "index", "floor", "priority") 
-VALUES
-    (1, 1, 1, 'pregnancy'),
-    (1, 1, 2, 'disability'),
-    (2, 1, 1, 'normal');
+-- INSERT INTO "ParkingSlots"("parkingLotID", "index", "floor", "priority") 
+-- VALUES
+--     (1, 1, 1, 'pregnancy'),
+--     (1, 1, 2, 'disability'),
+--     (2, 1, 1, 'normal');
+
+INSERT INTO "ParkingSlots" ("parkingLotID", "index", "floor", "priority")
+SELECT
+    pl.id AS "parkingLotID",
+    row_num * pl."numCol" + col_num AS "index",
+    fl.floor_num AS "floor",
+    (enum_range(NULL::"priorityType"))[floor(random() * 3 + 1)] AS "priority"
+FROM "ParkingLots" pl
+CROSS JOIN LATERAL generate_series(1, pl."numFloor") fl(floor_num)
+CROSS JOIN LATERAL generate_series(0, pl."numRow"-1) rows(row_num)
+CROSS JOIN LATERAL generate_series(0, pl."numCol"-1) cols(col_num);
 
 INSERT INTO "Users" ("id", "name", "email", "phoneNo", "gender", "age", "jobTitle", "priority")
 VALUES
