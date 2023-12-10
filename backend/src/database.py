@@ -518,7 +518,7 @@ class QuickParkingDB():
         FROM "ParkingRecords" pr
         JOIN "ParkingSlots" ps ON pr."slotID" = ps.id
         WHERE ps."parkingLotID" = %s
-        AND pr."endTime" >= %s
+        AND (pr."endTime" >= %s or pr."endTime" IS NULL)
         AND pr."startTime" < %s;
         """
 
