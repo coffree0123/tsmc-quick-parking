@@ -30,7 +30,6 @@ async def lifespan(app: FastAPI):
     # set up database
     app.state.database = QuickParkingDB(DB_CONNECT)
 
-    
     def mock_authentication(request: Request):
         '''Mock authentication'''
         request.state.token_claims = {
