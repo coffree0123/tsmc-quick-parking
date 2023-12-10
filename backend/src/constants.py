@@ -5,17 +5,7 @@ from datetime import datetime
 from typing import Union
 from pydantic import BaseModel, Field
 
-
-# Parking Constants
-class ParkingRecord(BaseModel):
-    '''return type of parking record'''
-    license_plate_no: Union[str, None] = None
-    parkinglot_name: Union[str, None] = None
-    position: Union[str, None] = None
-    start_time: Union[datetime, None] = None
-    end_time: Union[datetime, None] = None
-
-# Vehicles constants
+# Enum
 class VehicleSize(str, Enum):
     '''Vehicle sizes'''
     SMALL = "small"
@@ -29,6 +19,38 @@ class VehicleCategory(str, Enum):
     CAR = "car"
 
 
+class Role(str, Enum):
+    '''User roles'''
+    ENGINEER = "engineer"
+    MANAGER = "manager"
+    QA = "qa"
+    PM = "pm"
+
+
+class Gender(str, Enum):
+    '''User genders'''
+    MALE = "male"
+    FEMALE = "female"
+
+
+class Priority(str, Enum):
+    '''Priority Level'''
+    NORMAL = "normal"
+    PREGNANCY = "pregnancy"
+    DISABILITY = "disability"
+
+
+# Parking Constants
+class ParkingRecord(BaseModel):
+    '''return type of parking record'''
+    license_plate_no: Union[str, None] = None
+    parkinglot_name: Union[str, None] = None
+    position: Union[str, None] = None
+    start_time: Union[datetime, None] = None
+    end_time: Union[datetime, None] = None
+
+
+# Vehicles constants
 @dataclass
 class Vehicle:
     '''Return type of vehicle'''
@@ -47,7 +69,7 @@ class OwnerInfo:
     job_title: str = ""
     email: str = ""
     phone: str = ""
-    priority: str = ""
+    priority: Priority | None = None
 
 
 class VehicleAndOwner(BaseModel):
@@ -80,20 +102,6 @@ class UserInfo(BaseModel):
     parked_vehicles: list[Vehicle]
 
 
-class Role(str, Enum):
-    '''User roles'''
-    ENGINEER = "engineer"
-    MANAGER = "manager"
-    QA = "qa"
-    PM = "pm"
-
-
-class Gender(str, Enum):
-    '''User genders'''
-    MALE = "male"
-    FEMALE = "female"
-
-
 class UserData(BaseModel):
     '''User info data'''
     user_id: str
@@ -103,7 +111,7 @@ class UserData(BaseModel):
     gender: Gender
     age: int
     job_title: Role
-    priority: str = "None"
+    priority: Priority | None = ""
 
 
 class Slot(BaseModel):

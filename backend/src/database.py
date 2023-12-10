@@ -42,7 +42,7 @@ class QuickParkingDB():
         '''Update a user's information in the database'''
         sql_query = """
         UPDATE "Users" SET "name" = %s, "email" = %s, 
-        "phoneNo" = %s, "gender" = %s, "age" = %s, "jobTitle" = %s, "priority" = %s 
+        "phoneNo" = %s, "gender" = %s, "age" = %s, "jobTitle" = %s, "priority" = %s
         WHERE id = %s;
         """
 
@@ -67,7 +67,7 @@ class QuickParkingDB():
         FROM
             "Users"
         WHERE 
-            "id" = %s
+            "id" = %s;
         """
 
         with self._connection_pools.connection() as conn:
@@ -356,7 +356,7 @@ class QuickParkingDB():
         FROM "ParkingSlots"
         WHERE
             "parkingLotID" = %s AND
-            "priority" IS NOT NULL
+            "priority" != 'normal'
         ORDER BY floor ASC, index ASC;
         """
         with self._connection_pools.connection() as conn:
