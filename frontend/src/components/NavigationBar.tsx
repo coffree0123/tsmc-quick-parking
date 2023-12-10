@@ -26,6 +26,7 @@ export const NavigationBar = (): any => {
       if (event.eventType === EventType.LOGIN_SUCCESS && event.payload.account != null) {
         const idTokenClaims = event.payload.idTokenClaims
         const idToken = event.payload.idToken
+        // console.log(idTokenClaims)
         localStorage.setItem('idToken', idToken)
         axios.get('users/', getAxiosConfig())
           .then(response => {
@@ -42,7 +43,7 @@ export const NavigationBar = (): any => {
               gender: idTokenClaims.gender,
               age: idTokenClaims.age,
               job_title: idTokenClaims.job_title,
-              special_role: idTokenClaims.special_role
+              priority: idTokenClaims.priority
             }, getAxiosConfig())
               .then(function (response) {
                 console.log(response)

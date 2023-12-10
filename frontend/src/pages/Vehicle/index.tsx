@@ -15,6 +15,8 @@ interface VehicleInfo {
 const Vehicle = ({ instance }: any): React.ReactElement => {
   const [vehicleInfo, setVehicleInfo] = useState<VehicleInfo[]>([])
   const [addInfo, setAddInfo] = useState<VehicleInfo>()
+  const [currentVehicle, setCurrent] = useState(0)
+  const [vehicleCount, setCount] = useState(0)
   const [addForm] = Form.useForm()
   const [editForm] = Form.useForm()
 
@@ -32,12 +34,14 @@ const Vehicle = ({ instance }: any): React.ReactElement => {
   const onChange = (key: string | string[]): void => {
     // console.log(key)
     editForm.setFieldsValue(vehicleInfo[Number(key)])
+    setCurrent(Number(key))
   }
 
   const deleteClick = (event: any): void => {
-    axios.delete(`users/vehicles/${vehicleInfo[0].license_plate_no}`, getAxiosConfig())
+    axios.delete(`users/vehicles/${vehicleInfo[currentVehicle].license_plate_no}`, getAxiosConfig())
       .then(function (response) {
         console.log(response)
+        setCount(vehicleCount - 1)
       })
       .catch(function (error) {
         console.log(error)
@@ -48,7 +52,7 @@ const Vehicle = ({ instance }: any): React.ReactElement => {
     axios.post('users/vehicles/',
       addForm.getFieldsValue(), getAxiosConfig())
       .then(function (response) {
-        console.log(response)
+        setCount(vehicleCount + 1)
       })
       .catch(function (error) {
         console.log(error)
@@ -56,20 +60,50 @@ const Vehicle = ({ instance }: any): React.ReactElement => {
   }
 
   useEffect(() => {
-    axios.get<VehicleInfo[]>('users/user_vehicles/', getAxiosConfig())
+    axios.get('users/', getAxiosConfig())
       .then(response => {
-        console.log(response.data)
-        // console.log(localStorage.getItem('idToken'))
-        setVehicleInfo(response.data)
-        setAddInfo({
-          user_id: response.data[0].user_id,
-          license_plate_no: '',
-          nick_name: '',
-          car_size: ''
-        })
+        const userId = response.data.user_id
+        axios.get<VehicleInfo[]>('users/user_vehicles/', getAxiosConfig())
+          .then(response => {
+            console.log(response.data)
+            setVehicleInfo(response.data)
+            setAddInfo({
+              user_id: userId,
+              license_plate_no: '',
+              nick_name: '',
+              car_size: ''
+            })
+            setCount(response.data.length)
+          })
+          .catch(error => { console.error(error) })
       })
-      .catch(error => { console.error(error) })
+      .catch(error => {
+        console.error(error)
+      })
   }, [])
+
+  useEffect(() => {
+    axios.get('users/', getAxiosConfig())
+      .then(response => {
+        const userId = response.data.user_id
+        axios.get<VehicleInfo[]>('users/user_vehicles/', getAxiosConfig())
+          .then(response => {
+            console.log(response.data)
+            setVehicleInfo(response.data)
+            setAddInfo({
+              user_id: userId,
+              license_plate_no: '',
+              nick_name: '',
+              car_size: ''
+            })
+            setCount(response.data.length)
+          })
+          .catch(error => { console.error(error) })
+      })
+      .catch(error => {
+        console.error(error)
+      })
+  }, [vehicleCount])
 
   useEffect(() => {
     addForm.setFieldsValue(addInfo)
