@@ -332,13 +332,23 @@ class QuickParkingDB():
             SELECT
                 slots.floor,
                 slots.index,
-                records."licensePlateNo" AS license_plate_no
+                records."licensePlateNo" AS license_plate_no,
+                (CASE WHEN (
+                    slots.priority != 'normal' AND
+                    slots.priority != users.priority
+                ) THEN true ELSE false END) AS illegally_parked
             FROM "ParkingSlots" AS slots
             INNER JOIN "ParkingRecords" AS records
                 ON
                     slots."parkingLotID" = %s AND
                     records."endTime" IS NULL AND
                     slots.id = records."slotID"
+            INNER JOIN "Cars" AS cars
+                ON
+                    records."licensePlateNo" = cars."licensePlateNo"
+            INNER JOIN "Users" AS users
+                ON
+                    cars."userID" = users."id"
             ORDER BY floor ASC, index ASC;
         """
         with self._connection_pools.connection() as conn:
