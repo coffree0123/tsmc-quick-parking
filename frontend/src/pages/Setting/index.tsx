@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Input, Flex, Button, Radio, InputNumber, Form } from 'antd'
 import LogOutButton from '../../components/LogOutButton'
-import { MsalProvider } from '@azure/msal-react'
 import axios from 'axios'
 import { getAxiosConfig } from '../../utils/api'
 
@@ -16,12 +15,12 @@ interface UserInfo {
   user_id: string
 }
 
-const Setting = ({ instance }: any): React.ReactElement => {
+const Setting = (): React.ReactElement => {
   const [userInfo, setUserInfo] = useState<UserInfo>()
 
   const [form] = Form.useForm()
 
-  const saveClick = (event: any): void => {
+  const saveClick = (): void => {
     console.log(form.getFieldsValue())
     axios.put('users/', form.getFieldsValue(), getAxiosConfig())
       .then(function (response) {
@@ -46,7 +45,6 @@ const Setting = ({ instance }: any): React.ReactElement => {
   }, [userInfo])
 
   return (
-    <MsalProvider instance={instance}>
     <Flex vertical style={{ overflow: 'hidden' }}>
       <Form form={form}>
       <Form.Item name="user_id">
@@ -89,7 +87,6 @@ const Setting = ({ instance }: any): React.ReactElement => {
       <Button onClick={saveClick}>Save</Button>
       <LogOutButton />
     </Flex>
-    </MsalProvider>
   )
 }
 

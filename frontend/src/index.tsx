@@ -12,12 +12,12 @@ import { msalConfig } from './authConfig'
 import './styles/index.css'
 import Dashboard from './pages/Dashboard'
 import ParkingLotPage from './pages/ParkingLotPage'
-import Login from './pages/Login'
 import Setting from './pages/Setting'
 import Vehicle from './pages/Vehicle'
 import AuthContextProvider, { AuthContext } from './contexts/AuthContext'
 import axios from 'axios'
 import ParkingLotList from './pages/ParkingLotList'
+import { MsalProvider } from '@azure/msal-react'
 
 /**
  * MSAL should be instantiated outside of the component tree to prevent it from being re-instantiated on re-renders.
@@ -39,7 +39,7 @@ msalInstance.addEventCallback((event: any) => {
   }
 })
 
-const PubliceDefaultURL = '/app'
+const PubliceDefaultURL = '/login'
 const UserDefaultURL = '/vehicle'
 const GuardDefaultURL = '/dashboard'
 
@@ -70,24 +70,25 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <AuthContextProvider>
-        <Routes>
-          <Route element={<RestrictedPublicRoutes />}>
-            <Route path="/login" element={<Login />} />
-            <Route path="/app" element={<App instance={msalInstance}/>} />
-          </Route>
-          <Route element={<UserRoutes />}>
-            <Route path="/" element={<Home instance={msalInstance}/>} />
-            <Route path="/parkingLots" element={<ParkingLotList instance={msalInstance}/>} />
-            <Route path="/parkingLots/:id" element={<ParkingLotPage instance={msalInstance}/>} />
-            <Route path="/setting" element={<Setting instance={msalInstance}/>} />
-            <Route path="/vehicle" element={<Vehicle instance={msalInstance}/>} />
-          </Route>
-          <Route element={<GuardRoutes />}>
-            <Route path='/dashboard' element={<Dashboard instance={msalInstance}/>} />
-          </Route>
-        </Routes>
-      </AuthContextProvider>
+      <MsalProvider instance={msalInstance}>
+        <AuthContextProvider>
+          <Routes>
+            <Route element={<RestrictedPublicRoutes />}>
+              <Route path="/login" element={<App />} />
+            </Route>
+            <Route element={<UserRoutes />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/parkingLots" element={<ParkingLotList />} />
+              <Route path="/parkingLots/:id" element={<ParkingLotPage />} />
+              <Route path="/setting" element={<Setting />} />
+              <Route path="/vehicle" element={<Vehicle />} />
+            </Route>
+            <Route element={<GuardRoutes />}>
+              <Route path='/dashboard' element={<Dashboard />} />
+            </Route>
+          </Routes>
+        </AuthContextProvider>
+      </MsalProvider>
     </BrowserRouter>
   </React.StrictMode>
 )

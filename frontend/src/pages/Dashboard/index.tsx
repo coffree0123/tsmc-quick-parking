@@ -4,7 +4,6 @@ import { SearchOutlined } from '@ant-design/icons'
 import { Line } from '@ant-design/charts'
 import ParkingLot from '../../components/ParkingLot'
 import LogOutButton from '../../components/LogOutButton'
-import { MsalProvider } from '@azure/msal-react'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import { getAxiosConfig } from '../../utils/api'
@@ -183,9 +182,8 @@ const Chart = (): React.ReactElement => {
   )
 }
 
-const Dashboard = ({ instance }: any): React.ReactElement => {
+const Dashboard = (): React.ReactElement => {
   return (
-    <MsalProvider instance={instance}>
     <Layout>
       <Header
         style={{
@@ -226,7 +224,6 @@ const Dashboard = ({ instance }: any): React.ReactElement => {
         </Row>
       </Content>
     </Layout>
-    </MsalProvider>
   )
 }
 
