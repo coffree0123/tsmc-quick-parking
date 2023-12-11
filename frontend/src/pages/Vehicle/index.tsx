@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Input, Flex, Button, Radio, Form, Collapse } from 'antd'
 import LogOutButton from '../../components/LogOutButton'
-import { MsalProvider } from '@azure/msal-react'
 import axios from 'axios'
 import { getAxiosConfig } from '../../utils/api'
 
@@ -12,7 +11,7 @@ interface VehicleInfo {
   car_size: string
 }
 
-const Vehicle = ({ instance }: any): React.ReactElement => {
+const Vehicle = (): React.ReactElement => {
   const [vehicleInfo, setVehicleInfo] = useState<VehicleInfo[]>([])
   const [addInfo, setAddInfo] = useState<VehicleInfo>()
   const [currentVehicle, setCurrent] = useState(0)
@@ -110,7 +109,6 @@ const Vehicle = ({ instance }: any): React.ReactElement => {
   }, [addInfo])
 
   return (
-    <MsalProvider instance={instance}>
     <Flex vertical style={{ overflow: 'hidden' }}>
     <Collapse accordion onChange={onChange} items={vehicleInfo.map((vehicle, i) => ({
       key: i,
@@ -163,7 +161,6 @@ const Vehicle = ({ instance }: any): React.ReactElement => {
       <Button onClick={addClick}>Add</Button>
       <LogOutButton />
     </Flex>
-    </MsalProvider>
   )
 }
 

@@ -5,9 +5,8 @@ import { HeartFilled, HeartOutlined } from '@ant-design/icons'
 import axios from 'axios'
 import { type UserInfo } from '../Home'
 import { getAxiosConfig } from '../../utils/api'
-import { MsalProvider } from '@azure/msal-react'
 
-const ParkingLotList = ({ instance }: any): React.ReactElement => {
+const ParkingLotList = (): React.ReactElement => {
   const [favorites, setFavorotes] = useState<boolean[]>([])
   const lotList = useParkingLotList()
 
@@ -51,7 +50,6 @@ const ParkingLotList = ({ instance }: any): React.ReactElement => {
   }
 
   return (
-    <MsalProvider instance={instance}>
     <List
       size='large'
       bordered
@@ -69,7 +67,6 @@ const ParkingLotList = ({ instance }: any): React.ReactElement => {
         </List.Item>
       )}
     />
-    </MsalProvider>
   )
 }
 

@@ -3,7 +3,6 @@ import { ArrowRightOutlined } from '@ant-design/icons'
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import LogOutButton from '../../components/LogOutButton'
-import { MsalProvider } from '@azure/msal-react'
 import axios from 'axios'
 import { getAxiosConfig } from '../../utils/api'
 
@@ -59,7 +58,7 @@ export interface UserInfo {
   parked_vehicles: VehicleInfo[]
 }
 
-const Home = ({ instance }: any): React.ReactElement => {
+const Home = (): React.ReactElement => {
   const [userInfo, setUserInfo] = useState<UserInfo>()
 
   useEffect(() => {
@@ -71,7 +70,6 @@ const Home = ({ instance }: any): React.ReactElement => {
   }, [])
 
   return (
-    <MsalProvider instance={instance}>
     <Flex vertical style={{ overflow: 'hidden' }}>
       <Title>Hi Alice!</Title>
       <div>
@@ -116,7 +114,6 @@ const Home = ({ instance }: any): React.ReactElement => {
       </div>
       <LogOutButton />
     </Flex>
-    </MsalProvider>
   )
 }
 

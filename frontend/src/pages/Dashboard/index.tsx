@@ -4,10 +4,11 @@ import { SearchOutlined } from '@ant-design/icons'
 import { Line } from '@ant-design/charts'
 import ParkingLot from '../../components/ParkingLot'
 import LogOutButton from '../../components/LogOutButton'
-import { MsalProvider } from '@azure/msal-react'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import { getAxiosConfig } from '../../utils/api'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useParkingLot, useParkingLotList } from '../../hooks'
 
 const { Header, Content } = Layout
 const { Title } = Typography
@@ -50,7 +51,6 @@ interface TimeRecordInfo {
 }
 
 interface TimeRecordQuery {
-  parkinglot_id: number
   floor: number
   start_time: string
   end_time: string
@@ -71,7 +71,7 @@ const Occupants = (props: { id: number }): React.ReactElement => {
         })))
       })
       .catch(error => { console.error(error) })
-  }, [])
+  }, [props.id])
 
   return (
     <List
@@ -86,30 +86,34 @@ const Occupants = (props: { id: number }): React.ReactElement => {
     />
   )
 }
-const Chart = (): React.ReactElement => {
+const Chart = (props: { id: number }): React.ReactElement => {
   const [timeRecords, setTimeRecords] = useState<TimeRecordInfo[]>([])
   const [query, setQuery] = useState<TimeRecordQuery>({
-    parkinglot_id: 1,
     floor: 1,
     start_time: dayjs().subtract(1, 'day').toString(),
     end_time: dayjs().toString(),
     interval: 1,
     time_unit: 'H'
   })
+  const lotInfo = useParkingLot(props.id)
 
   const changeQuery = (identifier: any, value: any): void => {
     setQuery((prevQuery) => ({ ...prevQuery, [identifier]: value }))
   }
   useEffect(() => {
-    axios.get<TimeRecordInfo[]>(`guards/dashboard/time-records?parkinglot_id=${query.parkinglot_id}&floor=${query.floor}&start_time=${query.start_time}&end_time=${query.end_time}&interval=${query.interval}${query.time_unit}`, getAxiosConfig())
-      .then(response => {
-        setTimeRecords(response.data.map(item => ({
-          time: item.time,
-          value: item.value
-        })))
-      })
-      .catch(error => { console.error(error) })
-  }, [query])
+    if (lotInfo !== undefined && query.floor <= lotInfo.num_floor) {
+      axios.get<TimeRecordInfo[]>(`guards/dashboard/time-records?parkinglot_id=${props.id}&floor=${query.floor}&start_time=${query.start_time}&end_time=${query.end_time}&interval=${query.interval}${query.time_unit}`, getAxiosConfig())
+        .then(response => {
+          setTimeRecords(response.data.map(item => ({
+            time: item.time,
+            value: item.value
+          })))
+        })
+        .catch(error => { console.error(error) })
+    } else {
+      setQuery({ ...query, floor: 1 })
+    }
+  }, [query, props.id, lotInfo])
 
   const config = {
     data: timeRecords,
@@ -132,24 +136,15 @@ const Chart = (): React.ReactElement => {
     <React.Fragment>
       <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
         <Space wrap>
-          Pakring Lot
-          <Select
-            defaultValue="1"
-            style={{ width: 120 }}
-            options={[
-              { value: '1', label: '1' },
-              { value: '2', label: '2' }
-            ]}
-            onChange={(val) => { changeQuery('parkinglot_id', val) }}
-          />
           Floor
           <Select
-            defaultValue="1"
+            value={query.floor}
             style={{ width: 120 }}
-            options={[
-              { value: '1', label: '1' },
-              { value: '2', label: '2' }
-            ]}
+            options={
+              lotInfo === undefined
+                ? []
+                : lotInfo.floor_info.map((item, index) => ({ value: index + 1, label: item.floor }))
+            }
             onChange={(val) => { changeQuery('floor', val) }}
           />
         </Space>
@@ -183,9 +178,16 @@ const Chart = (): React.ReactElement => {
   )
 }
 
-const Dashboard = ({ instance }: any): React.ReactElement => {
+const Dashboard = (): React.ReactElement => {
+  const { id } = useParams()
+  const lotList = useParkingLotList()
+  const navigate = useNavigate()
+  const switchLot = (value: number): void => {
+    if (Number(id) !== value) {
+      navigate(`/dashboard/${value}`)
+    }
+  }
   return (
-    <MsalProvider instance={instance}>
     <Layout>
       <Header
         style={{
@@ -203,7 +205,15 @@ const Dashboard = ({ instance }: any): React.ReactElement => {
           <span style={{ width: '150px', color: '#B32A2A', fontWeight: 'bold' }} >Quick Parking</span>
           <Input prefix={<SearchOutlined />} placeholder='Search the vehicles' style={{ width: '250px' }} />
         </Space>
-        <LogOutButton />
+        <Space>
+          <Select
+            value={Number(id)}
+            style={{ width: 120 }}
+            options={lotList.map(item => ({ value: item.id, label: item.name }))}
+            onChange={switchLot}
+          />
+          <LogOutButton />
+        </Space>
       </Header>
       <Content
         style={{
@@ -212,21 +222,20 @@ const Dashboard = ({ instance }: any): React.ReactElement => {
       >
         <Row>
           <Col span={18} offset={6}>
-            <Chart />
+            <Chart id={Number(id)} />
           </Col>
         </Row>
         <Row>
           <Col span={12}>
             <Title level={3}>Long-term occupants</Title>
-            <Occupants id={1} />
+            <Occupants id={Number(id)} />
           </Col>
           <Col span={12}>
-            <ParkingLot id={1} />
+            <ParkingLot id={Number(id)} />
           </Col>
         </Row>
       </Content>
     </Layout>
-    </MsalProvider>
   )
 }
 

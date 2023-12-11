@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { MsalProvider, AuthenticatedTemplate, useMsal, UnauthenticatedTemplate } from '@azure/msal-react'
+import { AuthenticatedTemplate, useMsal, UnauthenticatedTemplate } from '@azure/msal-react'
 import { Button } from 'antd'
 import { PageLayout } from '../../components/PageLayout'
 // import { IdTokenData } from '../../components/DataDisplay'
@@ -51,13 +51,11 @@ const MainContent = (): any => {
 * PublicClientApplication instance via context as well as all hooks and components provided by msal-react. For more, visit:
 * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-react/docs/getting-started.md
 */
-const App = ({ instance }: any): any => {
+const App = (): React.ReactElement => {
   return (
-      <MsalProvider instance={instance}>
-          <PageLayout>
-              <MainContent />
-          </PageLayout>
-      </MsalProvider>
+    <PageLayout>
+        <MainContent />
+    </PageLayout>
   )
 }
 
