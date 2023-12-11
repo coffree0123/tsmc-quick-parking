@@ -1,7 +1,6 @@
 import { Flex, Skeleton, Tabs, Typography } from 'antd'
-import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { getAxiosConfig } from '../utils/api'
+import { type Slots, useParkingLot } from '../hooks'
 
 const { Title } = Typography
 
@@ -28,8 +27,6 @@ const ParkingSlot = (props: { name: string, slotInfo: SlotInfo }): React.ReactEl
     </div>
   )
 }
-
-type Slots = number[]
 
 interface ParkingLotMapProps {
   prefix: string
@@ -86,31 +83,9 @@ const ParkingLotMap = (props: ParkingLotMapProps): React.ReactElement => {
   )
 }
 
-interface FloorInfo {
-  floor: string
-  free_slots: Slots
-  priority_slots: Slots
-}
-
-interface LotInfo {
-  num_row: number
-  num_col: number
-  num_floor: number
-  floor_info: FloorInfo[]
-}
-
 const ParkingLot = (props: { id: number }): React.ReactElement => {
   const [floorId, setFloorId] = useState<number>(0)
-  const [lotInfo, setLotInfo] = useState<LotInfo>()
-
-  useEffect(() => {
-    axios.get<LotInfo>(`users/parkinglots/${props.id}`, getAxiosConfig())
-      .then(response => {
-        console.log(response.data)
-        setLotInfo(response.data)
-      })
-      .catch(error => { console.error(error) })
-  }, [])
+  const lotInfo = useParkingLot(props.id)
 
   const changeMap = (key: string): void => {
     setFloorId(Number(key))

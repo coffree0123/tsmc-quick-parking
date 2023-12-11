@@ -17,6 +17,7 @@ import Vehicle from './pages/Vehicle'
 import AuthContextProvider, { AuthContext } from './contexts/AuthContext'
 import axios from 'axios'
 import ParkingLotList from './pages/ParkingLotList'
+import DashboardRouter from './pages/DashboardRouter'
 import { MsalProvider } from '@azure/msal-react'
 
 /**
@@ -84,7 +85,8 @@ root.render(
               <Route path="/vehicle" element={<Vehicle />} />
             </Route>
             <Route element={<GuardRoutes />}>
-              <Route path='/dashboard' element={<Dashboard />} />
+              <Route path='/dashboard' element={<DashboardRouter />} />
+              <Route path='/dashboard/:id' element={<Dashboard />} />
             </Route>
           </Routes>
         </AuthContextProvider>
