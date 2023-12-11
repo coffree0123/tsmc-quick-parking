@@ -116,9 +116,11 @@ class UserData(BaseModel):
 
 class Slot(BaseModel):
     '''Object containing information of one slot'''
+    # including position, currently parked car, and the valid/invalid parked
     floor: Union[int, None] = None
     index: Union[int, None] = None
     license_plate_no: Union[str, None] = None
+    illegally_parked: Union[bool, None] = None
 
 class FloorInfo(BaseModel):
     '''Object containing information of one parking lot floor'''

@@ -67,6 +67,7 @@ def get_parkinglot(r: Request, parkinglot_id: int):
 
 @router.get(
     path="/guards/parkinglots/{parkinglot_id}",
+    tags=['guard'],
     response_model=ParkingLot,
     response_model_exclude_none=True,
 )
@@ -88,11 +89,13 @@ def get_parkinglot_for_guard(r: Request, parkinglot_id: int):
         for slot in slots:
             floors[slot["floor"]].append(extract_fn(slot))
         return floors
+
     parked_slots = collect_floor_info(
         r.app.state.database.get_parked_spaces(parkinglot_id),
         extract_fn=lambda slot: Slot(
             license_plate_no=slot["license_plate_no"],
-            index=slot["index"]
+            index=slot["index"],
+            illegally_parked=slot["illegally_parked"]
         ),
     )
     priority_slots = collect_floor_info(
