@@ -41,7 +41,7 @@ msalInstance.addEventCallback((event: any) => {
 })
 
 const PubliceDefaultURL = '/login'
-const UserDefaultURL = '/vehicle'
+const UserDefaultURL = '/'
 const GuardDefaultURL = '/dashboard'
 
 const RestrictedPublicRoutes = (): React.ReactElement => {
