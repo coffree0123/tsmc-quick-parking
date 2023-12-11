@@ -8,7 +8,7 @@ const LogOutButton = (): React.ReactElement => {
   function signOutClickHandler (instance: any): any {
     const logoutRequest = {
       account: activeAccount,
-      postLogoutRedirectUri: '/app'
+      postLogoutRedirectUri: '/login'
     }
     instance.logoutRedirect(logoutRequest)
   }

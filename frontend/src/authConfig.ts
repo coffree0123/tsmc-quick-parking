@@ -15,8 +15,8 @@ export const msalConfig = {
   auth: {
     clientId: '445f1017-2318-4b79-a470-9164afe1738b', // This is the ONLY mandatory field that you need to supply.
     authority: 'https://TrialTenantwU6R1d7g.ciamlogin.com/', // Replace the placeholder with your tenant subdomain
-    redirectUri: '/app', // Points to window.location.origin. You must register this URI on Azure Portal/App Registration.
-    postLogoutRedirectUri: '/app', // Indicates the page to navigate after logout.
+    redirectUri: '/login', // Points to window.location.origin. You must register this URI on Azure Portal/App Registration.
+    postLogoutRedirectUri: '/login', // Indicates the page to navigate after logout.
     navigateToLoginRequestUrl: false // If "true", will navigate back to the original request location before processing the auth code response.
   },
   cache: {
