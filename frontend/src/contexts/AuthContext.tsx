@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react'
+import React, { createContext, useState, useEffect } from 'react'
 
 interface AuthContextType {
   token?: string
@@ -19,12 +19,25 @@ const AuthContextProvider = (props: { children: React.ReactNode }): React.ReactE
   const [token, setToken] = useState<string | undefined>()
   const [isGuard, setIsGuard] = useState<boolean>(false)
 
+  useEffect(() => {
+    if (localStorage.getItem('token') !== null && localStorage.getItem('isGuard') !== null) {
+      console.log(localStorage.getItem('isGuard'))
+      console.log(localStorage.getItem('token'))
+      setIsGuard(JSON.parse(localStorage.getItem('isGuard') ?? '{}'))
+      setToken(JSON.stringify(localStorage.getItem('token') ?? '{}'))
+    }
+  }, [])
+
   const login = (token: string, isGuard: boolean = false): void => {
+    localStorage.setItem('token', token)
+    localStorage.setItem('isGuard', isGuard.toString())
     setIsGuard(isGuard)
     setToken(token)
   }
 
   const logout = (): void => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('isGuard')
     setToken(undefined)
     setIsGuard(false)
   }

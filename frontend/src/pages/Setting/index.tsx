@@ -3,6 +3,7 @@ import { Input, Flex, Button, Radio, InputNumber, Form } from 'antd'
 import LogOutButton from '../../components/LogOutButton'
 import axios from 'axios'
 import { getAxiosConfig } from '../../utils/api'
+import { MsalProvider } from '@azure/msal-react'
 
 interface UserInfo {
   age: number
@@ -15,7 +16,7 @@ interface UserInfo {
   user_id: string
 }
 
-const Setting = (): React.ReactElement => {
+const Setting = ({ instance }: any): React.ReactElement => {
   const [userInfo, setUserInfo] = useState<UserInfo>()
 
   const [form] = Form.useForm()
@@ -45,6 +46,7 @@ const Setting = (): React.ReactElement => {
   }, [userInfo])
 
   return (
+    <MsalProvider instance={instance}>
     <Flex vertical style={{ overflow: 'hidden' }}>
       <Form form={form}>
       <Form.Item name="user_id">
@@ -87,6 +89,7 @@ const Setting = (): React.ReactElement => {
       <Button onClick={saveClick}>Save</Button>
       <LogOutButton />
     </Flex>
+    </MsalProvider>
   )
 }
 
