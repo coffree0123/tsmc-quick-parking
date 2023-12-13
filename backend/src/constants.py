@@ -114,20 +114,21 @@ class UserData(BaseModel):
     priority: Union[Priority, None] = ""
 
 
-class Slot(BaseModel):
+class ParkedSlot(BaseModel):
     '''Object containing information of one slot'''
     # including position, currently parked car, and the valid/invalid parked
     floor: Union[int, None] = None
     index: Union[int, None] = None
     license_plate_no: Union[str, None] = None
     illegally_parked: Union[bool, None] = None
+    car_owner_enrolled: Union[bool, None] = None
 
 class FloorInfo(BaseModel):
     '''Object containing information of one parking lot floor'''
     floor: Union[str, None] = ""
     free_slots: Union[list[int], None] = None
     priority_slots: Union[list[int], None] = None
-    parked_slots: Union[list[Slot], None] = None
+    parked_slots: Union[list[ParkedSlot], None] = None
 
 class ParkingLot(BaseModel):
     '''Return class of parking lot (for user)'''
