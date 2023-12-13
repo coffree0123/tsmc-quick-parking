@@ -63,7 +63,7 @@ def test_create_user_with_invalid_token(mocker, mock_db, user_data):
 def test_create_user_with_valid_token(mocker, mock_db, user_data):
     '''Test create user'''
     def mock_authentication(request: Request):
-        request.state.token_claims = {"sub": user_data["user_id"]}
+        request.state.token_claims = {"oid": user_data["user_id"]}
     app.dependency_overrides[authentication] = mock_authentication
 
     mocker.patch("src.main.QuickParkingDB", return_value=mock_db)
@@ -77,7 +77,7 @@ def test_create_user_with_valid_token(mocker, mock_db, user_data):
 def test_update_user(mocker, mock_db, user_data):
     '''Test update user'''
     def mock_authentication(request: Request):
-        request.state.token_claims = {"sub": user_data["user_id"]}
+        request.state.token_claims = {"oid": user_data["user_id"]}
     app.dependency_overrides[authentication] = mock_authentication
 
     mocker.patch("src.main.QuickParkingDB", return_value=mock_db)
