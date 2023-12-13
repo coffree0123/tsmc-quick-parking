@@ -336,17 +336,18 @@ class QuickParkingDB():
                 (CASE WHEN (
                     slots.priority != 'normal' AND
                     slots.priority != users.priority
-                ) THEN true ELSE false END) AS illegally_parked
+                ) THEN true ELSE false END) AS illegally_parked,
+                users."id" IS NOT NULL AS car_owner_enrolled
             FROM "ParkingSlots" AS slots
             INNER JOIN "ParkingRecords" AS records
                 ON
                     slots."parkingLotID" = %s AND
                     records."endTime" IS NULL AND
                     slots.id = records."slotID"
-            INNER JOIN "Cars" AS cars
+            LEFT JOIN "Cars" AS cars
                 ON
                     records."licensePlateNo" = cars."licensePlateNo"
-            INNER JOIN "Users" AS users
+            LEFT JOIN "Users" AS users
                 ON
                     cars."userID" = users."id"
             ORDER BY floor ASC, index ASC;
