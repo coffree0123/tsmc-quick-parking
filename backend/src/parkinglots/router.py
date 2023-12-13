@@ -1,6 +1,6 @@
 '''Parking Space Management Module'''
 from fastapi import APIRouter, Request, HTTPException, status, Depends
-from src.constants import ParkingLot, FloorInfo, ParkingRecord, Slot
+from src.constants import ParkingLot, FloorInfo, ParkingRecord, ParkedSlot
 from src.security import authentication, is_guard
 
 
@@ -92,10 +92,11 @@ def get_parkinglot_for_guard(r: Request, parkinglot_id: int):
 
     parked_slots = collect_floor_info(
         r.app.state.database.get_parked_spaces(parkinglot_id),
-        extract_fn=lambda slot: Slot(
+        extract_fn=lambda slot: ParkedSlot(
             license_plate_no=slot["license_plate_no"],
             index=slot["index"],
-            illegally_parked=slot["illegally_parked"]
+            illegally_parked=slot["illegally_parked"],
+            car_owner_enrolled=slot["car_owner_enrolled"],
         ),
     )
     priority_slots = collect_floor_info(
