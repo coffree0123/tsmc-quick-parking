@@ -33,8 +33,8 @@ async def lifespan(app: FastAPI):
     def mock_authentication(request: Request):
         '''Mock authentication'''
         request.state.token_claims = {
-            "sub": request.headers['authorization'].split(' ')[1], 
-            "roles": ["guard"]
+            "oid": request.headers['authorization'].split(' ')[1], 
+            "roles": ["Guard"]
         }
 
     print(os.environ.get('SKIP_AUTH', 'False'))

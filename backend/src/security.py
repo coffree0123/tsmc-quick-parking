@@ -65,7 +65,7 @@ authentication = JWTBearer()
 
 def get_user_id(request: Request) -> str:
     '''Get user_id from token claims in request.state'''
-    return request.state.token_claims['sub']
+    return request.state.token_claims['oid']
 
 def is_guard(request: Request) -> bool:
     '''Check if the person is guard from token claims in request.state'''
