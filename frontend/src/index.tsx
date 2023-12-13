@@ -75,14 +75,14 @@ root.render(
         <AuthContextProvider>
           <Routes>
             <Route element={<RestrictedPublicRoutes />}>
-              <Route path="/login" element={<App />} />
+              <Route path="/login" element={<App instance={msalInstance}/>} />
             </Route>
             <Route element={<UserRoutes />}>
               <Route path="/" element={<Home />} />
               <Route path="/parkingLots" element={<ParkingLotList />} />
               <Route path="/parkingLots/:id" element={<ParkingLotPage />} />
-              <Route path="/setting" element={<Setting />} />
-              <Route path="/vehicle" element={<Vehicle />} />
+              <Route path="/setting" element={<Setting instance={msalInstance}/>} />
+              <Route path="/vehicle" element={<Vehicle instance={msalInstance}/>} />
             </Route>
             <Route element={<GuardRoutes />}>
               <Route path='/dashboard' element={<DashboardRouter />} />
