@@ -26,8 +26,13 @@ export const NavigationBar = (): any => {
       if (event.eventType === EventType.LOGIN_SUCCESS && event.payload.account != null) {
         const idTokenClaims = event.payload.idTokenClaims
         const idToken = event.payload.idToken
-        // console.log(idTokenClaims)
-        localStorage.setItem('idToken', idToken)
+
+        if (typeof idTokenClaims.roles === 'undefined') {
+          login(idToken, false)
+        } else {
+          login(idToken, true)
+        }
+
         axios.get('users/', getAxiosConfig())
           .then(response => {
             console.log('user exists ')
@@ -52,11 +57,6 @@ export const NavigationBar = (): any => {
                 console.log(error)
               })
           })
-        if (typeof idTokenClaims.roles === 'undefined') {
-          login(idTokenClaims.sub, false)
-        } else {
-          login(idTokenClaims.sub, true)
-        }
       }
     })
 
