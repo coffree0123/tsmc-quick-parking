@@ -1,7 +1,8 @@
 '''Vehicles management module'''
 from fastapi import APIRouter, Request, HTTPException, status, Depends
-from src.constants import VehicleAndOwner, VehicleData
+from src.constants import VehicleAndOwner, VehicleData, ParkingRecord
 from src.security import authentication, get_user_id, is_guard
+from src.parkinglots.utils import fmt
 
 router = APIRouter(
     dependencies=[Depends(authentication)]
@@ -76,8 +77,13 @@ def get_vehicle_and_owner_info(r: Request, license_plate_no: str) -> VehicleAndO
             detail="Permission denied"
         )
     # get records of the query vehicle
-    vehicle_records = r.app.state.database.get_latest_records(
-        license_plate_no, None)
+    raw_records = r.app.state.database.get_latest_records(license_plate_no, None)
+    vehicle_records = [
+        ParkingRecord(
+            position=fmt(record["floor"], record["index"], record["num_row"], record["num_col"]),
+            **record
+        ) for record in raw_records
+    ]
     if not vehicle_records:
         raise HTTPException(
             status.HTTP_404_NOT_FOUND,

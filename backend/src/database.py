@@ -423,7 +423,7 @@ class QuickParkingDB():
                 cursor.close()
                 conn.close()
 
-    def get_latest_records(self, license_plate_no: str, user_id: str) -> list[ParkingRecord]:
+    def get_latest_records(self, license_plate_no: str, user_id: str) -> list[dict]:
         '''Retrieve the lastest 10 parking records'''
         num_records = 10
 
@@ -442,7 +442,10 @@ class QuickParkingDB():
         SELECT
             vehicles."licensePlateNo" AS license_plate_no,
             parkinglots.name AS parkinglot_name,
-            CONCAT('B', slots.floor, '#', slots.index) AS position,
+            parkinglots."numRow" AS num_row,
+            parkinglots."numCol" AS num_col,
+            slots.floor AS floor,
+            slots.index as index,
             records."startTime" AS start_time,
             records."endTime" AS end_time
         FROM (
@@ -462,7 +465,7 @@ class QuickParkingDB():
         """
 
         with self._connection_pools.connection() as conn:
-            with conn.cursor(row_factory=class_row(ParkingRecord)) as cursor:
+            with conn.cursor(row_factory=dict_row) as cursor:
                 res = cursor.execute(sql_query, params=params).fetchall()
         return res
 
