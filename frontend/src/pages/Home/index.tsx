@@ -1,10 +1,11 @@
-import { Flex, List, Skeleton, Typography } from 'antd'
+import { Col, Flex, List, Row, Skeleton, Typography } from 'antd'
 import { ArrowRightOutlined } from '@ant-design/icons'
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import LogOutButton from '../../components/LogOutButton'
 import axios from 'axios'
 import { getAxiosConfig } from '../../utils/api'
+import { getStayTime, formatStayTime } from '../Dashboard'
 
 const { Title } = Typography
 
@@ -101,11 +102,12 @@ const Home = (): React.ReactElement => {
                 bordered
                 dataSource={userInfo.parked_vehicles}
                 renderItem={(item) => (
-                  <List.Item>
-                    <Flex justify='space-between' style={{ width: '100%' }}>
-                      <div>{item.model !== '' ? item.model : item.license_plate_no}</div>
-                      <div>{item.parkinglot_name}, <span style={{ color: 'gray' }}>{item.position}</span></div>
-                    </Flex>
+                  <List.Item style={{ justifyContent: 'center', paddingLeft: '10px', paddingRight: '10px' }}>
+                    <Row style={{ width: '100%' }}>
+                      <Col span={6}>{item.model !== '' ? item.model : item.license_plate_no}</Col>
+                      <Col span={9}>{item.parkinglot_name}, <span style={{ color: 'gray' }}>{item.position}</span></Col>
+                      <Col span={9} style={{ textAlign: 'right' }}>{formatStayTime(getStayTime(item.start_time))}</Col>
+                    </Row>
                   </List.Item>
                 )}
               />
