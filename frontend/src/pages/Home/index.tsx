@@ -103,7 +103,7 @@ const Home = (): React.ReactElement => {
                 renderItem={(item) => (
                   <List.Item>
                     <Flex justify='space-between' style={{ width: '100%' }}>
-                      <div>{item.model}</div>
+                      <div>{item.model !== '' ? item.model : item.license_plate_no}</div>
                       <div>{item.parkinglot_name}, <span style={{ color: 'gray' }}>{item.position}</span></div>
                     </Flex>
                   </List.Item>

@@ -2,6 +2,7 @@
 from fastapi import APIRouter, Request, HTTPException, status, Depends
 from src.constants import ParkingLot, FloorInfo, ParkingRecord, ParkedSlot
 from src.security import authentication, is_guard
+from src.parkinglots.utils import fmt
 
 
 router = APIRouter(
@@ -142,12 +143,11 @@ def get_long_term_occupants(r: Request, parkinglot_id: int):
     parkinglot_info = parkinglot_info[0]
 
     # format the positions
-    num_slots_per_floor = int(parkinglot_info["numRow"]) * int(parkinglot_info["numCol"])
-    num_digits = len(str(num_slots_per_floor))
     occupants = r.app.state.database.get_long_term_occupants(parkinglot_id)
     for ocpt in occupants:
-        floor, idx = ocpt["floor"], ocpt["index"]
-        ocpt["position"] = f"B{floor}#{floor}{idx:0{num_digits}}"
+        ocpt["position"] = fmt(
+            ocpt["floor"], ocpt["index"], parkinglot_info["numRow"], parkinglot_info["numCol"]
+        )
 
     return [
         ParkingRecord(

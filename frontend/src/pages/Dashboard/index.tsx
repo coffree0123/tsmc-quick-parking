@@ -40,7 +40,7 @@ interface OccupantInfo {
 }
 
 interface OccupantRes {
-  postion: string
+  position: string
   license_plate_no: string
   start_time: string
 }
@@ -65,7 +65,7 @@ const Occupants = (props: { id: number }): React.ReactElement => {
     axios.get<OccupantRes[]>(`guards/parkinglots/${props.id}/long-term-occupants`, getAxiosConfig())
       .then(response => {
         setOccupants(response.data.map(item => ({
-          position: item.postion,
+          position: item.position,
           license: item.license_plate_no,
           startTime: Date.parse(item.start_time)
         })))
@@ -104,10 +104,13 @@ const Chart = (props: { id: number }): React.ReactElement => {
     if (lotInfo !== undefined && query.floor <= lotInfo.num_floor) {
       axios.get<TimeRecordInfo[]>(`guards/dashboard/time-records?parkinglot_id=${props.id}&floor=${query.floor}&start_time=${query.start_time}&end_time=${query.end_time}&interval=${query.interval}${query.time_unit}`, getAxiosConfig())
         .then(response => {
-          setTimeRecords(response.data.map(item => ({
-            time: item.time,
-            value: item.value
-          })))
+          setTimeRecords(response.data.map(item => {
+            const date = new Date(item.time + '+00:00')
+            return ({
+              time: `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}`,
+              value: item.value
+            })
+          }))
         })
         .catch(error => { console.error(error) })
     } else {
