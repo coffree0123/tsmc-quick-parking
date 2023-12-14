@@ -51,14 +51,13 @@ class ParkingRecord(BaseModel):
 
 
 # Vehicles constants
-@dataclass
-class Vehicle:
+class VehicleState(BaseModel):
     '''Return type of vehicle'''
     license_plate_no: str = ""
     model: str = ""
-    start_time: datetime = ""
-    parkinglot_name: str = ""
-    position: str = ""
+    start_time: Union[datetime, None] = None
+    parkinglot_name: Union[str, None] = ""
+    position: Union[str, None] = ""
 
 
 @dataclass
@@ -76,7 +75,7 @@ class VehicleAndOwner(BaseModel):
     '''Return model of vehicle and owner info'''
     vehicle_records: list[ParkingRecord] = Field(default_factory=list)
     owner_info: OwnerInfo = Field(default_factory=OwnerInfo)
-    owner_other_vehicles: list[Vehicle] = Field(default_factory=list)
+    owner_other_vehicles: list[VehicleState] = Field(default_factory=list)
 
 
 class VehicleData(BaseModel):
@@ -99,7 +98,7 @@ class BuildingInfo():
 class UserInfo(BaseModel):
     '''User information'''
     favorite_buildings: list[BuildingInfo]
-    parked_vehicles: list[Vehicle]
+    parked_vehicles: list[VehicleState]
 
 
 class UserData(BaseModel):
