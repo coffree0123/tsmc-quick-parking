@@ -1,8 +1,9 @@
 '''User management module'''
 import psycopg
 from fastapi import APIRouter, Request, HTTPException, status, Depends
-from src.constants import UserData, UserInfo, VehicleData
+from src.constants import UserData, UserInfo, VehicleData, VehicleState
 from src.security import authentication, get_user_id
+from src.parkinglots.utils import fmt
 
 router = APIRouter(
     prefix='/users',
@@ -97,9 +98,12 @@ def get_page_info(r: Request) -> UserInfo:
 
     # Get user's parked vehicles
     parked_vehicles = [
-        vehicle
+        VehicleState(
+            position=fmt(**vehicle),
+            **vehicle
+        )
         for vehicle in r.app.state.database.get_user_vehicle_states(user_id)
-        if vehicle.start_time is not None
+        if vehicle["start_time"] is not None
     ]
 
     return UserInfo(favorite_buildings=building_info_list,
