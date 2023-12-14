@@ -2,7 +2,7 @@
 import os
 from psycopg.rows import dict_row, class_row
 from psycopg_pool import ConnectionPool
-from src.constants import Role, Gender, VehicleSize, Vehicle, OwnerInfo, ParkingRecord, \
+from src.constants import Role, Gender, VehicleSize, OwnerInfo, ParkingRecord, \
     UserData, VehicleData, BuildingInfo
 
 DB_CONNECT = os.environ["DB_CONNECT"] \
@@ -268,15 +268,18 @@ class QuickParkingDB():
                 res = cursor.fetchall()
         return res
 
-    def get_user_vehicle_states(self, user_id: str) -> list[Vehicle]:
+    def get_user_vehicle_states(self, user_id: str) -> list[dict]:
         '''Retrive the user vehicles info and their current states in the parking lot'''
         sql_query = """
         SELECT
             cars."licensePlateNo" AS license_plate_no,
-            cars."model",
+            cars."model" AS model,
             records."startTime" AS start_time,
             parkinglots."name" AS parkinglot_name,
-            CONCAT('B', slots."floor", '#', slots."index") AS position
+            parkinglots."numRow" AS num_row,
+            parkinglots."numCol" AS num_col,
+            slots."floor" AS floor,
+            slots."index" AS index
         FROM (
             SELECT
                 "licensePlateNo",
@@ -295,7 +298,7 @@ class QuickParkingDB():
         """
 
         with self._connection_pools.connection() as conn:
-            with conn.cursor(row_factory=class_row(Vehicle)) as cursor:
+            with conn.cursor(row_factory=dict_row) as cursor:
                 cursor.execute(sql_query, (user_id,))
                 res = cursor.fetchall()
         return res
