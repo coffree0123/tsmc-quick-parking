@@ -1,29 +1,54 @@
-import { Flex, Skeleton, Tabs, Typography } from 'antd'
+import { Flex, Skeleton, Tabs } from 'antd'
 import React, { useEffect, useState } from 'react'
-import { type Slots, useParkingLot } from '../hooks'
-
-const { Title } = Typography
+import { type Slots, useParkingLot, type ParkingInfo } from '../hooks'
 
 interface SlotInfo {
   isFree: boolean
   hasPriority: boolean
+  license?: string
+  isIllegal?: boolean
+  enrolled?: boolean
 }
 
+const slotWidth = 100
+const slotHeight = 220
+
 const ParkingSlot = (props: { name: string, slotInfo: SlotInfo }): React.ReactElement => {
+  const slotStyle: Record<string, string> = {}
+  if (props.slotInfo.hasPriority) {
+    slotStyle.outline = 'dodgerblue 5px solid'
+    slotStyle.outlineOffset = '-10px'
+  }
+  if (props.slotInfo.isFree) {
+    slotStyle.backgroundColor = 'transparent'
+  } else {
+    if (typeof props.slotInfo.isIllegal !== 'undefined' && props.slotInfo.isIllegal) {
+      slotStyle.backgroundColor = 'red'
+    } else if (typeof props.slotInfo.enrolled !== 'undefined' && !props.slotInfo.enrolled) {
+      if (props.slotInfo.hasPriority) {
+        slotStyle.backgroundColor = 'orange'
+      } else {
+        slotStyle.backgroundColor = 'yellow'
+      }
+    } else {
+      slotStyle.backgroundColor = 'lightgray'
+    }
+  }
   return (
     <div
       style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        width: '66px',
-        height: '145px',
+        width: `${slotWidth}px`,
+        height: `${slotHeight}px`,
         border: 'gray 3px solid',
-        backgroundColor: props.slotInfo.isFree
-          ? (props.slotInfo.hasPriority ? 'lightblue' : 'transparent')
-          : 'lightgray'
+        textAlign: 'center',
+        ...slotStyle
       }}>
-      {props.slotInfo.isFree && props.name}
+      {
+        props.slotInfo.license !== undefined ? <>License:<br/>{props.slotInfo.license}</> : props.name
+      }
     </div>
   )
 }
@@ -32,14 +57,16 @@ interface ParkingLotMapProps {
   prefix: string
   numRows: number
   numCols: number
-  freeSlots: Slots
+  freeSlots?: Slots
   prioritySlots: Slots
+  parkedSlots?: ParkingInfo[]
 }
 
 const ParkingLotMap = (props: ParkingLotMapProps): React.ReactElement => {
+  const defaultFree = props.freeSlots === undefined
   const [map, setMap] = useState<SlotInfo[][]>(Array(props.numRows).fill(null).map(() => (
     Array(props.numCols).fill(null).map(() => ({
-      isFree: false,
+      isFree: defaultFree,
       hasPriority: false
     }))
   )))
@@ -48,7 +75,7 @@ const ParkingLotMap = (props: ParkingLotMapProps): React.ReactElement => {
   useEffect(() => {
     const newMap: SlotInfo[][] = Array(props.numRows).fill(null).map(() => (
       Array(props.numCols).fill(null).map(() => ({
-        isFree: false,
+        isFree: defaultFree,
         hasPriority: false
       }))
     ))
@@ -57,19 +84,30 @@ const ParkingLotMap = (props: ParkingLotMapProps): React.ReactElement => {
       const col = index % props.numCols
       return [row, col]
     }
-    for (const [row, col] of props.freeSlots.map(parseIndex)) {
-      newMap[row][col].isFree = true
+    if (props.freeSlots !== undefined) {
+      for (const [row, col] of props.freeSlots.map(parseIndex)) {
+        newMap[row][col].isFree = true
+      }
     }
     for (const [row, col] of props.prioritySlots.map(parseIndex)) {
       newMap[row][col].hasPriority = true
     }
+    if (props.parkedSlots !== undefined) {
+      for (const item of props.parkedSlots) {
+        const [row, col] = parseIndex(item.index)
+        newMap[row][col].isFree = false
+        newMap[row][col].license = item.license_plate_no
+        newMap[row][col].isIllegal = item.illegally_parked
+        newMap[row][col].enrolled = item.car_owner_enrolled
+      }
+    }
     setMap(newMap)
-  }, [props.freeSlots])
+  }, [props.freeSlots, props.parkedSlots, props.prioritySlots])
 
   return (
     <Flex vertical gap='middle' style={{ width: '100%', height: '500px', overflow: 'scroll' }}>
       {map.map((item, i) => (
-        <Flex key={i} gap='small' style={{ width: `${66 * props.numCols + 8 * (props.numCols - 1)}px` }}>
+        <Flex key={i} gap='small' style={{ width: `${slotWidth * props.numCols + 8 * (props.numCols - 1)}px` }}>
           {item.map((slotInfo, j) => (
             <ParkingSlot
               key={j}
@@ -93,7 +131,6 @@ const ParkingLot = (props: { id: number }): React.ReactElement => {
 
   return (
     <Flex vertical style={{ overflow: 'hidden' }}>
-      <Title level={3}>Map id: {props.id}</Title>
       {
         lotInfo === undefined
           ? <Skeleton active />
@@ -110,6 +147,7 @@ const ParkingLot = (props: { id: number }): React.ReactElement => {
                 numCols={lotInfo.num_col}
                 freeSlots={lotInfo.floor_info[floorId].free_slots}
                 prioritySlots={lotInfo.floor_info[floorId].priority_slots}
+                parkedSlots={lotInfo.floor_info[floorId].parked_slots}
               />
             </>
             )

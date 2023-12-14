@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 
 import { getAxiosConfig } from './utils/api'
+import { AuthContext } from './contexts/AuthContext'
 
 interface LotItem {
   id: number
@@ -22,10 +23,18 @@ export const useParkingLotList = (): LotItem[] => {
 
 export type Slots = number[]
 
+export interface ParkingInfo {
+  index: number
+  license_plate_no: string
+  illegally_parked: boolean
+  car_owner_enrolled: boolean
+}
+
 interface FloorInfo {
   floor: string
-  free_slots: Slots
+  free_slots?: Slots
   priority_slots: Slots
+  parked_slots?: ParkingInfo[]
 }
 
 interface LotInfo {
@@ -37,8 +46,9 @@ interface LotInfo {
 
 export const useParkingLot = (id: number): LotInfo | undefined => {
   const [lotInfo, setLotInfo] = useState<LotInfo>()
+  const { isGuard } = useContext(AuthContext)
   useEffect(() => {
-    axios.get<LotInfo>(`users/parkinglots/${id}`, getAxiosConfig())
+    axios.get<LotInfo>(`${isGuard ? 'guards' : 'users'}/parkinglots/${id}`, getAxiosConfig())
       .then(response => {
         setLotInfo(response.data)
       })
