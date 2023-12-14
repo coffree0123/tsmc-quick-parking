@@ -1,23 +1,13 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { Input, Flex, Button, Radio, InputNumber, Form } from 'antd'
 import LogOutButton from '../../components/LogOutButton'
 import axios from 'axios'
 import { getAxiosConfig } from '../../utils/api'
 import { MsalProvider } from '@azure/msal-react'
-
-interface UserInfo {
-  age: number
-  email: string
-  gender: string
-  job_title: string
-  name: string
-  phone_num: string
-  priority: string
-  user_id: string
-}
+import { useUserInfo } from '../../hooks'
 
 const Setting = ({ instance }: any): React.ReactElement => {
-  const [userInfo, setUserInfo] = useState<UserInfo>()
+  const userInfo = useUserInfo()
 
   const [form] = Form.useForm()
 
@@ -33,15 +23,6 @@ const Setting = ({ instance }: any): React.ReactElement => {
   }
 
   useEffect(() => {
-    axios.get<UserInfo>('users/', getAxiosConfig())
-      .then(response => {
-        setUserInfo(response.data)
-      })
-      .catch(error => { console.error(error) })
-  }, [])
-
-  useEffect(() => {
-    console.log(userInfo)
     form.setFieldsValue(userInfo)
   }, [userInfo])
 

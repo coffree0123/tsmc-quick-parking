@@ -3,7 +3,7 @@ import { Flex, List } from 'antd'
 import { useParkingLotList } from '../../hooks'
 import { HeartFilled, HeartOutlined } from '@ant-design/icons'
 import axios from 'axios'
-import { type UserInfo } from '../Home'
+import { type PageInfo } from '../Home'
 import { getAxiosConfig } from '../../utils/api'
 
 const ParkingLotList = (): React.ReactElement => {
@@ -12,7 +12,7 @@ const ParkingLotList = (): React.ReactElement => {
 
   useEffect(() => {
     if (lotList.length > 0 && lotList.length !== favorites.length) {
-      axios.get<UserInfo>('users/page_info/', getAxiosConfig())
+      axios.get<PageInfo>('users/page_info/', getAxiosConfig())
         .then(response => {
           const newFavorites = Array(lotList.length).fill(false)
           const id2Index: Record<number, number> = {}

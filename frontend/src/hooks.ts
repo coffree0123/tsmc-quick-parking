@@ -56,3 +56,28 @@ export const useParkingLot = (id: number): LotInfo | undefined => {
   }, [id])
   return lotInfo
 }
+
+interface UserInfo {
+  age: number
+  email: string
+  gender: string
+  job_title: string
+  name: string
+  phone_num: string
+  priority: string
+  user_id: string
+}
+
+export const useUserInfo = (): UserInfo | undefined => {
+  const [userInfo, setUserInfo] = useState<UserInfo>()
+
+  useEffect(() => {
+    axios.get<UserInfo>('users/', getAxiosConfig())
+      .then(response => {
+        setUserInfo(response.data)
+      })
+      .catch(error => { console.error(error) })
+  }, [])
+
+  return userInfo
+}

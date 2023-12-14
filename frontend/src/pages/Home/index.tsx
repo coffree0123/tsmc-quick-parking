@@ -6,6 +6,7 @@ import LogOutButton from '../../components/LogOutButton'
 import axios from 'axios'
 import { getAxiosConfig } from '../../utils/api'
 import { getStayTime, formatStayTime } from '../Dashboard'
+import { useUserInfo } from '../../hooks'
 
 const { Title } = Typography
 
@@ -54,35 +55,36 @@ interface VehicleInfo {
   position: string
 }
 
-export interface UserInfo {
+export interface PageInfo {
   favorite_buildings: BuildingInfo[]
   parked_vehicles: VehicleInfo[]
 }
 
 const Home = (): React.ReactElement => {
-  const [userInfo, setUserInfo] = useState<UserInfo>()
+  const [pageInfo, setPageInfo] = useState<PageInfo>()
+  const userInfo = useUserInfo()
 
   useEffect(() => {
-    axios.get<UserInfo>('users/page_info/', getAxiosConfig())
+    axios.get<PageInfo>('users/page_info/', getAxiosConfig())
       .then(response => {
-        setUserInfo(response.data)
+        setPageInfo(response.data)
       })
       .catch(error => { console.error(error) })
   }, [])
 
   return (
     <Flex vertical style={{ overflow: 'hidden' }}>
-      <Title>Hi Alice!</Title>
+      <Title>Hi{typeof userInfo !== 'undefined' && userInfo.name !== '' && ` ${userInfo.name}`}!</Title>
       <div>
         <Title level={2}>Your favorites</Title>
         <div style={{ overflowX: 'scroll' }}>
           {
-            userInfo === undefined
+            pageInfo === undefined
               ? <Skeleton active />
               : (
                 <Flex gap='large' style={{ width: '150%' }}>
                   {
-                    userInfo.favorite_buildings.map((item, index) => (
+                    pageInfo.favorite_buildings.map((item, index) => (
                       <LotCard key={index} title={item.building_name} value={Number(item.free_num)} id={item.build_id} />
                     ))
                   }
@@ -94,13 +96,13 @@ const Home = (): React.ReactElement => {
       <div>
         <Title level={2}>Parked Vehicles</Title>
         {
-          userInfo === undefined
+          pageInfo === undefined
             ? <Skeleton active />
             : (
               <List
                 size='large'
                 bordered
-                dataSource={userInfo.parked_vehicles}
+                dataSource={pageInfo.parked_vehicles}
                 renderItem={(item) => (
                   <List.Item style={{ justifyContent: 'center', paddingLeft: '10px', paddingRight: '10px' }}>
                     <Row style={{ width: '100%' }}>
