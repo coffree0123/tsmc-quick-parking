@@ -378,6 +378,39 @@ class QuickParkingDB():
                 res = cursor.execute(sql_query, (parkinglot_id,)).fetchall()
         return res
 
+    def check_valid_parking(self, slot_id: int, license_plate_no: str,
+                            start_time: str = None, end_time: str = None) -> bool:
+        '''Check if the parking is valid'''
+        res = False
+        if start_time:
+            check_query = """
+            SELECT *
+            FROM "ParkingRecords" AS records
+            WHERE (records."endTime" IS NULL
+            OR (records."endTime" >= %s AND records."startTime" <= %s))
+            AND (records."slotID" = %s OR records."licensePlateNo" = %s);
+            """
+            with self._connection_pools.connection() as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute(check_query, (start_time, start_time, slot_id, license_plate_no))
+                    result = cursor.fetchone()
+                    if result is None:
+                        res = True
+        if end_time:
+            check_query = """
+            SELECT 1
+            FROM "ParkingRecords" AS records
+            WHERE (records."endTime" >= %s AND records."startTime" <= %s)
+            AND (records."slotID" = %s OR records."licensePlateNo" = %s);
+            """
+            with self._connection_pools.connection() as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute(check_query, (end_time, end_time, slot_id, license_plate_no))
+                    result = cursor.fetchone()
+                    if result is None:
+                        res = True
+        return res
+
     def park_car(self, slot_id: int, license_plate_no: str, start_time: str) -> int:
         '''Add a parking record to the database and return the record_id'''
         check_query = """
@@ -404,27 +437,28 @@ class QuickParkingDB():
                 record_id = result[0]
                 # Commit the changes to the database
                 conn.commit()
-                # Close the cursor and the connection
-                cursor.close()
-                conn.close()
 
         return record_id
 
-    def pick_car(self, slot_id: int, end_time: str) -> None:
+    def pick_car(self, slot_id: int, license_plate_no: str, end_time: str) -> bool:
         '''Add end_time to a record'''
         sql_query = """
         UPDATE "ParkingRecords" 
         SET "endTime" = %s
-        WHERE "slotID" = %s AND "endTime" IS NULL;
+        WHERE "slotID" = %s
+        AND "licensePlateNo" = %s
+        AND "endTime" IS NULL
+        RETURNING *;
         """
         with self._connection_pools.connection() as conn:
             with conn.cursor() as cursor:
-                cursor.execute(sql_query, (end_time, slot_id))
+                cursor.execute(sql_query, (end_time, slot_id, license_plate_no))
+                result = cursor.fetchone()
+                if result is None:
+                    return False
                 # Commit the changes to the database
                 conn.commit()
-                # Close the cursor and the connection
-                cursor.close()
-                conn.close()
+        return True
 
     def get_latest_records(self, license_plate_no: str, user_id: str) -> list[dict]:
         '''Retrieve the lastest 10 parking records'''
