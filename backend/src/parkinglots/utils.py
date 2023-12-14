@@ -3,7 +3,7 @@ from typing import Union
 
 
 # pylint: disable=unused-argument
-def fmt(floor: int, index: int, num_row: int, num_col: int, *kwargs) -> Union[str, None]:
+def fmt(floor: int, index: int, num_row: int, num_col: int, **kwargs) -> Union[str, None]:
     '''Returns the formatted position of a parking slot'''
     if floor is None or index is None:
         return None
