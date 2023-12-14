@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Col, Input, Layout, List, Row, Space, Typography, Select, DatePicker, InputNumber, Modal, Form, Button, notification } from 'antd'
+import { Col, Input, Layout, List, Row, Space, Typography, Select, DatePicker, InputNumber, Modal, Form, Button, notification, Flex } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import { Line } from '@ant-design/charts'
 import ParkingLot from '../../components/ParkingLot'
@@ -21,15 +21,19 @@ interface VehicleProps {
   onClick?: React.MouseEventHandler<HTMLDivElement>
 }
 
+const formatStayTime = (stayTime: number): string => {
+  const days = Math.floor(stayTime / (1000 * 60 * 60 * 24))
+  const hours = Math.floor(stayTime / (1000 * 60 * 60) - days * 24)
+  const minutes = Math.round(stayTime / (1000 * 60) - (days * 24 + hours) * 60)
+  return `${days > 0 ? `${days} day${days > 1 ? 's' : ''} ` : ''}${hours > 0 ? `${hours} hr${hours > 1 ? 's' : ''} ` : ''}${minutes > 0 ? `${minutes} min${minutes > 1 ? 's' : ''}` : ''}`
+}
+
 const Vehicle = (props: VehicleProps): React.ReactElement => {
-  const days = Math.floor(props.stayTime / (1000 * 60 * 60 * 24))
-  const hours = Math.floor(props.stayTime / (1000 * 60 * 60) - days * 24)
-  const minutes = Math.round(props.stayTime / (1000 * 60) - (days * 24 + hours) * 60)
   return (
     <Row style={{ width: '100%', cursor: 'pointer' }} onClick={props.onClick}>
       <Col span={8}>{props.license}</Col>
       <Col span={8}>{props.position}</Col>
-      <Col span={8} style={{ textAlign: 'end' }}>{days > 0 ? `${days} day${days > 1 ? 's' : ''} ` : ''}{hours > 0 ? `${hours} hr${hours > 1 ? 's' : ''} ` : ''}{minutes > 0 ? `${minutes} min${minutes > 1 ? 's' : ''}` : ''}</Col>
+      <Col span={8} style={{ textAlign: 'end' }}>{formatStayTime(props.stayTime)}</Col>
     </Row>
   )
 }
@@ -186,9 +190,159 @@ interface SearchInterface {
   query?: string
 }
 
+interface VehicleRecords {
+  license_plate_no: string
+  parkinglot_name: string
+  position: string
+  start_time: string
+  end_time?: string
+}
+
+interface OwnerInfo {
+  id?: string
+  name?: string
+  job_title?: string
+  email?: string
+  phone?: string
+  priority?: string
+}
+
+interface OtherVehicleInfo {
+  license_plate_no: string
+  model: string
+  start_time: string
+  parkinglot_name: string
+  position: string
+}
+
+interface VehicleInfo {
+  vehicle_records: VehicleRecords[]
+  owner_info: OwnerInfo
+  owner_other_vehicle: OtherVehicleInfo[]
+}
+
+const RecordItem = (props: { position: string, stayTime: number }): React.ReactElement => {
+  return (
+    <Row style={{ width: '100%' }}>
+      <Col span={12}>{props.position}</Col>
+      <Col span={12} style={{ textAlign: 'end' }}>{formatStayTime(props.stayTime)}</Col>
+    </Row>
+  )
+}
+
+const OtherVehicleItem = (props: { license: string, position?: string }): React.ReactElement => {
+  return (
+    <Row style={{ width: '100%' }}>
+      <Col span={8}>{props.license}</Col>
+      <Col span={8} style={{ textAlign: 'end' }}>{props.position}</Col>
+    </Row>
+  )
+}
+
+const getStayTime = (record: VehicleRecords): number => (
+  record.end_time === undefined || record.end_time === null
+    ? Date.now()
+    : Date.parse(record.end_time)
+) - Date.parse(record.start_time)
+
+const VehicleModal = (props: { id: string, vehicleInfo: VehicleInfo }): React.ReactElement => {
+  let currentPosition: string | undefined
+  for (const item of props.vehicleInfo.vehicle_records) {
+    if (typeof item.end_time === 'undefined') {
+      currentPosition = item.position
+      break
+    }
+  }
+  return (
+    <Row>
+      <Col span={12} style={{ paddingRight: '12px' }} >
+        <Title
+          level={3}
+          style={{
+            textAlign: 'center',
+            color: 'white',
+            backgroundColor: 'red'
+          }}
+        >
+          Vehicle: {props.id}
+        </Title>
+        <Title level={4}>Current Position: <span style={{ fontWeight: 'normal' }}>{currentPosition ?? 'Not parked'}</span></Title>
+        {
+          props.vehicleInfo.vehicle_records.length > 0 && (
+            <Title level={4}>Average Parking Time: <span style={{ fontWeight: 'normal' }}>{
+              formatStayTime(props.vehicleInfo.vehicle_records.reduce((acc, item) => acc + getStayTime(item), 0) / props.vehicleInfo.vehicle_records.length)
+            }</span></Title>
+          )
+        }
+        <Title level={4}>Historical Parking Records:</Title>
+        <List
+          size='large'
+          bordered
+          dataSource={props.vehicleInfo.vehicle_records}
+          renderItem={(item) => (
+            <List.Item>
+              <RecordItem
+                position={item.position}
+                stayTime={getStayTime(item)}
+              />
+            </List.Item>
+          )}
+        />
+      </Col>
+      <Col span={12} style={{ paddingLeft: '12px' }} >
+        {
+          props.vehicleInfo.owner_info.id !== null
+            ? (
+              <>
+                <Title
+                  level={3}
+                  style={{
+                    textAlign: 'center'
+                  }}
+                >
+                  Owner: {props.vehicleInfo.owner_info.name}
+                </Title>
+                <Title level={4}>Role: <span style={{ fontWeight: 'normal' }}>{
+                  props.vehicleInfo.owner_info.job_title ?? 'Unknown'
+                }</span></Title>
+                <Title level={4}>Email: {
+                  props.vehicleInfo.owner_info.email !== undefined && props.vehicleInfo.owner_info.email !== ''
+                    ? <a href={`mailto:${props.vehicleInfo.owner_info.email}`} style={{ fontWeight: 'normal' }}>{props.vehicleInfo.owner_info.email}</a>
+                    : <span style={{ fontWeight: 'normal' }}>Unknown</span>
+                }</Title>
+                <Title level={4}>Phone: {
+                  props.vehicleInfo.owner_info.phone !== undefined && props.vehicleInfo.owner_info.phone !== ''
+                    ? <a href={`tel:${props.vehicleInfo.owner_info.phone}`} style={{ fontWeight: 'normal' }}>{props.vehicleInfo.owner_info.phone}</a>
+                    : <span style={{ fontWeight: 'normal' }}>Unknown</span>
+                }</Title>
+                <Title level={4}>Priority: <span style={{ fontWeight: 'normal' }}>{props.vehicleInfo.owner_info.priority ?? 'Unknown'}</span></Title>
+                <Title level={4}>Other Vehicles:</Title>
+                <List
+                  size='large'
+                  bordered
+                  dataSource={props.vehicleInfo.owner_other_vehicle}
+                  renderItem={(item) => (
+                    <List.Item>
+                      <OtherVehicleItem
+                        license={item.license_plate_no}
+                        position={item.position}
+                      />
+                    </List.Item>
+                  )}
+                />
+              </>
+              )
+            : <Flex align='center' justify='center' style={{ width: '100%', height: '100%' }}>Owner not registered.</Flex>
+        }
+      </Col>
+    </Row>
+  )
+}
+
 const Dashboard = (): React.ReactElement => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [carId, setCarId] = useState('')
+  const [vehicleInfo, setVehicleInfo] = useState<VehicleInfo>()
   const [noti, notiContextHolder] = notification.useNotification()
   const { id } = useParams()
   const lotList = useParkingLotList()
@@ -199,17 +353,23 @@ const Dashboard = (): React.ReactElement => {
     }
   }
   const openCarInfo = (id: string): void => {
-    // Mocking not found
-    if (id === 'no') {
-      noti.error({
-        message: 'License not found.',
-        placement: 'bottomRight',
-        duration: 4.5
+    axios.get<VehicleInfo>(`guards/vehicles/${id}`, getAxiosConfig())
+      .then(response => {
+        setVehicleInfo(response.data)
+        setCarId(id)
+        setIsModalOpen(true)
       })
-    } else {
-      setCarId(id)
-      setIsModalOpen(true)
-    }
+      .catch(error => {
+        if (error.response.status === 404) {
+          noti.error({
+            message: `License Plate Number "${id}" not found.`,
+            placement: 'bottomRight',
+            duration: 3
+          })
+        } else {
+          console.error(error)
+        }
+      })
   }
   return (
     <Layout>
@@ -272,11 +432,16 @@ const Dashboard = (): React.ReactElement => {
           </Col>
         </Row>
         <Modal
-          open={isModalOpen}
+          open={isModalOpen && typeof vehicleInfo !== 'undefined'}
           footer={null}
           onCancel={() => { setIsModalOpen(false) }}
+          width='80%'
         >
-          Car Info: {carId}
+          {
+            typeof vehicleInfo !== 'undefined'
+              ? <VehicleModal id={carId} vehicleInfo={vehicleInfo} />
+              : undefined
+          }
         </Modal>
       </Content>
     </Layout>
