@@ -13,7 +13,7 @@ interface SlotInfo {
 const slotWidth = 100
 const slotHeight = 220
 
-const ParkingSlot = (props: { name: string, slotInfo: SlotInfo }): React.ReactElement => {
+const ParkingSlot = (props: { name: string, slotInfo: SlotInfo, onClick?: React.MouseEventHandler<HTMLDivElement> }): React.ReactElement => {
   const slotStyle: Record<string, string> = {}
   if (props.slotInfo.hasPriority) {
     slotStyle.outline = 'dodgerblue 5px solid'
@@ -35,21 +35,23 @@ const ParkingSlot = (props: { name: string, slotInfo: SlotInfo }): React.ReactEl
     }
   }
   return (
-    <div
+    <Flex
+      vertical
       style={{
-        display: 'flex',
-        alignItems: 'center',
         justifyContent: 'center',
         width: `${slotWidth}px`,
         height: `${slotHeight}px`,
         border: 'gray 3px solid',
         textAlign: 'center',
-        ...slotStyle
-      }}>
+        ...slotStyle,
+        ...(props.slotInfo.license !== undefined ? { cursor: 'pointer' } : {})
+      }}
+      onClick={props.slotInfo.license !== undefined ? props.onClick : undefined}
+    >
       {
         props.slotInfo.license !== undefined ? <>License:<br/>{props.slotInfo.license}</> : props.name
       }
-    </div>
+    </Flex>
   )
 }
 
@@ -60,6 +62,7 @@ interface ParkingLotMapProps {
   freeSlots?: Slots
   prioritySlots: Slots
   parkedSlots?: ParkingInfo[]
+  openCarInfo?: (id: string) => void
 }
 
 const ParkingLotMap = (props: ParkingLotMapProps): React.ReactElement => {
@@ -113,6 +116,11 @@ const ParkingLotMap = (props: ParkingLotMapProps): React.ReactElement => {
               key={j}
               name={`${props.prefix}${String(i * props.numCols + j + 1).padStart(numPads, '0')}`}
               slotInfo={slotInfo}
+              onClick={
+                typeof props.openCarInfo !== 'undefined' && typeof slotInfo.license !== 'undefined'
+                  ? () => { if (props.openCarInfo !== undefined && slotInfo.license !== undefined) { props.openCarInfo(slotInfo.license) } }
+                  : undefined
+              }
             />
           ))}
         </Flex>
@@ -121,7 +129,7 @@ const ParkingLotMap = (props: ParkingLotMapProps): React.ReactElement => {
   )
 }
 
-const ParkingLot = (props: { id: number }): React.ReactElement => {
+const ParkingLot = (props: { id: number, openCarInfo?: (id: string) => void }): React.ReactElement => {
   const [floorId, setFloorId] = useState<number>(0)
   const lotInfo = useParkingLot(props.id)
 
@@ -148,6 +156,7 @@ const ParkingLot = (props: { id: number }): React.ReactElement => {
                 freeSlots={lotInfo.floor_info[floorId].free_slots}
                 prioritySlots={lotInfo.floor_info[floorId].priority_slots}
                 parkedSlots={lotInfo.floor_info[floorId].parked_slots}
+                openCarInfo={props.openCarInfo}
               />
             </>
             )
