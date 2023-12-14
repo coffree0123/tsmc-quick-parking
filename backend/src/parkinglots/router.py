@@ -147,7 +147,7 @@ def get_long_term_occupants(r: Request, parkinglot_id: int):
     occupants = r.app.state.database.get_long_term_occupants(parkinglot_id)
     for ocpt in occupants:
         floor, idx = ocpt["floor"], ocpt["index"]
-        ocpt["position"] = f"B{floor}#{floor}{idx:0{num_digits}}"
+        ocpt["position"] = f"B{floor}#{floor}{idx+1:0{num_digits}}"
 
     return [
         ParkingRecord(

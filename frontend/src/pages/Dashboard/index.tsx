@@ -40,7 +40,7 @@ interface OccupantInfo {
 }
 
 interface OccupantRes {
-  postion: string
+  position: string
   license_plate_no: string
   start_time: string
 }
@@ -65,7 +65,7 @@ const Occupants = (props: { id: number }): React.ReactElement => {
     axios.get<OccupantRes[]>(`guards/parkinglots/${props.id}/long-term-occupants`, getAxiosConfig())
       .then(response => {
         setOccupants(response.data.map(item => ({
-          position: item.postion,
+          position: item.position,
           license: item.license_plate_no,
           startTime: Date.parse(item.start_time)
         })))
