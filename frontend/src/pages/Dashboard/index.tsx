@@ -21,7 +21,7 @@ interface VehicleProps {
   onClick?: React.MouseEventHandler<HTMLDivElement>
 }
 
-const formatStayTime = (stayTime: number): string => {
+export const formatStayTime = (stayTime: number): string => {
   const days = Math.floor(stayTime / (1000 * 60 * 60 * 24))
   const hours = Math.floor(stayTime / (1000 * 60 * 60) - days * 24)
   const minutes = Math.round(stayTime / (1000 * 60) - (days * 24 + hours) * 60)
@@ -264,11 +264,11 @@ const OtherVehicleItem = (props: { license: string, position?: string }): React.
   )
 }
 
-const getStayTime = (record: VehicleRecords): number => (
-  record.end_time === undefined || record.end_time === null
+export const getStayTime = (startTime: string, endTime?: string | null): number => (
+  endTime === undefined || endTime === null
     ? Date.now()
-    : Date.parse(record.end_time)
-) - Date.parse(record.start_time)
+    : Date.parse(endTime)
+) - Date.parse(startTime)
 
 const VehicleModal = (props: { id: string, vehicleInfo: VehicleInfo }): React.ReactElement => {
   let currentPosition: string | undefined
@@ -295,7 +295,7 @@ const VehicleModal = (props: { id: string, vehicleInfo: VehicleInfo }): React.Re
         {
           props.vehicleInfo.vehicle_records.length > 0 && (
             <Title level={4}>Average Parking Time: <span style={{ fontWeight: 'normal' }}>{
-              formatStayTime(props.vehicleInfo.vehicle_records.reduce((acc, item) => acc + getStayTime(item), 0) / props.vehicleInfo.vehicle_records.length)
+              formatStayTime(props.vehicleInfo.vehicle_records.reduce((acc, item) => acc + getStayTime(item.start_time, item.end_time), 0) / props.vehicleInfo.vehicle_records.length)
             }</span></Title>
           )
         }
@@ -308,7 +308,7 @@ const VehicleModal = (props: { id: string, vehicleInfo: VehicleInfo }): React.Re
             <List.Item>
               <RecordItem
                 position={item.position}
-                stayTime={getStayTime(item)}
+                stayTime={getStayTime(item.start_time, item.end_time)}
               />
             </List.Item>
           )}
