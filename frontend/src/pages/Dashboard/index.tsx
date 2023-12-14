@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { Col, Input, Layout, List, Row, Space, Typography, Select, DatePicker, InputNumber, Modal, Form, Button, notification, Flex } from 'antd'
+import { Col, Input, Layout, List, Row, Space, Typography, Select, DatePicker, InputNumber, Switch, Modal, Form, Button, notification, Flex } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
-import { Line } from '@ant-design/charts'
+import { Area } from '@ant-design/charts'
 import ParkingLot from '../../components/ParkingLot'
 import LogOutButton from '../../components/LogOutButton'
 import axios from 'axios'
@@ -54,6 +54,11 @@ interface TimeRecordInfo {
   time: string
   value: number
 }
+interface TimeRecordDisplay {
+  label: string
+  time: string
+  value: number
+}
 
 interface TimeRecordQuery {
   floor: number
@@ -92,7 +97,7 @@ const Occupants = (props: { id: number, openCarInfo: (id: string) => void }): Re
   )
 }
 const Chart = (props: { id: number }): React.ReactElement => {
-  const [timeRecords, setTimeRecords] = useState<TimeRecordInfo[]>([])
+  const [timeRecords, setTimeRecords] = useState<TimeRecordDisplay[]>([])
   const [query, setQuery] = useState<TimeRecordQuery>({
     floor: 1,
     start_time: dayjs().subtract(1, 'day').toString(),
@@ -101,6 +106,7 @@ const Chart = (props: { id: number }): React.ReactElement => {
     time_unit: 'H'
   })
   const lotInfo = useParkingLot(props.id)
+  const [isPercent, setIsPercent] = useState<boolean>(false)
 
   const changeQuery = (identifier: any, value: any): void => {
     setQuery((prevQuery) => ({ ...prevQuery, [identifier]: value }))
@@ -109,13 +115,28 @@ const Chart = (props: { id: number }): React.ReactElement => {
     if (lotInfo !== undefined && query.floor <= lotInfo.num_floor) {
       axios.get<TimeRecordInfo[]>(`guards/dashboard/time-records?parkinglot_id=${props.id}&floor=${query.floor}&start_time=${query.start_time}&end_time=${query.end_time}&interval=${query.interval}${query.time_unit}`, getAxiosConfig())
         .then(response => {
-          setTimeRecords(response.data.map(item => {
+          const tmp: TimeRecordDisplay[] = []
+          response.data.forEach((item) => {
             const date = new Date(item.time + '+00:00')
-            return ({
-              time: `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}`,
-              value: item.value
+            const year = date.getFullYear()
+            const month = (date.getMonth() + 1).toString().padStart(2, '0')
+            const day = date.getDate().toString().padStart(2, '0')
+            const hour = date.getHours().toString().padStart(2, '0')
+            const minute = date.getMinutes().toString().padStart(2, '0')
+            const value = item.value
+            tmp.push({
+              label: 'Occupied',
+              time: `${year}/${month}/${day} ${hour}:${minute}`,
+              value
             })
-          }))
+            tmp.push({
+              label: 'Free',
+              time: `${year}/${month}/${day} ${hour}:${minute}`,
+              value: lotInfo.num_row * lotInfo.num_col - value
+            })
+          })
+          setTimeRecords(tmp)
+          console.log(timeRecords)
         })
         .catch(error => { console.error(error) })
     } else {
@@ -130,13 +151,16 @@ const Chart = (props: { id: number }): React.ReactElement => {
     autoFit: false,
     xField: 'time',
     yField: 'value',
-    point: {
-      size: 5,
-      shape: 'diamond'
+    isStack: true,
+    isPercent,
+    seriesField: 'label',
+    color: ['#82d1de', '#cb302d'],
+    areaStyle: {
+      fillOpacity: 0.7
     },
-    label: {
-      style: {
-        fill: '#aaa'
+    meta: {
+      label: {
+        values: ['Free', 'Occupied']
       }
     }
   }
@@ -179,8 +203,9 @@ const Chart = (props: { id: number }): React.ReactElement => {
             ]}
             onChange={(val) => { changeQuery('time_unit', val) }}
           />
+          <Switch checked={isPercent} onChange={(val) => { setIsPercent(val) }} />Percentage
         </Space>
-        <Line {...config} />
+        <Area {...config} />
       </Space>
     </React.Fragment>
   )
