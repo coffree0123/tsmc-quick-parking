@@ -79,8 +79,8 @@ root.render(
             </Route>
             <Route element={<UserRoutes />}>
               <Route path="/" element={<Home />} />
-              <Route path="/parkinglots" element={<ParkingLotList />} />
-              <Route path="/parkinglots/:id" element={<ParkingLotPage />} />
+              <Route path="/parkingLots" element={<ParkingLotList />} />
+              <Route path="/parkingLots/:id" element={<ParkingLotPage />} />
               <Route path="/setting" element={<Setting instance={msalInstance}/>} />
               <Route path="/vehicle" element={<Vehicle instance={msalInstance}/>} />
             </Route>
