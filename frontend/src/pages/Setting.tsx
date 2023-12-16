@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react'
 import { Input, Flex, Button, Radio, InputNumber, Form, notification } from 'antd'
-import LogOutButton from '../../components/LogOutButton'
+import LogOutButton from '../components/LogOutButton'
 import axios from 'axios'
-import { getAxiosConfig } from '../../utils/api'
+import { getAxiosConfig } from '../utils/api'
 import { MsalProvider } from '@azure/msal-react'
-import { useUserInfo } from '../../hooks'
+import { useUserInfo } from '../hooks'
 
 const Label = (props: { label: string, style?: React.CSSProperties }): React.ReactElement => <div style={{ width: '50px', ...props.style }}>{props.label}</div>
 
