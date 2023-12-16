@@ -3,11 +3,11 @@ import { ArrowRightOutlined } from '@ant-design/icons'
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
-import { getAxiosConfig } from '../../utils/api'
-import { getStayTime, formatStayTime } from '../Dashboard'
-import { useUserInfo } from '../../hooks'
-import { styles } from '../../constants'
-import background from '../../assets/background.svg'
+import { getAxiosConfig } from '../utils/api'
+import { getStayTime, formatStayTime } from './Dashboard'
+import { useUserInfo } from '../hooks'
+import { styles } from '../constants'
+import background from '../assets/background.svg'
 
 const { Title, Text } = Typography
 
