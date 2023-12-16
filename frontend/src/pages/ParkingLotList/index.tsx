@@ -39,7 +39,6 @@ const ParkingLotList = (): React.ReactElement => {
         parking_lot: lotList[index].id
       }
     }
-    console.log(config)
     if (newFavorite[index]) {
       axios.post(resource, null, config)
         .catch(error => { console.error(error) })
