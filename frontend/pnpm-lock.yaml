@@ -8,6 +8,7 @@ overrides:
   nth-check@<2.0.1: '>=2.0.1'
   postcss@<8.4.31: '>=8.4.31'
   '@adobe/css-tools@<4.3.2': '>=4.3.2'
+  d3-color@<3.1.0: '>=3.1.0'
 
 dependencies:
   '@ant-design/charts':
@@ -652,7 +653,7 @@ packages:
       '@turf/polygon-to-line': 6.5.0
       '@turf/union': 6.5.0
       d3-array: 1.2.4
-      d3-color: 1.4.1
+      d3-color: 3.1.0
       d3-interpolate: 1.4.0
       d3-scale: 2.2.2
       earcut: 2.2.4
@@ -750,7 +751,7 @@ packages:
       '@turf/bbox': 6.5.0
       '@turf/bbox-polygon': 6.5.0
       '@turf/helpers': 6.5.0
-      d3-color: 1.4.1
+      d3-color: 3.1.0
       earcut: 2.2.4
       eventemitter3: 4.0.7
       gl-matrix: 3.4.3
@@ -5576,10 +5577,6 @@ packages:
     resolution: {integrity: sha512-ii0/r5f4sjKNTfh84Di+DpztYwqKhEyUlKoPrzUFfeSkWxjW49xU2QzO9qrPrNkpdI0XJkfzvmTu8V2Zylln6A==}
     dev: false
 
-  /d3-color@1.4.1:
-    resolution: {integrity: sha512-p2sTHSLCJI2QKunbGb7ocOh7DgTAn8IrLx21QRc/BSnodXM4sv6aLQlnfpvehFMLZEfBc6g9pH9SWQccFYfJ9Q==}
-    dev: false
-
   /d3-color@3.1.0:
     resolution: {integrity: sha512-zg/chbXyeBtMQ1LbD/WSoW2DpC3I0mpmPdW+ynRTj/x2DAWYrIY7qeZIHidozwV24m4iavr15lNwIwLxRmOxhA==}
     engines: {node: '>=12'}
@@ -5625,7 +5622,7 @@ packages:
   /d3-interpolate@1.4.0:
     resolution: {integrity: sha512-V9znK0zc3jOPV4VD2zZn0sDhZU3WAE2bmlxdIwwQPPzPjvyLkd8B3JUVdS1IDUFDkWZ72c9qnv1GK2ZagTZ8EA==}
     dependencies:
-      d3-color: 1.4.1
+      d3-color: 3.1.0
     dev: false
 
   /d3-interpolate@3.0.1:
