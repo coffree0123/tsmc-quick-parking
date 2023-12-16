@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Col, List, Row } from 'antd'
-import { useParkingLotList } from '../../hooks'
+import { useParkingLotList } from '../hooks'
 import { HeartFilled, HeartOutlined } from '@ant-design/icons'
 import axios from 'axios'
-import { type PageInfo } from '../Home'
-import { getAxiosConfig } from '../../utils/api'
-import { styles } from '../../constants'
+import { type PageInfo } from './Home'
+import { getAxiosConfig } from '../utils/api'
+import { styles } from '../constants'
 import { useNavigate } from 'react-router-dom'
 
 const ParkingLotList = (): React.ReactElement => {

@@ -2,8 +2,9 @@ import React, { useContext } from 'react'
 import { Button } from 'antd'
 import { useMsal } from '@azure/msal-react'
 import { AuthContext } from '../contexts/AuthContext'
+import { styles } from '../constants'
 
-const LogOutButton = (): React.ReactElement => {
+const LogOutButton = (props: { style?: React.CSSProperties }): React.ReactElement => {
   const { instance } = useMsal()
   const activeAccount = instance.getActiveAccount()
   const { logout } = useContext(AuthContext)
@@ -16,7 +17,7 @@ const LogOutButton = (): React.ReactElement => {
     logout()
   }
   return (
-      <Button type='primary' onClick={() => signOutClickHandler(instance)}>Logout</Button>
+      <Button onClick={() => signOutClickHandler(instance)} style={{ backgroundColor: 'transparent', border: `2px solid ${styles.gray}`, ...props.style }}>Logout</Button>
   )
 }
 

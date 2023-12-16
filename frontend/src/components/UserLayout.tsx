@@ -44,6 +44,8 @@ interface UserLayoutProps {
   children?: React.ReactNode
 }
 
+const headerHeight = 60
+
 const UserLayout = (props: UserLayoutProps): React.ReactElement => {
   const navigate = useNavigate()
   return (
@@ -52,7 +54,10 @@ const UserLayout = (props: UserLayoutProps): React.ReactElement => {
         props.title !== undefined && (
           <Header
             style={{
-              minHeight: '60px',
+              position: 'sticky',
+              top: 0,
+              zIndex: 1,
+              height: `${headerHeight}px`,
               padding: '0 30px',
               backgroundColor: styles.primaryColor,
               color: styles.white
@@ -74,7 +79,7 @@ const UserLayout = (props: UserLayoutProps): React.ReactElement => {
       }
       <Content
         style={{
-          height: '100vh',
+          height: props.title === undefined ? '100vh' : `calc(100vh - ${headerHeight}px)`,
           backgroundColor: styles.lightGray,
           overflow: 'auto'
         }}
