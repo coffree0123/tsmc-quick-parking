@@ -12,13 +12,9 @@ const Setting = ({ instance }: any): React.ReactElement => {
   const [form] = Form.useForm()
 
   const saveClick = (): void => {
-    console.log(form.getFieldsValue())
     axios.put('users/', form.getFieldsValue(), getAxiosConfig())
-      .then(function (response) {
-        console.log(response)
-      })
-      .catch(function (error) {
-        console.log(error)
+      .catch(error => {
+        console.error(error)
       })
   }
 

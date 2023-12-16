@@ -136,7 +136,6 @@ const Chart = (props: { id: number }): React.ReactElement => {
             })
           })
           setTimeRecords(tmp)
-          console.log(timeRecords)
         })
         .catch(error => { console.error(error) })
     } else {

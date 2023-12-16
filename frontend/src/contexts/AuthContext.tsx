@@ -21,8 +21,6 @@ const AuthContextProvider = (props: { children: React.ReactNode }): React.ReactE
 
   useEffect(() => {
     if (localStorage.getItem('token') !== null && localStorage.getItem('isGuard') !== null) {
-      console.log(localStorage.getItem('isGuard'))
-      console.log(localStorage.getItem('token'))
       setIsGuard(JSON.parse(localStorage.getItem('isGuard') ?? '{}'))
       setToken(JSON.stringify(localStorage.getItem('token') ?? '{}'))
     }
