@@ -1,3 +1,4 @@
 export const styles = {
-  primaryColor: '#b32a2a'
+  primaryColor: '#b32a2a',
+  white: '#fff'
 }

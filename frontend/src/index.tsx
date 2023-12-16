@@ -89,10 +89,20 @@ root.render(
               </Route>
               <Route element={<UserRoutes />}>
                 <Route path="/" element={<UserLayout active='home'><Home /></UserLayout>} />
-                <Route path="/parkinglots" element={<UserLayout active='parkinglots'><ParkingLotList /></UserLayout>} />
-                <Route path="/parkinglots/:id" element={<UserLayout active='parkinglots'><ParkingLotPage /></UserLayout>} />
-                <Route path="/vehicles" element={<UserLayout active='vehicles'><Vehicle instance={msalInstance}/></UserLayout>} />
-                <Route path="/settings" element={<UserLayout active='settings'><Setting instance={msalInstance}/></UserLayout>} />
+                <Route
+                  path="/parkinglots"
+                  element={<UserLayout active='parkinglots' title='Parking Lots'><ParkingLotList /></UserLayout>}
+                />
+                {/* Wrap UserLayout inside ParkingLotPage to specify title with parking lot name */}
+                <Route path="/parkinglots/:id" element={<ParkingLotPage />} />
+                <Route
+                  path="/vehicles"
+                  element={<UserLayout active='vehicles' title='Vehicles'><Vehicle instance={msalInstance}/></UserLayout>}
+                />
+                <Route
+                  path="/settings"
+                  element={<UserLayout active='settings' title='Settings'><Setting instance={msalInstance}/></UserLayout>}
+                />
               </Route>
               <Route element={<GuardRoutes />}>
                 <Route path='/dashboard' element={<DashboardRouter />} />

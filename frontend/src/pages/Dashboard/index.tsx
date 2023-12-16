@@ -285,8 +285,8 @@ const VehicleModal = (props: { id: string, vehicleInfo: VehicleInfo }): React.Re
           level={3}
           style={{
             textAlign: 'center',
-            color: 'white',
-            backgroundColor: 'red'
+            color: styles.white,
+            backgroundColor: styles.primaryColor
           }}
         >
           Vehicle: {props.id}
@@ -405,7 +405,7 @@ const Dashboard = (): React.ReactElement => {
           top: 0,
           zIndex: 1,
           width: '100%',
-          backgroundColor: 'white',
+          backgroundColor: styles.white,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between'
