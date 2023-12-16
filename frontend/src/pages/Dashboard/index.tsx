@@ -9,6 +9,7 @@ import dayjs from 'dayjs'
 import { getAxiosConfig } from '../../utils/api'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useParkingLot, useParkingLotList } from '../../hooks'
+import { styles } from '../../constants'
 
 const { Header, Content } = Layout
 const { Title } = Typography
@@ -411,7 +412,7 @@ const Dashboard = (): React.ReactElement => {
         }}
       >
         <Space>
-          <span style={{ width: '150px', color: '#B32A2A', fontWeight: 'bold' }} >Quick Parking</span>
+          <span style={{ width: '150px', color: styles.primaryColor, fontWeight: 'bold' }} >Quick Parking</span>
           <Form onFinish={(values: SearchInterface) => { values.query !== undefined && openCarInfo(values.query) }}>
             <Form.Item<SearchInterface>
               name='query'

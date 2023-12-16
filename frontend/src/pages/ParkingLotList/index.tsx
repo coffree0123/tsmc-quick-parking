@@ -5,6 +5,7 @@ import { HeartFilled, HeartOutlined } from '@ant-design/icons'
 import axios from 'axios'
 import { type PageInfo } from '../Home'
 import { getAxiosConfig } from '../../utils/api'
+import { styles } from '../../constants'
 
 const ParkingLotList = (): React.ReactElement => {
   const [favorites, setFavorotes] = useState<boolean[]>([])
@@ -59,7 +60,7 @@ const ParkingLotList = (): React.ReactElement => {
             <div>{item.name}</div>
             {
               favorites.length > index && favorites[index]
-                ? <HeartFilled onClick={() => { handleSetFavorites(index) }} style={{ color: '#B32A2A' }} />
+                ? <HeartFilled onClick={() => { handleSetFavorites(index) }} style={{ color: styles.primaryColor }} />
                 : <HeartOutlined onClick={() => { handleSetFavorites(index) }} style={{ color: '#979797' }} />
             }
           </Flex>
