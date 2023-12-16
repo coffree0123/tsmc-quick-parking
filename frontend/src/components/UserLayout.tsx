@@ -72,7 +72,13 @@ const UserLayout = (props: UserLayoutProps): React.ReactElement => {
           </Header>
         )
       }
-      <Content>
+      <Content
+        style={{
+          height: '100vh',
+          backgroundColor: styles.lightGray,
+          overflow: 'auto'
+        }}
+      >
         {props.children}
       </Content>
       <Footer style={{ height: '120px', backgroundColor: 'transparent', padding: '0 30px' }}>
