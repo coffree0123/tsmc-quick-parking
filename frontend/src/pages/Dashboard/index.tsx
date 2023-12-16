@@ -9,6 +9,7 @@ import dayjs from 'dayjs'
 import { getAxiosConfig } from '../../utils/api'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useParkingLot, useParkingLotList } from '../../hooks'
+import { styles } from '../../constants'
 
 const { Header, Content } = Layout
 const { Title } = Typography
@@ -136,7 +137,6 @@ const Chart = (props: { id: number }): React.ReactElement => {
             })
           })
           setTimeRecords(tmp)
-          console.log(timeRecords)
         })
         .catch(error => { console.error(error) })
     } else {
@@ -285,8 +285,8 @@ const VehicleModal = (props: { id: string, vehicleInfo: VehicleInfo }): React.Re
           level={3}
           style={{
             textAlign: 'center',
-            color: 'white',
-            backgroundColor: 'red'
+            color: styles.white,
+            backgroundColor: styles.primaryColor
           }}
         >
           Vehicle: {props.id}
@@ -405,14 +405,14 @@ const Dashboard = (): React.ReactElement => {
           top: 0,
           zIndex: 1,
           width: '100%',
-          backgroundColor: 'white',
+          backgroundColor: styles.white,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between'
         }}
       >
         <Space>
-          <span style={{ width: '150px', color: '#B32A2A', fontWeight: 'bold' }} >Quick Parking</span>
+          <span style={{ width: '150px', color: styles.primaryColor, fontWeight: 'bold' }} >Quick Parking</span>
           <Form onFinish={(values: SearchInterface) => { values.query !== undefined && openCarInfo(values.query) }}>
             <Form.Item<SearchInterface>
               name='query'

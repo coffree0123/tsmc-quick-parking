@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react'
-import { Flex, List } from 'antd'
+import { Col, List, Row } from 'antd'
 import { useParkingLotList } from '../../hooks'
 import { HeartFilled, HeartOutlined } from '@ant-design/icons'
 import axios from 'axios'
 import { type PageInfo } from '../Home'
 import { getAxiosConfig } from '../../utils/api'
+import { styles } from '../../constants'
+import { useNavigate } from 'react-router-dom'
 
 const ParkingLotList = (): React.ReactElement => {
   const [favorites, setFavorotes] = useState<boolean[]>([])
   const lotList = useParkingLotList()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (lotList.length > 0 && lotList.length !== favorites.length) {
@@ -39,7 +42,6 @@ const ParkingLotList = (): React.ReactElement => {
         parking_lot: lotList[index].id
       }
     }
-    console.log(config)
     if (newFavorite[index]) {
       axios.post(resource, null, config)
         .catch(error => { console.error(error) })
@@ -56,14 +58,16 @@ const ParkingLotList = (): React.ReactElement => {
       dataSource={lotList}
       renderItem={(item, index) => (
         <List.Item>
-          <Flex justify='space-between' align='center' style={{ width: '100%' }}>
-            <div>{item.name}</div>
+          <Row style={{ width: '100%', height: '100%' }}>
+            <Col span={23} onClick={() => { navigate(`/parkinglots/${item.id}`) }}>{item.name}</Col>
+            <Col span={1} style={{ display: 'flex', justifyContent: 'end' }}>
             {
               favorites.length > index && favorites[index]
-                ? <HeartFilled onClick={() => { handleSetFavorites(index) }} style={{ color: '#B32A2A' }} />
+                ? <HeartFilled onClick={() => { handleSetFavorites(index) }} style={{ color: styles.primaryColor }} />
                 : <HeartOutlined onClick={() => { handleSetFavorites(index) }} style={{ color: '#979797' }} />
             }
-          </Flex>
+            </Col>
+          </Row>
         </List.Item>
       )}
     />

@@ -21,41 +21,35 @@ const Vehicle = ({ instance }: any): React.ReactElement => {
   const [editForm] = Form.useForm()
 
   const saveClick = (event: any): void => {
-    console.log(editForm.getFieldsValue())
     axios.put('users/vehicles/', editForm.getFieldsValue(), getAxiosConfig())
-      .then(function (response) {
-        console.log(response)
-      })
-      .catch(function (error) {
-        console.log(error)
+      .catch(error => {
+        console.error(error)
       })
   }
 
   const onChange = (key: string | string[]): void => {
-    // console.log(key)
     editForm.setFieldsValue(vehicleInfo[Number(key)])
     setCurrent(Number(key))
   }
 
   const deleteClick = (event: any): void => {
     axios.delete(`users/vehicles/${vehicleInfo[currentVehicle].license_plate_no}`, getAxiosConfig())
-      .then(function (response) {
-        console.log(response)
+      .then(() => {
         setCount(vehicleCount - 1)
       })
-      .catch(function (error) {
-        console.log(error)
+      .catch(error => {
+        console.error(error)
       })
   }
 
   const addClick = (event: any): void => {
     axios.post('users/vehicles/',
       addForm.getFieldsValue(), getAxiosConfig())
-      .then(function (response) {
+      .then(() => {
         setCount(vehicleCount + 1)
       })
-      .catch(function (error) {
-        console.log(error)
+      .catch(error => {
+        console.error(error)
       })
   }
 
@@ -65,7 +59,6 @@ const Vehicle = ({ instance }: any): React.ReactElement => {
         const userId = response.data.user_id
         axios.get<VehicleInfo[]>('users/user_vehicles/', getAxiosConfig())
           .then(response => {
-            console.log(response.data)
             setVehicleInfo(response.data)
             setAddInfo({
               user_id: userId,
@@ -88,7 +81,6 @@ const Vehicle = ({ instance }: any): React.ReactElement => {
         const userId = response.data.user_id
         axios.get<VehicleInfo[]>('users/user_vehicles/', getAxiosConfig())
           .then(response => {
-            console.log(response.data)
             setVehicleInfo(response.data)
             setAddInfo({
               user_id: userId,

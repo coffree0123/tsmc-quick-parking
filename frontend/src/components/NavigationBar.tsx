@@ -12,12 +12,12 @@ export const NavigationBar = (): any => {
   const { login } = useContext(AuthContext)
   const { Header } = Layout
 
-  const handleLoginRedirect = (): any => {
-    instance.loginRedirect(loginRequest).catch((error) => { console.log(error) })
+  const handleLoginRedirect = (): void => {
+    instance.loginRedirect(loginRequest).catch((error) => { console.error(error) })
   }
 
-  const handleLogoutRedirect = (): any => {
-    instance.logoutRedirect().catch((error) => { console.log(error) })
+  const handleLogoutRedirect = (): void => {
+    instance.logoutRedirect().catch((error) => { console.error(error) })
   }
 
   useEffect(() => {
@@ -34,12 +34,7 @@ export const NavigationBar = (): any => {
         }
 
         axios.get('users/', getAxiosConfig())
-          .then(response => {
-            console.log('user exists ')
-          })
-          .catch(error => {
-            console.error(error)
-            console.log('new user')
+          .catch(() => {
             axios.post('users/', {
               user_id: idTokenClaims.oid,
               name: idTokenClaims.name,
@@ -50,11 +45,8 @@ export const NavigationBar = (): any => {
               job_title: idTokenClaims.job_title,
               priority: idTokenClaims.priority
             }, getAxiosConfig())
-              .then(function (response) {
-                console.log(response)
-              })
               .catch(function (error) {
-                console.log(error)
+                console.error(error)
               })
           })
       }

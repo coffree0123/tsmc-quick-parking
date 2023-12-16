@@ -29,7 +29,7 @@ const MainContent = (): any => {
         ...loginRequest,
         prompt: 'create'
       })
-      .catch((error) => { console.log(error) })
+      .catch((error) => { console.error(error) })
   }
   return (
       <div className="App">

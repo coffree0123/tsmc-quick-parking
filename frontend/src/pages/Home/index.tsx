@@ -7,6 +7,7 @@ import axios from 'axios'
 import { getAxiosConfig } from '../../utils/api'
 import { getStayTime, formatStayTime } from '../Dashboard'
 import { useUserInfo } from '../../hooks'
+import { styles } from '../../constants'
 
 const { Title } = Typography
 
@@ -23,8 +24,8 @@ const LotCard = (props: SlotCardProps): React.ReactElement => {
       align='center'
       justify='space-around'
       style={{
-        backgroundColor: '#B32A2A',
-        color: 'white',
+        backgroundColor: styles.primaryColor,
+        color: styles.white,
         height: '150px',
         width: '150px',
         borderRadius: '20px'
@@ -33,7 +34,7 @@ const LotCard = (props: SlotCardProps): React.ReactElement => {
       <div style={{ fontSize: '1.5em', fontWeight: 'bold' }}>{props.title}</div>
       <div style={{ fontSize: '3em', fontWeight: 'bold' }}>{props.value}</div>
       <Flex justify='flex-end' style={{ width: '80%' }}>
-        <Link to={`parkingLots/${props.id}`} style={{ color: 'white' }}>
+        <Link to={`/parkinglots/${props.id}`} style={{ color: styles.white }}>
           <ArrowRightOutlined style={{ fontSize: '1.5em' }} />
         </Link>
       </Flex>
