@@ -25,7 +25,7 @@ const LotCard = (props: SlotCardProps): React.ReactElement => {
       justify='space-around'
       style={{
         backgroundColor: styles.primaryColor,
-        color: 'white',
+        color: styles.white,
         height: '150px',
         width: '150px',
         borderRadius: '20px'
@@ -34,7 +34,7 @@ const LotCard = (props: SlotCardProps): React.ReactElement => {
       <div style={{ fontSize: '1.5em', fontWeight: 'bold' }}>{props.title}</div>
       <div style={{ fontSize: '3em', fontWeight: 'bold' }}>{props.value}</div>
       <Flex justify='flex-end' style={{ width: '80%' }}>
-        <Link to={`/parkinglots/${props.id}`} style={{ color: 'white' }}>
+        <Link to={`/parkinglots/${props.id}`} style={{ color: styles.white }}>
           <ArrowRightOutlined style={{ fontSize: '1.5em' }} />
         </Link>
       </Flex>
