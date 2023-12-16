@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { Input, Flex, Button, Radio, InputNumber, Form, notification } from 'antd'
 import LogOutButton from '../components/LogOutButton'
+import TokenRefresh from '../components/TokenRefresh'
 import axios from 'axios'
 import { getAxiosConfig } from '../utils/api'
 import { MsalProvider } from '@azure/msal-react'
@@ -34,6 +35,7 @@ const Setting = ({ instance }: any): React.ReactElement => {
 
   return (
     <MsalProvider instance={instance}>
+    <TokenRefresh instance={instance}>
     {notiContextHolder}
     <Flex vertical style={{ overflow: 'hidden', padding: '0 30px' }}>
       <Form form={form}>
@@ -86,6 +88,7 @@ const Setting = ({ instance }: any): React.ReactElement => {
       <Button onClick={saveClick} type='primary' style={{ marginTop: '32px' }}>Save</Button>
       <LogOutButton style={{ marginTop: '32px' }} />
     </Flex>
+    </TokenRefresh>
     </MsalProvider>
   )
 }
