@@ -16,7 +16,7 @@ const TokenRefresh = (props: { children: React.ReactNode, instance: any }): Reac
       .acquireTokenSilent(TokenRequest)
       .then(function (TokenResponse: any) {
         // Acquire token silent success
-        console.log(TokenResponse)
+        localStorage.setItem('token', TokenResponse.idToken)
       })
       .catch(function (error: any) {
         // Acquire token silent failure
