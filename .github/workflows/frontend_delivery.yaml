@@ -26,5 +26,5 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tsmccn-frontend:latest
-          build_args: |
+          build-args: |
             API_ROOT=${{ secrets.API_ROOT }}
