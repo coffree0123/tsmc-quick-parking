@@ -1,6 +1,7 @@
 import { Flex, Skeleton, Tabs } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { type Slots, type ParkingInfo, type LotInfo, type ParkingLotSummary } from '../hooks'
+import { styles } from '../constants'
 
 interface SlotInfo {
   isFree: boolean
@@ -108,7 +109,7 @@ const ParkingLotMap = (props: ParkingLotMapProps): React.ReactElement => {
   }, [props.freeSlots, props.parkedSlots, props.prioritySlots])
 
   return (
-    <Flex vertical gap='middle' style={{ width: '100%', height: '100%', overflow: 'auto', borderRadius: '10px', boxShadow: 'inset 0 0 10px #000' }}>
+    <Flex vertical gap='middle' style={{ width: '100%', height: '100%', overflow: 'auto', borderRadius: '10px', boxShadow: 'inset 0 0 10px #000', backgroundColor: styles.white }}>
       {map.map((item, i) => (
         <Flex key={i} gap='small' style={{ width: `${slotWidth * props.numCols + 8 * (props.numCols - 1)}px` }}>
           {item.map((slotInfo, j) => (
@@ -147,6 +148,9 @@ const ParkingLot = (props: { lotInfo?: LotInfo, summary?: ParkingLotSummary, ope
                 type='card'
                 items={props.lotInfo.floor_info.map((item, index) => ({ key: String(index), label: `${item.floor}${props.summary !== undefined ? ` (${props.summary.floors[index].numFree}/${props.summary.floors[index].numSlots})` : ''}` }))}
                 onChange={changeMap}
+                style={{ backgroundColor: styles.white }}
+                tabBarGutter={3}
+                tabBarStyle={{ backgroundColor: styles.lightGray, padding: '0 10px' }}
               />
               <ParkingLotMap
                 prefix={String(floorId + 1)}
