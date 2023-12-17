@@ -1,5 +1,6 @@
 '''Manage database connection and actions'''
 import os
+import psycopg
 from psycopg.rows import dict_row, class_row
 from psycopg_pool import ConnectionPool
 from src.constants import Role, Gender, VehicleSize, OwnerInfo, ParkingRecord, \
@@ -142,15 +143,35 @@ class QuickParkingDB():
     def add_vehicle(self, user_id: str, license_plate_no: str, nick_name: str,
                     car_size: VehicleSize = "small") -> None:
         '''Add a new vehicle to the database'''
-        sql_query = """
-        INSERT INTO "Cars" ("userID", "licensePlateNo", "size", "model")
-        VALUES (%s, %s, %s, %s);
-        """
-
         with self._connection_pools.connection() as conn:
             with conn.cursor() as cursor:
-                cursor.execute(
-                    sql_query, (user_id, license_plate_no, car_size, nick_name))
+                # Check if a record with the given license_plate_no exists
+                cursor.execute("""
+                    SELECT "userID" FROM "Cars" WHERE "licensePlateNo" = %s;
+                """, (license_plate_no,))
+
+                existing_record = cursor.fetchone()
+
+                if existing_record:
+                    existing_user_id = existing_record[0]
+
+                    if existing_user_id is None:
+                        # If user_id is NULL, update it
+                        cursor.execute("""
+                            UPDATE "Cars" SET "userID" = %s, "size" = %s, "model" = %s
+                            WHERE "licensePlateNo" = %s;
+                        """, (user_id, car_size, nick_name, license_plate_no))
+                    else:
+                        # If user_id exists, throw an error
+                        raise psycopg.errors.UniqueViolation(
+                            "License plate number already exists with a user_id.")
+                else:
+                    # If license_plate_no does not exist, insert the new record
+                    cursor.execute("""
+                        INSERT INTO "Cars" ("userID", "licensePlateNo", "size", "model")
+                        VALUES (%s, %s, %s, %s);
+                    """, (user_id, license_plate_no, car_size, nick_name))
+
                 conn.commit()
 
     def update_vehicle(self, license_plate_no: str, nick_name: str,
