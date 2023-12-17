@@ -1,0 +1,30 @@
+name: frontend_delivery
+
+on:
+  push:
+    branches:
+      - release
+
+jobs:
+  frontend_delivery:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to docker
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          platforms: linux/amd64,linux/arm64
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tsmccn-frontend:latest
+          build_args: |
+            API_ROOT=${{ secrets.API_ROOT }}
