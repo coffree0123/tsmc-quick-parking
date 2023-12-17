@@ -1,6 +1,6 @@
 import { Flex, Skeleton, Tabs } from 'antd'
 import React, { useEffect, useState } from 'react'
-import { type Slots, useParkingLot, type ParkingInfo } from '../hooks'
+import { type Slots, type ParkingInfo, type LotInfo, type ParkingLotSummary } from '../hooks'
 
 interface SlotInfo {
   isFree: boolean
@@ -108,7 +108,7 @@ const ParkingLotMap = (props: ParkingLotMapProps): React.ReactElement => {
   }, [props.freeSlots, props.parkedSlots, props.prioritySlots])
 
   return (
-    <Flex vertical gap='middle' style={{ width: '100%', height: '500px', overflow: 'scroll' }}>
+    <Flex vertical gap='middle' style={{ width: '100%', height: '100%', overflow: 'auto', borderRadius: '10px', boxShadow: 'inset 0 0 10px #000' }}>
       {map.map((item, i) => (
         <Flex key={i} gap='small' style={{ width: `${slotWidth * props.numCols + 8 * (props.numCols - 1)}px` }}>
           {item.map((slotInfo, j) => (
@@ -129,33 +129,32 @@ const ParkingLotMap = (props: ParkingLotMapProps): React.ReactElement => {
   )
 }
 
-const ParkingLot = (props: { id: number, openCarInfo?: (id: string) => void }): React.ReactElement => {
+const ParkingLot = (props: { lotInfo?: LotInfo, summary?: ParkingLotSummary, openCarInfo?: (id: string) => void }): React.ReactElement => {
   const [floorId, setFloorId] = useState<number>(0)
-  const lotInfo = useParkingLot(props.id)
 
   const changeMap = (key: string): void => {
     setFloorId(Number(key))
   }
 
   return (
-    <Flex vertical style={{ overflow: 'hidden' }}>
+    <Flex vertical style={{ height: '100%' }}>
       {
-        lotInfo === undefined
+        props.lotInfo === undefined
           ? <Skeleton active />
           : (
             <>
               <Tabs
                 type='card'
-                items={lotInfo.floor_info.map((item, index) => ({ key: String(index), label: item.floor }))}
+                items={props.lotInfo.floor_info.map((item, index) => ({ key: String(index), label: `${item.floor}${props.summary !== undefined ? ` (${props.summary.floors[index].numFree}/${props.summary.floors[index].numSlots})` : ''}` }))}
                 onChange={changeMap}
               />
               <ParkingLotMap
                 prefix={String(floorId + 1)}
-                numRows={lotInfo.num_row}
-                numCols={lotInfo.num_col}
-                freeSlots={lotInfo.floor_info[floorId].free_slots}
-                prioritySlots={lotInfo.floor_info[floorId].priority_slots}
-                parkedSlots={lotInfo.floor_info[floorId].parked_slots}
+                numRows={props.lotInfo.num_row}
+                numCols={props.lotInfo.num_col}
+                freeSlots={props.lotInfo.floor_info[floorId].free_slots}
+                prioritySlots={props.lotInfo.floor_info[floorId].priority_slots}
+                parkedSlots={props.lotInfo.floor_info[floorId].parked_slots}
                 openCarInfo={props.openCarInfo}
               />
             </>

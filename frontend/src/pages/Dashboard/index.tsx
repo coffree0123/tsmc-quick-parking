@@ -8,7 +8,7 @@ import axios from 'axios'
 import dayjs from 'dayjs'
 import { getAxiosConfig } from '../../utils/api'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useParkingLot, useParkingLotList } from '../../hooks'
+import { type LotInfo, useParkingLot, useParkingLotList } from '../../hooks'
 import { styles } from '../../constants'
 
 const { Header, Content } = Layout
@@ -97,7 +97,7 @@ const Occupants = (props: { id: number, openCarInfo: (id: string) => void }): Re
     />
   )
 }
-const Chart = (props: { id: number }): React.ReactElement => {
+const Chart = (props: { id: number, lotInfo?: LotInfo }): React.ReactElement => {
   const [timeRecords, setTimeRecords] = useState<TimeRecordDisplay[]>([])
   const [query, setQuery] = useState<TimeRecordQuery>({
     floor: 1,
@@ -106,14 +106,13 @@ const Chart = (props: { id: number }): React.ReactElement => {
     interval: 1,
     time_unit: 'H'
   })
-  const lotInfo = useParkingLot(props.id)
   const [isPercent, setIsPercent] = useState<boolean>(false)
 
   const changeQuery = (identifier: any, value: any): void => {
     setQuery((prevQuery) => ({ ...prevQuery, [identifier]: value }))
   }
   useEffect(() => {
-    if (lotInfo !== undefined && query.floor <= lotInfo.num_floor) {
+    if (props.lotInfo !== undefined && query.floor <= props.lotInfo.num_floor) {
       axios.get<TimeRecordInfo[]>(`guards/dashboard/time-records?parkinglot_id=${props.id}&floor=${query.floor}&start_time=${query.start_time}&end_time=${query.end_time}&interval=${query.interval}${query.time_unit}`, getAxiosConfig())
         .then(response => {
           const tmp: TimeRecordDisplay[] = []
@@ -133,7 +132,7 @@ const Chart = (props: { id: number }): React.ReactElement => {
             tmp.push({
               label: 'Free',
               time: `${year}/${month}/${day} ${hour}:${minute}`,
-              value: lotInfo.num_row * lotInfo.num_col - value
+              value: props.lotInfo !== undefined ? props.lotInfo.num_row * props.lotInfo.num_col - value : 0
             })
           })
           setTimeRecords(tmp)
@@ -142,7 +141,7 @@ const Chart = (props: { id: number }): React.ReactElement => {
     } else {
       setQuery({ ...query, floor: 1 })
     }
-  }, [query, props.id, lotInfo])
+  }, [query, props.id, props.lotInfo])
 
   const config = {
     data: timeRecords,
@@ -173,9 +172,9 @@ const Chart = (props: { id: number }): React.ReactElement => {
             value={query.floor}
             style={{ width: 120 }}
             options={
-              lotInfo === undefined
+              props.lotInfo === undefined
                 ? []
-                : lotInfo.floor_info.map((item, index) => ({ value: index + 1, label: item.floor }))
+                : props.lotInfo.floor_info.map((item, index) => ({ value: index + 1, label: item.floor }))
             }
             onChange={(val) => { changeQuery('floor', val) }}
           />
@@ -371,6 +370,7 @@ const Dashboard = (): React.ReactElement => {
   const [noti, notiContextHolder] = notification.useNotification()
   const { id } = useParams()
   const lotList = useParkingLotList()
+  const { lotInfo } = useParkingLot(Number(id))
   const navigate = useNavigate()
   const switchLot = (value: number): void => {
     if (Number(id) !== value) {
@@ -444,7 +444,7 @@ const Dashboard = (): React.ReactElement => {
       >
         <Row>
           <Col span={18} offset={6}>
-            <Chart id={Number(id)} />
+            <Chart id={Number(id)} lotInfo={lotInfo}/>
           </Col>
         </Row>
         <Row>
@@ -453,7 +453,7 @@ const Dashboard = (): React.ReactElement => {
             <Occupants id={Number(id)} openCarInfo={openCarInfo} />
           </Col>
           <Col span={12}>
-            <ParkingLot id={Number(id)} openCarInfo={openCarInfo} />
+            <ParkingLot lotInfo={lotInfo} openCarInfo={openCarInfo} />
           </Col>
         </Row>
         <Modal
