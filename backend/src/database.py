@@ -200,17 +200,11 @@ class QuickParkingDB():
 
     def delete_vehicle(self, license_plate_no: str) -> None:
         '''Delete a vehicle's information in the database'''
-        # Delete parking records first
+        # Set the vehicle's owner to NULL
         sql_query = """
-        DELETE FROM "ParkingRecords" WHERE "licensePlateNo" = %s;
-        """
-        with self._connection_pools.connection() as conn:
-            with conn.cursor() as cursor:
-                cursor.execute(sql_query, (license_plate_no,))
-                conn.commit()
-        # Delete car information
-        sql_query = """
-        DELETE FROM "Cars" WHERE "licensePlateNo" = %s;
+        UPDATE "Cars"
+        SET "userID" = NULL
+        WHERE "licensePlateNo" = %s
         """
         with self._connection_pools.connection() as conn:
             with conn.cursor() as cursor:
@@ -392,7 +386,8 @@ class QuickParkingDB():
             """
             with self._connection_pools.connection() as conn:
                 with conn.cursor() as cursor:
-                    cursor.execute(check_query, (start_time, start_time, slot_id, license_plate_no))
+                    cursor.execute(
+                        check_query, (start_time, start_time, slot_id, license_plate_no))
                     result = cursor.fetchone()
                     if result is None:
                         res = True
@@ -405,7 +400,8 @@ class QuickParkingDB():
             """
             with self._connection_pools.connection() as conn:
                 with conn.cursor() as cursor:
-                    cursor.execute(check_query, (end_time, end_time, slot_id, license_plate_no))
+                    cursor.execute(
+                        check_query, (end_time, end_time, slot_id, license_plate_no))
                     result = cursor.fetchone()
                     if result is None:
                         res = True
@@ -452,7 +448,8 @@ class QuickParkingDB():
         """
         with self._connection_pools.connection() as conn:
             with conn.cursor() as cursor:
-                cursor.execute(sql_query, (end_time, slot_id, license_plate_no))
+                cursor.execute(
+                    sql_query, (end_time, slot_id, license_plate_no))
                 result = cursor.fetchone()
                 if result is None:
                     return False
