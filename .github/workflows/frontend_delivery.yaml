@@ -1,4 +1,4 @@
-name: frontend_delivery
+name: frontend_cd
 
 on:
   push:
