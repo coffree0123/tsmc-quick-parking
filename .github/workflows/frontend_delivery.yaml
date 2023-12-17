@@ -6,8 +6,7 @@ on:
       - release
 
 jobs:
-  build:
-    name: frontend_delivery
+  frontend_delivery:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
