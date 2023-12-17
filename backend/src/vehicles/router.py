@@ -1,4 +1,5 @@
 '''Vehicles management module'''
+import psycopg
 from fastapi import APIRouter, Request, HTTPException, status, Depends
 from src.constants import VehicleAndOwner, VehicleData, VehicleState, ParkingRecord
 from src.security import authentication, get_user_id, is_guard
@@ -8,12 +9,19 @@ router = APIRouter(
     dependencies=[Depends(authentication)]
 )
 
+
 @router.post("/users/vehicles/", tags=['user'])
 def add_vehicle(r: Request, vehicle_data: VehicleData) -> None:
     '''Add a new vehicle to the database'''
     vehicle_data.user_id = get_user_id(r)
-    r.app.state.database.add_vehicle(vehicle_data.user_id, vehicle_data.license_plate_no,
-                                     vehicle_data.nick_name, vehicle_data.car_size)
+    try:
+        r.app.state.database.add_vehicle(vehicle_data.user_id, vehicle_data.license_plate_no,
+                                         vehicle_data.nick_name, vehicle_data.car_size)
+    except psycopg.errors.UniqueViolation as unique_error:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="This vehicle has already been added to the database"
+        ) from unique_error
 
 
 @router.put("/users/vehicles/", tags=['user'])
@@ -77,7 +85,8 @@ def get_vehicle_and_owner_info(r: Request, license_plate_no: str) -> VehicleAndO
             detail="Permission denied"
         )
     # get records of the query vehicle
-    raw_records = r.app.state.database.get_latest_records(license_plate_no, None)
+    raw_records = r.app.state.database.get_latest_records(
+        license_plate_no, None)
     vehicle_records = [
         ParkingRecord(
             position=fmt(**record),
