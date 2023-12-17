@@ -37,24 +37,58 @@ interface FloorInfo {
   parked_slots?: ParkingInfo[]
 }
 
-interface LotInfo {
+export interface LotInfo {
   num_row: number
   num_col: number
   num_floor: number
   floor_info: FloorInfo[]
 }
 
-export const useParkingLot = (id: number): LotInfo | undefined => {
+interface FloorSummary {
+  name: string
+  numSlots: number
+  numFree: number
+}
+
+export interface ParkingLotSummary {
+  numSlots: number
+  numFree: number
+  floors: FloorSummary[]
+}
+
+export const useParkingLot = (id: number): { lotInfo?: LotInfo, summary?: ParkingLotSummary } => {
   const [lotInfo, setLotInfo] = useState<LotInfo>()
   const { isGuard } = useContext(AuthContext)
+  const [summary, setSummary] = useState<ParkingLotSummary>()
+
   useEffect(() => {
     axios.get<LotInfo>(`${isGuard ? 'guards' : 'users'}/parkinglots/${id}`, getAxiosConfig())
       .then(response => {
         setLotInfo(response.data)
+        const numSlots = response.data.num_row * response.data.num_col
+        let numFree = 0
+        const floors: FloorSummary[] = []
+        for (const item of response.data.floor_info) {
+          const free = typeof item.free_slots !== 'undefined'
+            ? item.free_slots.length
+            : (numSlots - (item.parked_slots?.length ?? 0))
+          numFree += free
+          floors.push({
+            name: item.floor,
+            numSlots,
+            numFree: free
+          })
+        }
+        setSummary({
+          numSlots: numSlots * response.data.floor_info.length,
+          numFree,
+          floors
+        })
       })
       .catch(error => { console.error(error) })
   }, [id])
-  return lotInfo
+
+  return { lotInfo, summary }
 }
 
 interface UserInfo {
