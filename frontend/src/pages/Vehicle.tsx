@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { Input, Flex, Button, Radio, Form, List, Drawer, Row, Col, Typography, notification, Popconfirm } from 'antd'
 import axios from 'axios'
-import { getAxiosConfig } from '../../utils/api'
+import { getAxiosConfig } from '../utils/api'
 import { MsalProvider } from '@azure/msal-react'
 import { EditFilled, PlusOutlined } from '@ant-design/icons'
-import { styles } from '../../constants'
-import FormLabel from '../../components/FormLabel'
-import UserLayout from '../../components/UserLayout'
+import { styles } from '../constants'
+import FormLabel from '../components/FormLabel'
+import UserLayout from '../components/UserLayout'
 
 const { Title } = Typography
 
