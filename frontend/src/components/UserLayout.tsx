@@ -42,6 +42,7 @@ interface UserLayoutProps {
   backButton: boolean
   active?: 'home' | 'parkinglots' | 'vehicles' | 'settings'
   children?: React.ReactNode
+  action?: React.ReactNode
 }
 
 const headerHeight = 60
@@ -72,7 +73,7 @@ const UserLayout = (props: UserLayoutProps): React.ReactElement => {
                   {props.title}
                 </Title>
               </Col>
-              <Col span={4}></Col>
+              <Col span={4} style={{ display: 'flex', alignItems: 'center', justifyContent: 'right' }}>{props.action}</Col>
             </Row>
           </Header>
         )

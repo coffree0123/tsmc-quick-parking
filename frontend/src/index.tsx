@@ -95,9 +95,10 @@ root.render(
                 />
                 {/* Wrap UserLayout inside ParkingLotPage to specify title with parking lot name */}
                 <Route path="/parkinglots/:id" element={<ParkingLotPage />} />
+                {/* Wrap UserLayout inside Vehicle to specify action to add new vehicle */}
                 <Route
                   path="/vehicles"
-                  element={<UserLayout active='vehicles' title='Vehicles'><Vehicle instance={msalInstance}/></UserLayout>}
+                  element={<Vehicle instance={msalInstance}/>}
                 />
                 <Route
                   path="/settings"
