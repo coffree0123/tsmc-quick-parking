@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import ParkingLot from '../../components/ParkingLot'
-import UserLayout, { footerHeight } from '../../components/UserLayout'
-import { useParkingLot, useParkingLotList } from '../../hooks'
+import ParkingLot from '../components/ParkingLot'
+import UserLayout, { footerHeight } from '../components/UserLayout'
+import { useParkingLot, useParkingLotList } from '../hooks'
 import { Typography } from 'antd'
-import { styles } from '../../constants'
+import { styles } from '../constants'
 
 const { Title } = Typography
 
