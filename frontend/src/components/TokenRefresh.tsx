@@ -6,10 +6,9 @@ const TokenRefresh = (props: { children: React.ReactNode, instance: any }): Reac
 
   useEffect(() => {
     const TokenRequest = {
-      scopes: ['user.read'],
-      account: instance.getAllAccounts()[0],
-      forceRefresh: true,
-      refreshTokenExpirationOffsetSeconds: 86400
+      scopes: ['445f1017-2318-4b79-a470-9164afe1738b/token.refresh'],
+      account: instance.getActiveAccount() ?? undefined,
+      forceRefresh: true
     }
 
     instance
