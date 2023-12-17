@@ -46,6 +46,7 @@ interface UserLayoutProps {
 }
 
 const headerHeight = 60
+export const footerHeight = 120
 
 const UserLayout = (props: UserLayoutProps): React.ReactElement => {
   const navigate = useNavigate()
@@ -87,7 +88,7 @@ const UserLayout = (props: UserLayoutProps): React.ReactElement => {
       >
         {props.children}
       </Content>
-      <Footer style={{ height: '120px', backgroundColor: 'transparent', padding: '0 30px' }}>
+      <Footer style={{ height: `${footerHeight}px`, backgroundColor: 'transparent', padding: '0 30px' }}>
         <Flex align='center' justify='space-between' style={{ height: '100%' }}>
           <NavButton
             defaultElement={<HomeOutlined />}
