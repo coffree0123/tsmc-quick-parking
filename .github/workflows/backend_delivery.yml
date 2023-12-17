@@ -1,15 +1,14 @@
-name: ci
+name: backend_delivery
 
 on:
   push:
     branches:
-      - main
+      - release
     tags:
       - '*'
 
 jobs:
-  build:
-    name: build
+  backend_delivery:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -28,4 +27,4 @@ jobs:
           platforms: linux/amd64,linux/arm64
           context: ./backend
           file: ./backend/Dockerfile.prod
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/quickparking:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tsmccn:latest
