@@ -10,6 +10,7 @@ import { getAxiosConfig } from '../utils/api'
 import { useNavigate, useParams } from 'react-router-dom'
 import { type LotInfo, useParkingLot, useParkingLotList } from '../hooks'
 import { styles } from '../constants'
+import TokenRefresh from '../components/TokenRefresh'
 
 const { Header, Content } = Layout
 const { Title } = Typography
@@ -379,7 +380,7 @@ const VehicleModal = (props: { id: string, vehicleInfo: VehicleInfo }): React.Re
   )
 }
 
-const Dashboard = (): React.ReactElement => {
+const Dashboard = ({ instance }: any): React.ReactElement => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [carId, setCarId] = useState('')
   const [vehicleInfo, setVehicleInfo] = useState<VehicleInfo>()
@@ -413,6 +414,7 @@ const Dashboard = (): React.ReactElement => {
       })
   }
   return (
+    <TokenRefresh instance={instance}>
     <Layout>
       {notiContextHolder}
       <Header
@@ -524,6 +526,7 @@ const Dashboard = (): React.ReactElement => {
         </Modal>
       </Content>
     </Layout>
+    </TokenRefresh>
   )
 }
 

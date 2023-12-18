@@ -8,6 +8,7 @@ import { getStayTime, formatStayTime } from './Dashboard'
 import { useParkingLotList, useUserInfo } from '../hooks'
 import { styles } from '../constants'
 import background from '../assets/background.svg'
+import TokenRefresh from '../components/TokenRefresh'
 
 const { Title, Text } = Typography
 
@@ -67,7 +68,7 @@ export interface PageInfo {
 const cardGap = 30
 const padding = 30
 
-const Home = (): React.ReactElement => {
+const Home = ({ instance }: any): React.ReactElement => {
   const [pageInfo, setPageInfo] = useState<PageInfo>()
   const userInfo = useUserInfo()
   const lotList = useParkingLotList()
@@ -99,6 +100,7 @@ const Home = (): React.ReactElement => {
       }px`
 
   return (
+    <TokenRefresh instance={instance}>
     <Flex vertical style={{
       height: '100%',
       overflow: 'hidden',
@@ -178,6 +180,7 @@ const Home = (): React.ReactElement => {
         }
       </div>
     </Flex>
+    </TokenRefresh>
   )
 }
 
