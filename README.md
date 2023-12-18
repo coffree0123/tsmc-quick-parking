@@ -1,5 +1,9 @@
 # tsmc-quick-parking
 
+### How to deploy our project
+Just create a new PR that merge **main** branch to **release** branch. Then, the CI/CD pipeline will automatically deploy our project to Azure. You can see the website [here](https://tsmccn-frontend.azurewebsites.net/). 
+If the website is not working, please contact [@coffree0123](https://github.com/coffree0123).
+
 ## Contribution
 
 ### Pull Request
