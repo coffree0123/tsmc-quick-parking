@@ -1,26 +1,17 @@
-import React, { useContext } from 'react'
+import React, { Suspense, lazy, useContext } from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
-import App from './pages/default'
 import reportWebVitals from './reportWebVitals'
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom'
-import Home from './pages/Home'
 
 import { PublicClientApplication, EventType } from '@azure/msal-browser'
 import { msalConfig } from './authConfig'
 
 import './styles/index.css'
-import Dashboard from './pages/Dashboard'
-import ParkingLotPage from './pages/ParkingLotPage'
-import Setting from './pages/Setting'
-import Vehicle from './pages/Vehicle'
 import AuthContextProvider, { AuthContext } from './contexts/AuthContext'
 import axios from 'axios'
-import ParkingLotList from './pages/ParkingLotList'
-import DashboardRouter from './pages/DashboardRouter'
 import { MsalProvider } from '@azure/msal-react'
-import UserLayout from './components/UserLayout'
-import { ConfigProvider } from 'antd'
+import { ConfigProvider, Skeleton } from 'antd'
 import { styles } from './constants'
 
 /**
@@ -68,6 +59,18 @@ const GuardRoutes = (): React.ReactElement => {
 
 axios.defaults.baseURL = process.env.REACT_APP_API_ROOT ?? 'http://localhost:8000/api'
 
+const App = lazy(async () => await import('./pages/default'))
+
+const UserLayout = lazy(async () => await import('./components/UserLayout'))
+const Home = lazy(async () => await import('./pages/Home'))
+const ParkingLotList = lazy(async () => await import('./pages/ParkingLotList'))
+const ParkingLotPage = lazy(async () => await import('./pages/ParkingLotPage'))
+const Vehicle = lazy(async () => await import('./pages/Vehicle'))
+const Setting = lazy(async () => await import('./pages/Setting'))
+
+const DashboardRouter = lazy(async () => await import('./pages/DashboardRouter'))
+const Dashboard = lazy(async () => await import('./pages/Dashboard'))
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 )
@@ -83,33 +86,35 @@ root.render(
       <BrowserRouter>
         <MsalProvider instance={msalInstance}>
           <AuthContextProvider>
-            <Routes>
-              <Route element={<RestrictedPublicRoutes />}>
-                <Route path="/login" element={<App instance={msalInstance}/>} />
-              </Route>
-              <Route element={<UserRoutes />}>
-                <Route path="/" element={<UserLayout active='home'><Home instance={msalInstance}/></UserLayout>} />
-                <Route
-                  path="/parkinglots"
-                  element={<UserLayout active='parkinglots' title='Parking Lots'><ParkingLotList /></UserLayout>}
-                />
-                {/* Wrap UserLayout inside ParkingLotPage to specify title with parking lot name */}
-                <Route path="/parkinglots/:id" element={<ParkingLotPage instance={msalInstance}/>} />
-                {/* Wrap UserLayout inside Vehicle to specify action to add new vehicle */}
-                <Route
-                  path="/vehicles"
-                  element={<Vehicle instance={msalInstance}/>}
-                />
-                <Route
-                  path="/settings"
-                  element={<UserLayout active='settings' title='Settings'><Setting instance={msalInstance}/></UserLayout>}
-                />
-              </Route>
-              <Route element={<GuardRoutes />}>
-                <Route path='/dashboard' element={<DashboardRouter />} />
-                <Route path='/dashboard/:id' element={<Dashboard instance={msalInstance}/>} />
-              </Route>
-            </Routes>
+            <Suspense fallback={<Skeleton active />}>
+              <Routes>
+                <Route element={<RestrictedPublicRoutes />}>
+                  <Route path="/login" element={<App instance={msalInstance}/>} />
+                </Route>
+                <Route element={<UserRoutes />}>
+                  <Route path="/" element={<UserLayout active='home'><Home instance={msalInstance}/></UserLayout>} />
+                  <Route
+                    path="/parkinglots"
+                    element={<UserLayout active='parkinglots' title='Parking Lots'><ParkingLotList /></UserLayout>}
+                  />
+                  {/* Wrap UserLayout inside ParkingLotPage to specify title with parking lot name */}
+                  <Route path="/parkinglots/:id" element={<ParkingLotPage instance={msalInstance}/>} />
+                  {/* Wrap UserLayout inside Vehicle to specify action to add new vehicle */}
+                  <Route
+                    path="/vehicles"
+                    element={<Vehicle instance={msalInstance}/>}
+                  />
+                  <Route
+                    path="/settings"
+                    element={<UserLayout active='settings' title='Settings'><Setting instance={msalInstance}/></UserLayout>}
+                  />
+                </Route>
+                <Route element={<GuardRoutes />}>
+                  <Route path='/dashboard' element={<DashboardRouter />} />
+                  <Route path='/dashboard/:id' element={<Dashboard instance={msalInstance}/>} />
+                </Route>
+              </Routes>
+            </Suspense>
           </AuthContextProvider>
         </MsalProvider>
       </BrowserRouter>
