@@ -26,7 +26,7 @@ export const formatStayTime = (stayTime: number): string => {
   const days = Math.floor(stayTime / (1000 * 60 * 60 * 24))
   const hours = Math.floor(stayTime / (1000 * 60 * 60) - days * 24)
   const minutes = Math.round(stayTime / (1000 * 60) - (days * 24 + hours) * 60)
-  return `${days > 0 ? `${days} day${days > 1 ? 's' : ''} ` : ''}${hours > 0 ? `${hours} hr${hours > 1 ? 's' : ''} ` : ''}${minutes > 0 ? `${minutes} min${minutes > 1 ? 's' : ''}` : ''}`
+  return `${days > 0 ? `${days} day${days > 1 ? 's' : ''} ` : ''}${hours > 0 ? `${hours} hr${hours > 1 ? 's' : ''} ` : ''}${days === 0 && minutes > 0 ? `${minutes} min${minutes > 1 ? 's' : ''}` : ''}`
 }
 
 const Vehicle = (props: VehicleProps): React.ReactElement => {
