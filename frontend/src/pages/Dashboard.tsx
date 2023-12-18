@@ -497,7 +497,7 @@ const Dashboard = ({ instance }: any): React.ReactElement => {
               }}
             >
               <div style={{ fontSize: '1.5em', fontWeight: 'bold' }}>Occupancy Rate</div>
-              <div style={{ fontSize: '3em', fontWeight: 'bold' }}>{summary?.numFree !== undefined && summary.numSlots !== undefined && (summary.numFree / summary.numSlots * 100).toFixed(2)}<span style={{ fontSize: '0.6em' }}>%</span></div>
+              <div style={{ fontSize: '3em', fontWeight: 'bold' }}>{summary?.numFree !== undefined && summary.numSlots !== undefined && ((1 - summary.numFree / summary.numSlots) * 100).toFixed(2)}<span style={{ fontSize: '0.6em' }}>%</span></div>
             </Flex>
           </Space>
           <Chart id={Number(id)} lotInfo={lotInfo}/>
