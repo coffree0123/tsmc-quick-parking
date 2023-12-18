@@ -21,6 +21,20 @@ const TokenRefresh = (props: { children: React.ReactNode, instance: any }): Reac
         // Acquire token silent failure
         console.log(error)
       })
+
+    const interval = setInterval(() => {
+      instance
+        .acquireTokenSilent(TokenRequest)
+        .then(function (TokenResponse: any) {
+        // Acquire token silent success
+          localStorage.setItem('token', TokenResponse.idToken)
+        })
+        .catch(function (error: any) {
+        // Acquire token silent failure
+          console.log(error)
+        })
+    }, 3300000)
+    return () => { clearInterval(interval) }
   }, [])
 
   return (
