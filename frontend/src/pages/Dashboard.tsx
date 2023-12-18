@@ -281,13 +281,18 @@ export const getStayTime = (startTime: string, endTime?: string | null): number 
 ) - Date.parse(startTime)
 
 const VehicleModal = (props: { id: string, vehicleInfo: VehicleInfo }): React.ReactElement => {
-  let currentPosition: string | undefined
-  for (const item of props.vehicleInfo.vehicle_records) {
-    if (typeof item.end_time === 'undefined') {
-      currentPosition = item.position
-      break
+  const [currentPosition, setCurrentPosition] = useState('Not parked')
+  useEffect(() => {
+    let tmp = 'Not parked'
+    for (const item of props.vehicleInfo.vehicle_records) {
+      console.log(item.end_time)
+      if (item.end_time === null) {
+        tmp = item.position
+        break
+      }
     }
-  }
+    setCurrentPosition(tmp)
+  }, [props.vehicleInfo])
   return (
     <Row>
       <Col span={12} style={{ paddingRight: '12px' }} >
@@ -301,7 +306,7 @@ const VehicleModal = (props: { id: string, vehicleInfo: VehicleInfo }): React.Re
         >
           Vehicle: {props.id}
         </Title>
-        <Title level={4}>Current Position: <span style={{ fontWeight: 'normal' }}>{currentPosition ?? 'Not parked'}</span></Title>
+        <Title level={4}>Current Position: <span style={{ fontWeight: 'normal' }}>{currentPosition}</span></Title>
         {
           props.vehicleInfo.vehicle_records.length > 0 && (
             <Title level={4}>Average Parking Time: <span style={{ fontWeight: 'normal' }}>{
