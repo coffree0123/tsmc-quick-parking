@@ -1,11 +1,11 @@
 import { Col, Flex, List, Row, Skeleton, Typography } from 'antd'
 import { ArrowRightOutlined } from '@ant-design/icons'
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { getAxiosConfig } from '../utils/api'
 import { getStayTime, formatStayTime } from './Dashboard'
-import { useUserInfo } from '../hooks'
+import { useParkingLotList, useUserInfo } from '../hooks'
 import { styles } from '../constants'
 import background from '../assets/background.svg'
 
@@ -70,6 +70,9 @@ const padding = 30
 const Home = (): React.ReactElement => {
   const [pageInfo, setPageInfo] = useState<PageInfo>()
   const userInfo = useUserInfo()
+  const lotList = useParkingLotList()
+  const [parkingLotID, setParkingLotID] = useState<Record<string, number>>({})
+  const navigate = useNavigate()
 
   useEffect(() => {
     axios.get<PageInfo>('users/page_info/', getAxiosConfig())
@@ -78,6 +81,14 @@ const Home = (): React.ReactElement => {
       })
       .catch(error => { console.error(error) })
   }, [])
+
+  useEffect(() => {
+    const tmp: Record<string, number> = {}
+    for (const item of lotList) {
+      tmp[item.name] = item.id
+    }
+    setParkingLotID(tmp)
+  }, [lotList])
 
   const favoriteWidth = pageInfo === undefined || pageInfo.favorite_buildings.length === 0
     ? '100%'
@@ -153,7 +164,7 @@ const Home = (): React.ReactElement => {
                       }}
                       dataSource={pageInfo.parked_vehicles}
                       renderItem={(item) => (
-                        <List.Item style={{ justifyContent: 'center', paddingLeft: `${padding}px`, paddingRight: `${padding}px` }}>
+                        <List.Item style={{ justifyContent: 'center', paddingLeft: `${padding}px`, paddingRight: `${padding}px` }} onClick={item.parkinglot_name in parkingLotID ? () => { navigate(`/parkinglots/${parkingLotID[item.parkinglot_name]}`) } : undefined} >
                           <Row style={{ width: '100%' }}>
                             <Col span={8}>{item.model !== '' ? item.model : item.license_plate_no}</Col>
                             <Col span={8}>{item.parkinglot_name}, <span style={{ color: 'gray' }}>{item.position}</span></Col>
