@@ -1,9 +1,9 @@
-'''Create mock parking records'''
+'''Create mock occupants'''
 import random
+import string
 import datetime
 import requests
 
-slots = list(range(1, 223))
 start_date = datetime.datetime.strptime('2023-12-04', '%Y-%m-%d')
 end_date = datetime.datetime.strptime('2023-12-05', '%Y-%m-%d')
 
@@ -20,9 +20,24 @@ t = datetime.datetime.now()
 for i in range(20):
     license_plate_no = user_licenses[i]
     slot = user_slots[i]
-    duration = random.randint(60*30, 60*480)
+    duration = random.randint(60*30, 60*300)
     start_time = t - datetime.timedelta(seconds=duration)
     requests.post(f'http://127.0.0.1:8000/api/parking/{slot}',
                     json={"license_plate_no": license_plate_no, "start_time": str(start_time)},
                     timeout=5)
+    print(f'{license_plate_no} still in slot {slot}, start time: {start_time}')
+
+slots = list(range(1, 223))
+for i in range(10):
+    # pylint: disable=invalid-name
+    license_plate_no = ''.join(random.choices(string.ascii_uppercase, k=3)) \
+                        + '-' + ''.join(random.choices(string.digits, k=4))
+    slot = random.choice(slots)
+    duration = random.randint(60*30, 60*480)
+    start_time = t - datetime.timedelta(seconds=duration)
+    park_response = requests.post(f'http://127.0.0.1:8000/api/parking/{slot}',
+                    json={"license_plate_no": license_plate_no, "start_time": str(start_time)},
+                    timeout=5)
+    if park_response.status_code != 200:
+        continue
     print(f'{license_plate_no} still in slot {slot}, start time: {start_time}')
