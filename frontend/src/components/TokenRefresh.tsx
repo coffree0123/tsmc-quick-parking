@@ -10,6 +10,18 @@ const TokenRefresh = (props: { children: React.ReactNode, instance: any }): Reac
       account: instance.getActiveAccount() ?? undefined,
       forceRefresh: true
     }
+
+    instance
+      .acquireTokenSilent(TokenRequest)
+      .then(function (TokenResponse: any) {
+        // Acquire token silent success
+        localStorage.setItem('token', TokenResponse.idToken)
+      })
+      .catch(function (error: any) {
+        // Acquire token silent failure
+        console.log(error)
+      })
+
     const interval = setInterval(() => {
       instance
         .acquireTokenSilent(TokenRequest)
