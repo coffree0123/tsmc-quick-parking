@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react'
 import { Col, Input, Layout, List, Row, Space, Typography, Select, DatePicker, InputNumber, Switch, Modal, Form, Button, notification, Flex } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import { Area } from '@ant-design/charts'
-import ParkingLot from '../../components/ParkingLot'
-import LogOutButton from '../../components/LogOutButton'
+import ParkingLot from '../components/ParkingLot'
+import LogOutButton from '../components/LogOutButton'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import { getAxiosConfig } from '../../utils/api'
+import { getAxiosConfig } from '../utils/api'
 import { useNavigate, useParams } from 'react-router-dom'
-import { type LotInfo, useParkingLot, useParkingLotList } from '../../hooks'
-import { styles } from '../../constants'
+import { type LotInfo, useParkingLot, useParkingLotList } from '../hooks'
+import { styles } from '../constants'
 
 const { Header, Content } = Layout
 const { Title } = Typography
@@ -88,6 +88,11 @@ const Occupants = (props: { id: number, openCarInfo: (id: string) => void }): Re
     <List
       size='large'
       bordered
+      style={{
+        backgroundColor: styles.white,
+        borderRadius: '10px',
+        boxShadow: '3px 5px 5px rgba(0, 0, 0, 0.3)'
+      }}
       dataSource={occupants}
       renderItem={(item) => (
         <List.Item>
@@ -147,13 +152,13 @@ const Chart = (props: { id: number, lotInfo?: LotInfo }): React.ReactElement => 
     data: timeRecords,
     width: 800,
     height: 400,
-    autoFit: false,
+    autoFit: true,
     xField: 'time',
     yField: 'value',
     isStack: true,
     isPercent,
     seriesField: 'label',
-    color: ['#82d1de', '#cb302d'],
+    color: [styles.darkGray, styles.primaryColor],
     areaStyle: {
       fillOpacity: 0.7
     },
@@ -161,6 +166,12 @@ const Chart = (props: { id: number, lotInfo?: LotInfo }): React.ReactElement => 
       label: {
         values: ['Free', 'Occupied']
       }
+    },
+    xAxis: {
+      title: { text: 'Time' }
+    },
+    yAxis: {
+      title: { text: isPercent ? 'Ratio (%)' : 'Count' }
     }
   }
   return (
@@ -370,7 +381,7 @@ const Dashboard = (): React.ReactElement => {
   const [noti, notiContextHolder] = notification.useNotification()
   const { id } = useParams()
   const lotList = useParkingLotList()
-  const { lotInfo } = useParkingLot(Number(id))
+  const { lotInfo, summary } = useParkingLot(Number(id))
   const navigate = useNavigate()
   const switchLot = (value: number): void => {
     if (Number(id) !== value) {
@@ -439,21 +450,59 @@ const Dashboard = (): React.ReactElement => {
       </Header>
       <Content
         style={{
-          height: 'calc(100vh - 64px)'
+          height: 'calc(100vh - 64px)',
+          padding: '60px',
+          backgroundColor: styles.lightGray,
+          overflow: 'auto'
         }}
       >
-        <Row>
-          <Col span={18} offset={6}>
-            <Chart id={Number(id)} lotInfo={lotInfo}/>
-          </Col>
-        </Row>
-        <Row>
-          <Col span={12}>
-            <Title level={3}>Long-term occupants</Title>
+        <Flex align='center' justify='center' gap={60}>
+          <Space direction='vertical' size='large'>
+            <Flex
+              vertical
+              align='center'
+              justify='space-around'
+              style={{
+                backgroundColor: styles.primaryColor,
+                color: styles.white,
+                height: '150px',
+                width: '250px',
+                borderRadius: '20px',
+                boxShadow: '3px 5px 5px rgba(0, 0, 0, 0.3)',
+                padding: '20px'
+              }}
+            >
+              <div style={{ fontSize: '1.5em', fontWeight: 'bold' }}>Free Slots</div>
+              <div style={{ fontSize: '3em', fontWeight: 'bold' }}>{summary?.numFree}<span style={{ fontSize: '0.6em' }}>/{summary?.numSlots}</span></div>
+            </Flex>
+            <Flex
+              vertical
+              align='center'
+              justify='space-around'
+              style={{
+                backgroundColor: styles.primaryColor,
+                color: styles.white,
+                height: '150px',
+                width: '250px',
+                borderRadius: '20px',
+                boxShadow: '3px 5px 5px rgba(0, 0, 0, 0.3)',
+                padding: '20px'
+              }}
+            >
+              <div style={{ fontSize: '1.5em', fontWeight: 'bold' }}>Occupancy Rate</div>
+              <div style={{ fontSize: '3em', fontWeight: 'bold' }}>{summary?.numFree !== undefined && summary.numSlots !== undefined && (summary.numFree / summary.numSlots * 100).toFixed(2)}<span style={{ fontSize: '0.6em' }}>%</span></div>
+            </Flex>
+          </Space>
+          <Chart id={Number(id)} lotInfo={lotInfo}/>
+        </Flex>
+        <Row gutter={60} style={{ width: '100%', height: '850px', marginTop: '30px' }}>
+          <Col span={12} style={{ maxHeight: '100%' }}>
+            <Title level={3} style={{ marginBottom: '56px' }}>Long-term Occupants</Title>
             <Occupants id={Number(id)} openCarInfo={openCarInfo} />
           </Col>
-          <Col span={12}>
-            <ParkingLot lotInfo={lotInfo} openCarInfo={openCarInfo} />
+          <Col span={12} style={{ maxHeight: '100%' }}>
+            <Title level={3}>Parking Lot Map</Title>
+            <ParkingLot lotInfo={lotInfo} summary={summary} openCarInfo={openCarInfo} />
           </Col>
         </Row>
         <Modal
