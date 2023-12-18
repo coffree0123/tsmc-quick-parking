@@ -122,9 +122,9 @@ const ParkingLotMap = (props: ParkingLotMapProps): React.ReactElement => {
   }, [props.freeSlots, props.parkedSlots, props.prioritySlots])
 
   return (
-    <Flex vertical gap='middle' style={{ width: '100%', height: '100%', overflow: 'auto', borderRadius: '10px', boxShadow: 'inset 0 0 10px #000', backgroundColor: styles.white, padding: '30px' }}>
+    <Flex vertical gap='large' style={{ width: '100%', height: '100%', overflow: 'auto', borderRadius: '10px', boxShadow: 'inset 0 0 10px #000', backgroundColor: styles.white, padding: '30px' }}>
       {map.map((item, i) => (
-        <Flex key={i} gap='small' style={{ width: `${slotWidth * props.numCols + 8 * (props.numCols - 1)}px` }}>
+        <Flex key={i} gap='middle' style={{ width: `${slotWidth * props.numCols + 16 * (props.numCols - 1)}px` }}>
           {item.map((slotInfo, j) => (
             <ParkingSlot
               key={j}
