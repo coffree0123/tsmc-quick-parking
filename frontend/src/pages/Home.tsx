@@ -114,7 +114,7 @@ const Home = ({ instance }: any): React.ReactElement => {
         Hi{typeof userInfo !== 'undefined' && userInfo.name !== '' && ` ${userInfo.name}`}!
       </Title>
       <div>
-        <Title level={2} style={{ padding: `0 ${padding}px` }}>Your favorites</Title>
+        <Title level={2} style={{ padding: `0 ${padding}px` }}>Your Favorites</Title>
         <div style={{ overflowX: 'auto' }}>
           {
             pageInfo === undefined
