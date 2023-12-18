@@ -5,12 +5,13 @@ import UserLayout, { footerHeight } from '../components/UserLayout'
 import { useParkingLot, useParkingLotList } from '../hooks'
 import { Typography } from 'antd'
 import { styles } from '../constants'
+import TokenRefresh from '../components/TokenRefresh'
 
 const { Title } = Typography
 
 const titleHeight = 96
 
-const ParkingLotPage = (): React.ReactElement => {
+const ParkingLotPage = ({ instance }: any): React.ReactElement => {
   const [title, setTitle] = useState<string>()
   const { id } = useParams()
   const lotList = useParkingLotList()
@@ -26,6 +27,7 @@ const ParkingLotPage = (): React.ReactElement => {
   }, [id, lotList])
 
   return (
+    <TokenRefresh instance={instance}>
     <UserLayout active='parkinglots' title={title} backButton >
       {
         summary !== undefined &&
@@ -48,6 +50,7 @@ const ParkingLotPage = (): React.ReactElement => {
         <ParkingLot lotInfo={lotInfo} summary={summary} />
       </div>
     </UserLayout>
+    </TokenRefresh>
   )
 }
 
