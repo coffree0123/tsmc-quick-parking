@@ -7,6 +7,7 @@ import { EditFilled, PlusOutlined } from '@ant-design/icons'
 import { styles } from '../constants'
 import FormLabel from '../components/FormLabel'
 import UserLayout from '../components/UserLayout'
+import TokenRefresh from '../components/TokenRefresh'
 
 const { Title } = Typography
 
@@ -108,6 +109,7 @@ const Vehicle = ({ instance }: any): React.ReactElement => {
   return (
     <UserLayout active='vehicles' title='Vehicles' action={<PlusOutlined style={{ fontSize: '24px' }} onClick={() => { openDrawer() }}/>}>
     <MsalProvider instance={instance}>
+    <TokenRefresh instance={instance}>
     {notiContextHandler}
     <List
       size='large'
@@ -187,6 +189,7 @@ const Vehicle = ({ instance }: any): React.ReactElement => {
         )
       }
     </Drawer>
+    </TokenRefresh>
     </MsalProvider>
     </UserLayout>
   )

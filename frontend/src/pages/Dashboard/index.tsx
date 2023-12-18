@@ -4,6 +4,7 @@ import { SearchOutlined } from '@ant-design/icons'
 import { Area } from '@ant-design/charts'
 import ParkingLot from '../../components/ParkingLot'
 import LogOutButton from '../../components/LogOutButton'
+import TokenRefresh from '../../components/TokenRefresh'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import { getAxiosConfig } from '../../utils/api'
@@ -364,7 +365,7 @@ const VehicleModal = (props: { id: string, vehicleInfo: VehicleInfo }): React.Re
   )
 }
 
-const Dashboard = (): React.ReactElement => {
+const Dashboard = ({ instance }: any): React.ReactElement => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [carId, setCarId] = useState('')
   const [vehicleInfo, setVehicleInfo] = useState<VehicleInfo>()
@@ -397,6 +398,7 @@ const Dashboard = (): React.ReactElement => {
       })
   }
   return (
+    <TokenRefresh instance={instance}>
     <Layout>
       {notiContextHolder}
       <Header
@@ -470,6 +472,7 @@ const Dashboard = (): React.ReactElement => {
         </Modal>
       </Content>
     </Layout>
+    </TokenRefresh>
   )
 }
 

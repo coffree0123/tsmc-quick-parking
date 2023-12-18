@@ -88,13 +88,13 @@ root.render(
                 <Route path="/login" element={<App instance={msalInstance}/>} />
               </Route>
               <Route element={<UserRoutes />}>
-                <Route path="/" element={<UserLayout active='home'><Home /></UserLayout>} />
+                <Route path="/" element={<UserLayout active='home'><Home instance={msalInstance}/></UserLayout>} />
                 <Route
                   path="/parkinglots"
                   element={<UserLayout active='parkinglots' title='Parking Lots'><ParkingLotList /></UserLayout>}
                 />
                 {/* Wrap UserLayout inside ParkingLotPage to specify title with parking lot name */}
-                <Route path="/parkinglots/:id" element={<ParkingLotPage />} />
+                <Route path="/parkinglots/:id" element={<ParkingLotPage instance={msalInstance}/>} />
                 {/* Wrap UserLayout inside Vehicle to specify action to add new vehicle */}
                 <Route
                   path="/vehicles"
@@ -107,7 +107,7 @@ root.render(
               </Route>
               <Route element={<GuardRoutes />}>
                 <Route path='/dashboard' element={<DashboardRouter />} />
-                <Route path='/dashboard/:id' element={<Dashboard />} />
+                <Route path='/dashboard/:id' element={<Dashboard instance={msalInstance}/>} />
               </Route>
             </Routes>
           </AuthContextProvider>
