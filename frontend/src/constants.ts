@@ -3,5 +3,8 @@ export const styles = {
   white: '#fff',
   lightGray: '#f5f5f5',
   gray: '#d9d9d9',
-  darkGray: '#979797'
+  darkGray: '#999',
+  lightBlue: '#d3e8ff',
+  lightOrange: '#ffefdc',
+  lightYellow: '#feffdc'
 }

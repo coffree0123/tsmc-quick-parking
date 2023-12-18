@@ -1,7 +1,10 @@
-import { Flex, Skeleton, Tabs } from 'antd'
+import { Flex, Skeleton, Tabs, Typography } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { type Slots, type ParkingInfo, type LotInfo, type ParkingLotSummary } from '../hooks'
 import { styles } from '../constants'
+import carSVG from '../assets/car.svg'
+
+const { Title } = Typography
 
 interface SlotInfo {
   isFree: boolean
@@ -17,22 +20,17 @@ const slotHeight = 220
 const ParkingSlot = (props: { name: string, slotInfo: SlotInfo, onClick?: React.MouseEventHandler<HTMLDivElement> }): React.ReactElement => {
   const slotStyle: Record<string, string> = {}
   if (props.slotInfo.hasPriority) {
-    slotStyle.outline = 'dodgerblue 5px solid'
-    slotStyle.outlineOffset = '-10px'
+    slotStyle.borderColor = 'dodgerblue'
+    slotStyle.backgroundColor = styles.lightBlue
   }
-  if (props.slotInfo.isFree) {
-    slotStyle.backgroundColor = 'transparent'
-  } else {
-    if (typeof props.slotInfo.isIllegal !== 'undefined' && props.slotInfo.isIllegal) {
-      slotStyle.backgroundColor = 'red'
+  if (!props.slotInfo.isFree) {
+    if (!props.slotInfo.hasPriority) {
+      slotStyle.backgroundColor = styles.lightGray
+    }
+    if (props.slotInfo.isIllegal === true) {
+      slotStyle.backgroundColor = styles.lightOrange
     } else if (typeof props.slotInfo.enrolled !== 'undefined' && !props.slotInfo.enrolled) {
-      if (props.slotInfo.hasPriority) {
-        slotStyle.backgroundColor = 'orange'
-      } else {
-        slotStyle.backgroundColor = 'yellow'
-      }
-    } else {
-      slotStyle.backgroundColor = 'lightgray'
+      slotStyle.backgroundColor = styles.lightYellow
     }
   }
   return (
@@ -42,15 +40,30 @@ const ParkingSlot = (props: { name: string, slotInfo: SlotInfo, onClick?: React.
         justifyContent: 'center',
         width: `${slotWidth}px`,
         height: `${slotHeight}px`,
-        border: 'gray 3px solid',
+        border: 'gray 5px solid',
         textAlign: 'center',
+        backgroundColor: styles.white,
         ...slotStyle,
         ...(props.slotInfo.license !== undefined ? { cursor: 'pointer' } : {})
       }}
       onClick={props.slotInfo.license !== undefined ? props.onClick : undefined}
     >
       {
-        props.slotInfo.license !== undefined ? <>License:<br/>{props.slotInfo.license}</> : props.name
+        props.slotInfo.isIllegal === true &&
+        <Title level={5} style={{ margin: 0, color: styles.darkGray }}>Illegal</Title>
+      }
+      {
+        typeof props.slotInfo.enrolled !== 'undefined' && !props.slotInfo.enrolled &&
+        <Title level={5} style={{ margin: 0, color: styles.darkGray }}>Unenrolled</Title>
+      }
+      {
+        !props.slotInfo.isFree &&
+        <img src={carSVG} alt="Parked" />
+      }
+      <Title level={3} style={{ margin: 0, fontWeight: 'bold', ...(props.slotInfo.hasPriority ? { color: 'dodgerblue' } : { color: styles.darkGray }) }}>{props.name}</Title>
+      {
+        props.slotInfo.license !== undefined &&
+        <Title level={5} style={{ margin: 0, color: styles.darkGray }}>{props.slotInfo.license}</Title>
       }
     </Flex>
   )
@@ -109,7 +122,7 @@ const ParkingLotMap = (props: ParkingLotMapProps): React.ReactElement => {
   }, [props.freeSlots, props.parkedSlots, props.prioritySlots])
 
   return (
-    <Flex vertical gap='middle' style={{ width: '100%', height: '100%', overflow: 'auto', borderRadius: '10px', boxShadow: 'inset 0 0 10px #000', backgroundColor: styles.white }}>
+    <Flex vertical gap='middle' style={{ width: '100%', height: '100%', overflow: 'auto', borderRadius: '10px', boxShadow: 'inset 0 0 10px #000', backgroundColor: styles.white, padding: '30px' }}>
       {map.map((item, i) => (
         <Flex key={i} gap='small' style={{ width: `${slotWidth * props.numCols + 8 * (props.numCols - 1)}px` }}>
           {item.map((slotInfo, j) => (
