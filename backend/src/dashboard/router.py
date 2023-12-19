@@ -1,4 +1,5 @@
 '''Guard Dashboard Module'''
+from datetime import datetime
 from dataclasses import dataclass
 from fastapi import APIRouter, Request, HTTPException, Depends, Query
 import pandas as pd
@@ -29,7 +30,8 @@ def get_time_records(r: Request, query: TimeRecordsQuery = Depends()) -> list[di
         query.parkinglot_id, query.start_time, query.end_time
     )
     all_df = pd.DataFrame.from_dict(data)
-    timestamps = pd.date_range(start=query.start_time, end=query.end_time, freq=query.interval)
+    timestamps = pd.date_range(start=query.start_time, end=query.end_time, freq=query.interval,
+                               tz=datetime.now().astimezone().tzinfo)
     res = []
     if len(all_df) == 0:
         for timestamp in timestamps:
@@ -37,7 +39,6 @@ def get_time_records(r: Request, query: TimeRecordsQuery = Depends()) -> list[di
     else:
         df = all_df[all_df['floor'] == query.floor]
         for timestamp in timestamps:
-            timestamp = timestamp.to_datetime64()
             mask = (df['startTime'] <= timestamp) &  \
                     ((df['endTime'] >= timestamp) | (pd.isnull(df['endTime'])))
             count = sum(mask)
