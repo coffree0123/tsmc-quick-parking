@@ -50,6 +50,11 @@ const UserRoutes = (): React.ReactElement => {
     : (isGuard ? <Navigate to={GuardDefaultURL} replace /> : <Outlet />)
 }
 
+const PublicUserRoutes = (): React.ReactElement => {
+  const { token, isGuard } = useContext(AuthContext)
+  return token !== undefined && isGuard ? <Navigate to={GuardDefaultURL} replace /> : <Outlet />
+}
+
 const GuardRoutes = (): React.ReactElement => {
   const { token, isGuard } = useContext(AuthContext)
   return token === undefined
@@ -88,12 +93,14 @@ root.render(
           <AuthContextProvider>
             <Suspense fallback={<Skeleton active />}>
               <Routes>
-                {/* Wrap UserLayout inside ParkingLotList to add login button */}
-                <Route path="/parkinglots" element={<ParkingLotList instance={msalInstance}/>}/>
-                {/* Wrap UserLayout inside ParkingLotPage to specify title with parking lot name and add login button */}
-                <Route path="/parkinglots/:id" element={<ParkingLotPage instance={msalInstance}/>} />
                 <Route element={<RestrictedPublicRoutes />}>
                   <Route path="/login" element={<App instance={msalInstance}/>} />
+                </Route>
+                <Route element={<PublicUserRoutes />}>
+                  {/* Wrap UserLayout inside ParkingLotList to add login button */}
+                  <Route path="/parkinglots" element={<ParkingLotList instance={msalInstance}/>}/>
+                  {/* Wrap UserLayout inside ParkingLotPage to specify title with parking lot name and add login button */}
+                  <Route path="/parkinglots/:id" element={<ParkingLotPage instance={msalInstance}/>} />
                 </Route>
                 <Route element={<UserRoutes />}>
                   <Route path="/" element={<UserLayout active='home'><Home instance={msalInstance}/></UserLayout>} />

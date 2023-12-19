@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Col, Input, Layout, List, Row, Space, Typography, Select, DatePicker, InputNumber, Switch, Modal, Form, Button, notification, Flex } from 'antd'
+import { Col, Input, Layout, List, Row, Space, Typography, Select, DatePicker, InputNumber, Switch, Modal, Form, Button, notification, Flex, Skeleton } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import { Area } from '@ant-design/charts'
 import ParkingLot from '../components/ParkingLot'
@@ -480,7 +480,13 @@ const Dashboard = ({ instance }: any): React.ReactElement => {
               }}
             >
               <div style={{ fontSize: '1.5em', fontWeight: 'bold' }}>Free Slots</div>
-              <div style={{ fontSize: '3em', fontWeight: 'bold' }}>{summary?.numFree}<span style={{ fontSize: '0.6em' }}>/{summary?.numSlots}</span></div>
+              {
+                summary === undefined
+                  ? <Skeleton.Input active />
+                  : (
+                    <div style={{ fontSize: '3em', fontWeight: 'bold' }}>{summary.numFree}<span style={{ fontSize: '0.6em' }}>/{summary.numSlots}</span></div>
+                    )
+              }
             </Flex>
             <Flex
               vertical
@@ -497,7 +503,13 @@ const Dashboard = ({ instance }: any): React.ReactElement => {
               }}
             >
               <div style={{ fontSize: '1.5em', fontWeight: 'bold' }}>Occupancy Rate</div>
-              <div style={{ fontSize: '3em', fontWeight: 'bold' }}>{summary?.numFree !== undefined && summary.numSlots !== undefined && ((1 - summary.numFree / summary.numSlots) * 100).toFixed(2)}<span style={{ fontSize: '0.6em' }}>%</span></div>
+              {
+                summary === undefined
+                  ? <Skeleton.Input active style={{ height: '3em' }} />
+                  : (
+                    <div style={{ fontSize: '3em', fontWeight: 'bold' }}>{summary.numSlots !== undefined && ((1 - summary.numFree / summary.numSlots) * 100).toFixed(2)}<span style={{ fontSize: '0.6em' }}>%</span></div>
+                    )
+              }
             </Flex>
           </Space>
           <Chart id={Number(id)} lotInfo={lotInfo}/>
