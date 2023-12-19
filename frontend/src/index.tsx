@@ -34,7 +34,7 @@ msalInstance.addEventCallback((event: any) => {
   }
 })
 
-const PubliceDefaultURL = '/login'
+const PubliceDefaultURL = '/parkinglots'
 const UserDefaultURL = '/'
 const GuardDefaultURL = '/dashboard'
 
@@ -88,17 +88,15 @@ root.render(
           <AuthContextProvider>
             <Suspense fallback={<Skeleton active />}>
               <Routes>
+                {/* Wrap UserLayout inside ParkingLotList to add login button */}
+                <Route path="/parkinglots" element={<ParkingLotList instance={msalInstance}/>}/>
+                {/* Wrap UserLayout inside ParkingLotPage to specify title with parking lot name and add login button */}
+                <Route path="/parkinglots/:id" element={<ParkingLotPage instance={msalInstance}/>} />
                 <Route element={<RestrictedPublicRoutes />}>
                   <Route path="/login" element={<App instance={msalInstance}/>} />
                 </Route>
                 <Route element={<UserRoutes />}>
                   <Route path="/" element={<UserLayout active='home'><Home instance={msalInstance}/></UserLayout>} />
-                  <Route
-                    path="/parkinglots"
-                    element={<UserLayout active='parkinglots' title='Parking Lots'><ParkingLotList /></UserLayout>}
-                  />
-                  {/* Wrap UserLayout inside ParkingLotPage to specify title with parking lot name */}
-                  <Route path="/parkinglots/:id" element={<ParkingLotPage instance={msalInstance}/>} />
                   {/* Wrap UserLayout inside Vehicle to specify action to add new vehicle */}
                   <Route
                     path="/vehicles"
@@ -110,7 +108,7 @@ root.render(
                   />
                 </Route>
                 <Route element={<GuardRoutes />}>
-                  <Route path='/dashboard' element={<DashboardRouter />} />
+                  <Route path='/dashboard' element={<DashboardRouter instance={msalInstance}/>} />
                   <Route path='/dashboard/:id' element={<Dashboard instance={msalInstance}/>} />
                 </Route>
               </Routes>
