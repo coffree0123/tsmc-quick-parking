@@ -196,9 +196,9 @@ const Chart = (props: { id: number, lotInfo?: LotInfo }): React.ReactElement => 
             showTime={{ format: 'HH:mm' }}
             format="YYYY-MM-DD HH:mm"
             defaultValue={[dayjs().subtract(1, 'day'), dayjs()]}
-            onChange={(time, timeString) => {
-              changeQuery('start_time', timeString[0])
-              changeQuery('end_time', timeString[1])
+            onChange={(time: any) => {
+              changeQuery('start_time', time[0].format('YYYY-MM-DD HH:mmZ').toString())
+              changeQuery('end_time', time[1].format('YYYY-MM-DD HH:mmZ').toString())
             }}
           />
           every
