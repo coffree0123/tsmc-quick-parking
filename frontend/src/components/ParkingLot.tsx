@@ -150,10 +150,22 @@ const ParkingLot = (props: { lotInfo?: LotInfo, summary?: ParkingLotSummary, ope
     setFloorId(Number(key))
   }
 
+  useEffect(() => {
+    if (
+      (props.lotInfo !== undefined && floorId >= props.lotInfo.floor_info.length) ||
+      (props.summary !== undefined && floorId >= props.summary.floors.length)
+    ) {
+      setFloorId(0)
+    }
+  }, [props.lotInfo, props.summary])
+
   return (
     <Flex vertical style={{ height: '100%' }}>
       {
-        props.lotInfo === undefined
+        (
+          (props.lotInfo === undefined || floorId >= props.lotInfo.floor_info.length) ||
+          (props.summary === undefined || floorId >= props.summary.floors.length)
+        )
           ? <Skeleton active />
           : (
             <>
