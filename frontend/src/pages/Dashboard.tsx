@@ -107,8 +107,8 @@ const Chart = (props: { id: number, lotInfo?: LotInfo }): React.ReactElement => 
   const [timeRecords, setTimeRecords] = useState<TimeRecordDisplay[]>([])
   const [query, setQuery] = useState<TimeRecordQuery>({
     floor: 1,
-    start_time: dayjs().subtract(1, 'day').toString(),
-    end_time: dayjs().toString(),
+    start_time: dayjs().subtract(1, 'day').format('YYYY-MM-DD HH:mm').toString(),
+    end_time: dayjs().format('YYYY-MM-DD HH:mm').toString(),
     interval: 1,
     time_unit: 'H'
   })
@@ -123,7 +123,7 @@ const Chart = (props: { id: number, lotInfo?: LotInfo }): React.ReactElement => 
         .then(response => {
           const tmp: TimeRecordDisplay[] = []
           response.data.forEach((item) => {
-            const date = new Date(item.time + '+00:00')
+            const date = new Date(item.time)
             const year = date.getFullYear()
             const month = (date.getMonth() + 1).toString().padStart(2, '0')
             const day = date.getDate().toString().padStart(2, '0')
