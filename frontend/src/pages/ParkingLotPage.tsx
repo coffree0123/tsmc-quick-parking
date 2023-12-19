@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import ParkingLot from '../components/ParkingLot'
-import UserLayout, { footerHeight } from '../components/UserLayout'
+import UserLayout from '../components/UserLayout'
 import { useParkingLot, useParkingLotList } from '../hooks'
 import { Typography } from 'antd'
 import { styles } from '../constants'
@@ -15,7 +15,7 @@ const { Title } = Typography
 const titleHeight = 96
 
 const ParkingLotPage = ({ instance }: any): React.ReactElement => {
-  const { token } = useContext(AuthContext)
+  const { token, isGuard } = useContext(AuthContext)
   const [title, setTitle] = useState<string>()
   const { id } = useParams()
   const lotList = useParkingLotList()
@@ -51,7 +51,7 @@ const ParkingLotPage = ({ instance }: any): React.ReactElement => {
           </Title>
         </div>
       }
-      <div style={{ height: `calc(100% - ${footerHeight + (summary === undefined ? 0 : titleHeight)}px)` }}>
+      <div style={{ height: `calc(100% - ${(token !== undefined && !isGuard ? 0 : 60) + (summary === undefined ? 0 : titleHeight)}px)` }}>
         <ParkingLot lotInfo={lotInfo} summary={summary} />
       </div>
     </UserLayout>

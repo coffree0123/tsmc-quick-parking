@@ -83,7 +83,7 @@ const UserLayout = (props: UserLayoutProps): React.ReactElement => {
       }
       <Content
         style={{
-          height: props.title === undefined ? '100vh' : `calc(100vh - ${headerHeight}px)`,
+          height: `calc(100vh - ${(token !== undefined && !isGuard ? footerHeight : 0) + (props.title !== undefined ? headerHeight : 0)}px)`,
           backgroundColor: styles.lightGray,
           overflow: 'auto'
         }}
