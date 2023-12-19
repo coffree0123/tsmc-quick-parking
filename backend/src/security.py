@@ -54,7 +54,10 @@ class JWTBearer(HTTPBearer):
                 rsa_key,
                 algorithms=["RS256"],
                 audience=CLIENT_ID,
-                issuer=(f'https://login.microsoftonline.com/{TENANT_ID}/v2.0', f'https://{TENANT_ID}.ciamlogin.com/{TENANT_ID}/v2.0')
+                issuer=(
+                    f'https://login.microsoftonline.com/{TENANT_ID}/v2.0',
+                    f'https://{TENANT_ID}.ciamlogin.com/{TENANT_ID}/v2.0'
+                )
             )
         except JOSEError:
             token_claims = None
