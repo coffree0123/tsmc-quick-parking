@@ -5,9 +5,7 @@ from src.security import authentication, is_guard
 from src.parkinglots.utils import fmt
 
 
-router = APIRouter(
-    dependencies=[Depends(authentication)]
-)
+router = APIRouter()
 
 
 @router.get(
@@ -71,6 +69,7 @@ def get_parkinglot(r: Request, parkinglot_id: int):
     tags=['guard'],
     response_model=ParkingLot,
     response_model_exclude_none=True,
+    dependencies=[Depends(authentication)]
 )
 def get_parkinglot_for_guard(r: Request, parkinglot_id: int):
     '''This API retrieves parking lot info including parked slots/vehicles & priority seat'''
@@ -123,7 +122,8 @@ def get_parkinglot_for_guard(r: Request, parkinglot_id: int):
     path="/guards/parkinglots/{parkinglot_id}/long-term-occupants",
     tags=['guard'],
     response_model=list[ParkingRecord],
-    response_model_exclude_none=True
+    response_model_exclude_none=True,
+    dependencies=[Depends(authentication)]
 )
 def get_long_term_occupants(r: Request, parkinglot_id: int):
     '''Search the vehicles that park the longest in a parking lot'''
