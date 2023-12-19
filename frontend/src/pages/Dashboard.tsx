@@ -107,8 +107,8 @@ const Chart = (props: { id: number, lotInfo?: LotInfo }): React.ReactElement => 
   const [timeRecords, setTimeRecords] = useState<TimeRecordDisplay[]>([])
   const [query, setQuery] = useState<TimeRecordQuery>({
     floor: 1,
-    start_time: dayjs().subtract(1, 'day').format('YYYY-MM-DD HH:mm').toString(),
-    end_time: dayjs().format('YYYY-MM-DD HH:mm').toString(),
+    start_time: dayjs().subtract(1, 'day').format('YYYY-MM-DD HH:mmZ').toString(),
+    end_time: dayjs().format('YYYY-MM-DD HH:mmZ').toString(),
     interval: 1,
     time_unit: 'H'
   })
@@ -119,7 +119,7 @@ const Chart = (props: { id: number, lotInfo?: LotInfo }): React.ReactElement => 
   }
   useEffect(() => {
     if (props.lotInfo !== undefined && query.floor <= props.lotInfo.num_floor) {
-      axios.get<TimeRecordInfo[]>(`guards/dashboard/time-records?parkinglot_id=${props.id}&floor=${query.floor}&start_time=${query.start_time}&end_time=${query.end_time}&interval=${query.interval}${query.time_unit}`, getAxiosConfig())
+      axios.get<TimeRecordInfo[]>(`guards/dashboard/time-records?parkinglot_id=${props.id}&floor=${query.floor}&start_time=${encodeURIComponent(query.start_time)}&end_time=${encodeURIComponent(query.end_time)}&interval=${query.interval}${query.time_unit}`, getAxiosConfig())
         .then(response => {
           const tmp: TimeRecordDisplay[] = []
           response.data.forEach((item) => {
