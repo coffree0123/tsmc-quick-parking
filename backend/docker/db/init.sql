@@ -52,8 +52,8 @@ CREATE TABLE "ParkingRecords" (
   "id" serial PRIMARY KEY,
   "licensePlateNo" varchar,
   "slotID" integer,
-  "startTime" timestamp,
-  "endTime" timestamp
+  "startTime" timestamptz,
+  "endTime" timestamptz
 );
 
 CREATE TABLE "UserFavorites" (

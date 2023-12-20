@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Col, Input, Layout, List, Row, Space, Typography, Select, DatePicker, InputNumber, Switch, Modal, Form, Button, notification, Flex } from 'antd'
+import { Col, Input, Layout, List, Row, Space, Typography, Select, DatePicker, InputNumber, Switch, Modal, Form, Button, notification, Flex, Skeleton } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import { Area } from '@ant-design/charts'
 import ParkingLot from '../components/ParkingLot'
@@ -107,8 +107,8 @@ const Chart = (props: { id: number, lotInfo?: LotInfo }): React.ReactElement => 
   const [timeRecords, setTimeRecords] = useState<TimeRecordDisplay[]>([])
   const [query, setQuery] = useState<TimeRecordQuery>({
     floor: 1,
-    start_time: dayjs().subtract(1, 'day').toString(),
-    end_time: dayjs().toString(),
+    start_time: dayjs().subtract(1, 'day').format('YYYY-MM-DD HH:mmZ').toString(),
+    end_time: dayjs().format('YYYY-MM-DD HH:mmZ').toString(),
     interval: 1,
     time_unit: 'H'
   })
@@ -119,11 +119,11 @@ const Chart = (props: { id: number, lotInfo?: LotInfo }): React.ReactElement => 
   }
   useEffect(() => {
     if (props.lotInfo !== undefined && query.floor <= props.lotInfo.num_floor) {
-      axios.get<TimeRecordInfo[]>(`guards/dashboard/time-records?parkinglot_id=${props.id}&floor=${query.floor}&start_time=${query.start_time}&end_time=${query.end_time}&interval=${query.interval}${query.time_unit}`, getAxiosConfig())
+      axios.get<TimeRecordInfo[]>(`guards/dashboard/time-records?parkinglot_id=${props.id}&floor=${query.floor}&start_time=${encodeURIComponent(query.start_time)}&end_time=${encodeURIComponent(query.end_time)}&interval=${query.interval}${query.time_unit}`, getAxiosConfig())
         .then(response => {
           const tmp: TimeRecordDisplay[] = []
           response.data.forEach((item) => {
-            const date = new Date(item.time + '+00:00')
+            const date = new Date(item.time)
             const year = date.getFullYear()
             const month = (date.getMonth() + 1).toString().padStart(2, '0')
             const day = date.getDate().toString().padStart(2, '0')
@@ -196,9 +196,9 @@ const Chart = (props: { id: number, lotInfo?: LotInfo }): React.ReactElement => 
             showTime={{ format: 'HH:mm' }}
             format="YYYY-MM-DD HH:mm"
             defaultValue={[dayjs().subtract(1, 'day'), dayjs()]}
-            onChange={(time, timeString) => {
-              changeQuery('start_time', timeString[0])
-              changeQuery('end_time', timeString[1])
+            onChange={(time: any) => {
+              changeQuery('start_time', time[0].format('YYYY-MM-DD HH:mmZ').toString())
+              changeQuery('end_time', time[1].format('YYYY-MM-DD HH:mmZ').toString())
             }}
           />
           every
@@ -282,17 +282,21 @@ export const getStayTime = (startTime: string, endTime?: string | null): number 
 ) - Date.parse(startTime)
 
 const VehicleModal = (props: { id: string, vehicleInfo: VehicleInfo }): React.ReactElement => {
+  const [currentLot, setCurrentLot] = useState('Not parked')
   const [currentPosition, setCurrentPosition] = useState('Not parked')
   useEffect(() => {
-    let tmp = 'Not parked'
+    let lot = 'Not parked'
+    let position = 'Not parked'
     for (const item of props.vehicleInfo.vehicle_records) {
       console.log(item.end_time)
       if (item.end_time === null) {
-        tmp = item.position
+        lot = item.parkinglot_name
+        position = item.position
         break
       }
     }
-    setCurrentPosition(tmp)
+    setCurrentLot(lot)
+    setCurrentPosition(position)
   }, [props.vehicleInfo])
   return (
     <Row>
@@ -307,6 +311,7 @@ const VehicleModal = (props: { id: string, vehicleInfo: VehicleInfo }): React.Re
         >
           Vehicle: {props.id}
         </Title>
+        <Title level={4}>Current Parking Lot: <span style={{ fontWeight: 'normal' }}>{currentLot}</span></Title>
         <Title level={4}>Current Position: <span style={{ fontWeight: 'normal' }}>{currentPosition}</span></Title>
         {
           props.vehicleInfo.vehicle_records.length > 0 && (
@@ -480,7 +485,13 @@ const Dashboard = ({ instance }: any): React.ReactElement => {
               }}
             >
               <div style={{ fontSize: '1.5em', fontWeight: 'bold' }}>Free Slots</div>
-              <div style={{ fontSize: '3em', fontWeight: 'bold' }}>{summary?.numFree}<span style={{ fontSize: '0.6em' }}>/{summary?.numSlots}</span></div>
+              {
+                summary === undefined
+                  ? <Skeleton.Input active />
+                  : (
+                    <div style={{ fontSize: '3em', fontWeight: 'bold' }}>{summary.numFree}<span style={{ fontSize: '0.6em' }}>/{summary.numSlots}</span></div>
+                    )
+              }
             </Flex>
             <Flex
               vertical
@@ -497,7 +508,13 @@ const Dashboard = ({ instance }: any): React.ReactElement => {
               }}
             >
               <div style={{ fontSize: '1.5em', fontWeight: 'bold' }}>Occupancy Rate</div>
-              <div style={{ fontSize: '3em', fontWeight: 'bold' }}>{summary?.numFree !== undefined && summary.numSlots !== undefined && (summary.numFree / summary.numSlots * 100).toFixed(2)}<span style={{ fontSize: '0.6em' }}>%</span></div>
+              {
+                summary === undefined
+                  ? <Skeleton.Input active style={{ height: '3em' }} />
+                  : (
+                    <div style={{ fontSize: '3em', fontWeight: 'bold' }}>{summary.numSlots !== undefined && ((1 - summary.numFree / summary.numSlots) * 100).toFixed(2)}<span style={{ fontSize: '0.6em' }}>%</span></div>
+                    )
+              }
             </Flex>
           </Space>
           <Chart id={Number(id)} lotInfo={lotInfo}/>

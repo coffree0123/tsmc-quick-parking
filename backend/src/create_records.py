@@ -4,9 +4,9 @@ import string
 import datetime
 import requests
 
-slots = list(range(1, 223))
-start_date = datetime.datetime.strptime('2023-12-04', '%Y-%m-%d')
-end_date = datetime.datetime.strptime('2023-12-05', '%Y-%m-%d')
+slots = list(range(1, 669))
+start_date = datetime.datetime.strptime('2023-12-04', '%Y-%m-%d').astimezone()
+end_date = datetime.datetime.strptime('2023-12-05', '%Y-%m-%d').astimezone()
 
 user_licenses = ['ABC-5678', 'DEF-1234', 'GHI-7890', 'JKL-4567',
                  'MNO-8901', 'PQR-2345', 'STU-6789', 'VWX-3456',

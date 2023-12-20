@@ -16,7 +16,7 @@ user_slots = [1, 2, 3, 204, 205,
               208, 209, 210, 4, 105,
               5, 211, 212, 213, 106, 6]
 
-t = datetime.datetime.now()
+t = datetime.datetime.now().astimezone()
 for i in range(20):
     license_plate_no = user_licenses[i]
     slot = user_slots[i]
@@ -27,8 +27,8 @@ for i in range(20):
                     timeout=5)
     print(f'{license_plate_no} still in slot {slot}, start time: {start_time}')
 
-slots = list(range(1, 223))
-for i in range(10):
+slots = list(range(1, 669))
+for i in range(20):
     # pylint: disable=invalid-name
     license_plate_no = ''.join(random.choices(string.ascii_uppercase, k=3)) \
                         + '-' + ''.join(random.choices(string.digits, k=4))

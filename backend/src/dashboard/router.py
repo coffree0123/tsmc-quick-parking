@@ -37,7 +37,6 @@ def get_time_records(r: Request, query: TimeRecordsQuery = Depends()) -> list[di
     else:
         df = all_df[all_df['floor'] == query.floor]
         for timestamp in timestamps:
-            timestamp = timestamp.to_datetime64()
             mask = (df['startTime'] <= timestamp) &  \
                     ((df['endTime'] >= timestamp) | (pd.isnull(df['endTime'])))
             count = sum(mask)
