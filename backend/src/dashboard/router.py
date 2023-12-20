@@ -30,8 +30,7 @@ def get_time_records(r: Request, query: TimeRecordsQuery = Depends()) -> list[di
         query.parkinglot_id, query.start_time, query.end_time
     )
     all_df = pd.DataFrame.from_dict(data)
-    timestamps = pd.date_range(start=query.start_time, end=query.end_time, freq=query.interval,
-                               tz=datetime.now().astimezone().tzinfo)
+    timestamps = pd.date_range(start=query.start_time, end=query.end_time, freq=query.interval)
     res = []
     if len(all_df) == 0:
         for timestamp in timestamps:
