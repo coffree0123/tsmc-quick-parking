@@ -1,5 +1,4 @@
 '''Guard Dashboard Module'''
-from datetime import datetime
 from dataclasses import dataclass
 from fastapi import APIRouter, Request, HTTPException, Depends, Query
 import pandas as pd
