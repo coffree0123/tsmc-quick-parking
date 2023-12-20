@@ -11,7 +11,7 @@ const LogOutButton = (props: { style?: React.CSSProperties }): React.ReactElemen
   function signOutClickHandler (instance: any): any {
     const logoutRequest = {
       account: activeAccount,
-      postLogoutRedirectUri: '/login'
+      postLogoutRedirectUri: '/parkinglots'
     }
     instance.logoutRedirect(logoutRequest)
     logout()
