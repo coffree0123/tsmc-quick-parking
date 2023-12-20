@@ -282,17 +282,21 @@ export const getStayTime = (startTime: string, endTime?: string | null): number 
 ) - Date.parse(startTime)
 
 const VehicleModal = (props: { id: string, vehicleInfo: VehicleInfo }): React.ReactElement => {
+  const [currentLot, setCurrentLot] = useState('Not parked')
   const [currentPosition, setCurrentPosition] = useState('Not parked')
   useEffect(() => {
-    let tmp = 'Not parked'
+    let lot = 'Not parked'
+    let position = 'Not parked'
     for (const item of props.vehicleInfo.vehicle_records) {
       console.log(item.end_time)
       if (item.end_time === null) {
-        tmp = item.position
+        lot = item.parkinglot_name
+        position = item.position
         break
       }
     }
-    setCurrentPosition(tmp)
+    setCurrentLot(lot)
+    setCurrentPosition(position)
   }, [props.vehicleInfo])
   return (
     <Row>
@@ -307,6 +311,7 @@ const VehicleModal = (props: { id: string, vehicleInfo: VehicleInfo }): React.Re
         >
           Vehicle: {props.id}
         </Title>
+        <Title level={4}>Current Parking Lot: <span style={{ fontWeight: 'normal' }}>{currentLot}</span></Title>
         <Title level={4}>Current Position: <span style={{ fontWeight: 'normal' }}>{currentPosition}</span></Title>
         {
           props.vehicleInfo.vehicle_records.length > 0 && (
