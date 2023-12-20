@@ -35,6 +35,8 @@ const Vehicle = ({ instance }: any): React.ReactElement => {
       form.resetFields()
       if (vehicleInfo.length > 0) {
         form.setFieldValue('user_id', vehicleInfo[0].user_id)
+      } else {
+        form.setFieldValue('user_id', '')
       }
     }
     setIndex(index)
@@ -84,6 +86,7 @@ const Vehicle = ({ instance }: any): React.ReactElement => {
   const submitVehicle = (): void => {
     if (typeof index === 'undefined') {
       // Add new vehicle
+      console.log(form.getFieldsValue())
       axios.post('users/vehicles/', form.getFieldsValue(), getAxiosConfig())
         .then(submitCallback('Vehicle added.'))
         .catch(error => {
